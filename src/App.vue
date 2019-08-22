@@ -34,6 +34,7 @@ const signInGithub = () => {
 	const provider = new firebase.auth.GithubAuthProvider();
 	provider.addScope('user');
 	provider.addScope('repo');
+	provider.addScope('admin:org_hook');
 	
 	// 실제 github 로그인 팝업창을 띄움
 	firebase.auth().signInWithPopup(provider)
