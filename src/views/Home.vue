@@ -1,13 +1,28 @@
 <template>
-  <HelloWorld />
+	<v-app>
+		<Header/>
+
+		<v-content>
+			<v-btn @click="test">Hello</v-btn>
+		</v-content>
+	</v-app>
 </template>
 
 <script>
-import HelloWorld from '../components/HelloWorld';
+import Header from './Header.vue';
 
 export default {
-  components: {
-    HelloWorld,
-  },
+	name: 'App',
+	components: {
+		Header
+	},
+	methods: {
+		test: function() {
+			console.log(this.$store.getters.user.photoURL);
+		}
+	},
+	data: () => ({
+		//
+	}),
 };
 </script>

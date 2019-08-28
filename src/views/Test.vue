@@ -18,18 +18,18 @@
 		</v-app-bar>
 
 		<v-content>
-			<HelloWorld/>
+			<v-btn @click="test">TEST</v-btn>
+			<a href="/">test</a>
 		</v-content>
 	</v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
 import axios from 'axios';
 import firebase from 'firebase';
 
 // Github 계정으로 로그인
-const signInGithub = () => {
+const signInGithub = function() {
 	// github auth provider
 	const provider = new firebase.auth.GithubAuthProvider();
 	provider.addScope('user');
@@ -42,8 +42,10 @@ const signInGithub = () => {
 			// 로그인 성공시
 			let token = result.credential.accessToken;
 			let user = result.user;
-			console.log(result);
-			console.log(token, user);
+
+			console.log(this.$store);
+			this.$store.commit('token', token); // 토큰 저장
+			//this.$store.state.userToken = token;
 		})
 		.catch((err) => {
 			// 로그인 실패시
@@ -54,10 +56,13 @@ const signInGithub = () => {
 export default {
 	name: 'App',
 	components: {
-		HelloWorld,
 	},
 	methods: {
-		signIn: signInGithub
+		signIn: signInGithub,
+		test: function(e) {
+			console.log(this.$store.getters.token);
+			console.log(this.$store.state.userToken);
+		},
 	},
 	data: () => ({
 		//
