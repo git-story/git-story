@@ -32,6 +32,11 @@ export default new Vuex.Store({
 			state.user = provider["0"];
 			state.userToken = token;
 			state.github = html_url;
+		},
+		logout: (state) => {
+			state.userToken = null;
+			state.user = null;
+			state.github = null;
 		}
 	}
 });

@@ -3,7 +3,6 @@
 		<Header/>
 
 		<router-view/>
-		<Footer/>
 	</v-app>
 </template>
 <script>
