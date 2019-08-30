@@ -3,14 +3,17 @@
 		<Header/>
 
 		<router-view/>
+		<Footer/>
 	</v-app>
 </template>
 <script>
 import HeaderComponent from './views/Header';
+import FooterComponent from './views/Footer';
 
 export default {
 	components: {
-		Header: HeaderComponent
+		Header: HeaderComponent,
+		Footer: FooterComponent
 	}
 }
 </script>
