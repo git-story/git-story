@@ -6,6 +6,7 @@ import Router from 'vue-router'
 
 import Home from '../views/Home'
 import Test from '../views/Test'
+import Edit from '../views/Edit'
 
 Vue.use(Router)
 
@@ -17,6 +18,11 @@ export default new Router({
 			path: '/',
 			name: 'Home',
 			component: Home
+    },
+    {
+			path: '/Edit',
+			name: 'Edit',
+			component: Edit
 		},
 		{
 			path: '/my-blog',
