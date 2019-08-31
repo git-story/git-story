@@ -6,7 +6,7 @@
 		:flat="true"
 		:app="true">
 		<v-toolbar-title class="headline text-uppercase">
-			<span class="font-weight-light">Git Story</span>
+			<router-link to="/" class="font-weight-light" style="text-decoration:none; color:white;">Git Story</router-link>
 		</v-toolbar-title>
 		<v-spacer></v-spacer>
 
@@ -16,7 +16,7 @@
 				transition="slide-y-transition"
 				bottom
 				min-width="200px"
-				:close-on-content-click="false"
+				:close-on-content-click="true"
 				:offset-y="true">
 				<!-- S:Avatar -->
 				<template v-slot:activator="{ on }">
@@ -76,24 +76,7 @@
 
 <script>
 import firebase from 'firebase';
-
-
-// 새로운 탭으로 URL 열기
-const openNewTabUrl = function(url) {
-	if ( typeof url === "string" ) {
-		window.open(url);
-	}
-};
-
-// Vue route 이동
-const routeAssignUrl = function(url, _this) {
-	let router = (this && this.$router) || (_this && _this.$router);
-	if ( typeof url === "string" && router ) {
-		if ( router.history.current.path !== url ) {
-			router.push({ path: url });
-		}
-	}
-}
+import { openNewTabUrl, routeAssignUrl } from '../modules/common.js'
 
 // Github 계정으로 로그인
 const signInGithub = function() {
@@ -102,11 +85,13 @@ const signInGithub = function() {
 	provider.addScope('user');
 	provider.addScope('repo');
 	provider.addScope('admin:org_hook');
+	provider.addScope('delete_repo');
 
 	// 실제 github 로그인 팝업창을 띄움
 	firebase.auth().signInWithPopup(provider)
 		.then((result) => {
 			// 로그인 성공시
+			console.log(result);
 			this.$store.commit('login', result); // 토큰 저장
 			this.$forceUpdate();
 		})
@@ -131,8 +116,7 @@ const isLoginCheck = function(redirect = false) {
 };
 
 // 새 글 작성 클릭
-const createPostClick = function(e) {
-	console.log(e);
+const createPostClick = function(/*e*/) {
 };
 
 export default {

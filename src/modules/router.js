@@ -5,7 +5,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Home from '../views/Home'
-import Test from '../views/Test'
+import MyBlog from '../views/MyBlog'
 
 Vue.use(Router)
 
@@ -20,8 +20,8 @@ export default new Router({
 		},
 		{
 			path: '/my-blog',
-			name: 'Blog',
-			component: Test
+			name: 'MyBlog',
+			component: MyBlog
 		}
 	]
 })

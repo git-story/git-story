@@ -46,8 +46,6 @@ export default {
 		Footer: FooterComponent
 	},
 	methods: {
-		test: function() {
-		}
 	},
 	data: () => ({
 		//
