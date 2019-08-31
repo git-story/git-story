@@ -49,7 +49,6 @@ export default {
         [{ 'align': [] }],
         ['clean'],
         ['link', 'image', 'video'],
-        ['source']
       ],
       syntax: {
         highlight: text => hljs.highlightAuto(text).value
