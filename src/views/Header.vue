@@ -52,6 +52,17 @@
 						</v-list-item-action>
 					</v-list-item>
 					<v-divider></v-divider>
+					<v-list-item @click="routeAssign('/edit')">
+						<v-list-item-content>
+							<v-list-item-title>편집기</v-list-item-title>
+						</v-list-item-content>
+						<v-list-item-action>
+							<v-btn @click.stop="createPost" icon>
+								<v-icon>mdi-border-color</v-icon>
+							</v-btn>
+						</v-list-item-action>
+					</v-list-item>
+					<v-divider></v-divider>
 					<v-list-item>
 						<v-list-item-content>
 							<v-list-item-subtitle align="end">

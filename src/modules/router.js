@@ -5,8 +5,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Home from '../views/Home'
-import Test from '../views/Test'
-import Test from '../views/Edit'
+import MyBlog from '../views/MyBlog'
+import Edit from '../views/Edit'
 
 Vue.use(Router)
 
@@ -19,15 +19,15 @@ export default new Router({
 			name: 'Home',
 			component: Home
     },
-    {
-			path: '/Edit',
-			name: 'Edit',
-			component: Edit
-		},
 		{
-			path: '/my-blog',
+      path: '/my-blog',
 			name: 'MyBlog',
 			component: MyBlog
-		}
+		},
+    {
+      path: '/edit',
+      name: 'Edit',
+      component: Edit
+    }
 	]
 })
