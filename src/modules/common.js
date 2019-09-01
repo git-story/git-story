@@ -34,5 +34,9 @@ export const openNewTabUrl = function(url) {
 	if ( typeof url === "string" ) {
 		window.open(url);
 	}
-};
+}
 
+// 랜덤 숫자 생성
+export const randomNumber = function(end, start = 0) {
+	return Math.floor(Math.random() * end) + start;
+}

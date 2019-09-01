@@ -1,3 +1,6 @@
 {
-	"api": "https://api.github.com"
+	"api": "https://api.github.com",
+	"templates": [
+		"git-story-template-default"
+	]
 }

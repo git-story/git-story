@@ -14,13 +14,12 @@
 import axios from 'axios';
 import Confirm from './Confirm';
 import Modal from './Modal';
-import { findChildByTagName, routeAssignUrl  } from '../modules/common.js';
+import { randomNumber, findChildByTagName, routeAssignUrl  } from '../modules/common.js';
 
 // 레포지토리 삭제. "유저/레포지토리" 형식으로 매개변수를 받음 그리고 store 정보를 받음
 const removeRepository = function(repoFullPath, store) {
 	return new Promise((resolve, reject) => {
 		if ( repoFullPath && store ) {
-			console.log(store.getters.token);
 			axios({
 				url: `${store.getters.config.api}/repos/${repoFullPath}`,
 				method: 'delete',
@@ -42,7 +41,47 @@ const removeRepository = function(repoFullPath, store) {
 	});
 };
 
-const createRepository = function(repoFullPath, store) {
+const createRepository = function(_this = this) {
+	if ( !_this ) return;
+
+	let store = _this.$store;
+	let user = store.getters.user;
+	let modal = findChildByTagName(_this, "Modal");
+
+	let templates = store.getters.config.templates;
+	let template = templates[randomNumber(templates.length)];
+	axios({
+		url: `https://api.github.com/repos/mobbing/${template}/generate`,
+		method: 'post',
+		headers: {
+			'Authorization': `Token ${store.getters.token}`,
+			'Accept': 'application/vnd.github.baptiste-preview+json'
+		},
+		data: {
+			'owner':  user.name,
+			'name': `${user.name}.github.io`,
+			'description': 'my github blog',
+			'private': false
+		}
+	}).then(() => {
+		modal.title = "알림";
+		modal.content = "블로그 생성에 성공하였습니다!";
+		modal.ok = "확인";
+		modal.okClick = () => {
+			modal.hide();
+			_this.$router.go(_this.$router.path);
+		};
+		modal.show();
+	}).catch(() => {
+		modal.title = "에러";
+		modal.content = "블로그 생성에 실패하였습니다.";
+		modal.ok = "확인";
+		modal.okClick = () => {
+			modal.hide();
+			routeAssignUrl('/');
+		};
+		modal.show();
+	});
 };
 
 export default {
@@ -86,6 +125,7 @@ export default {
 					confirm.okClick = () => {
 						// 레포지토리 삭제 후 생성
 						removeRepository(repo.full_name, this.$store).then(() => {
+							createRepository(this);
 						}).catch(() => {
 							modal.title = "에러";
 							modal.content = "레포지토리를 삭제할 수 없습니다.";
@@ -94,6 +134,7 @@ export default {
 								modal.hide();
 								routeAssignUrl('/');
 							};
+							modal.show();
 						});
 						confirm.hide();
 					}
@@ -114,6 +155,7 @@ export default {
 				confirm.okClick = () => {
 					// 레포지토리 생성
 					confirm.hide();
+					createRepository(this);
 				}
 				confirm.cancelClick = () => {
 					routeAssignUrl('/', this);
