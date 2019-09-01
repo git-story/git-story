@@ -1,10 +1,19 @@
 <template>
   <div class="editor">
-      <quillEditor
+    <quillEditor ref="quill"
       :options="editorOption"
-      />
+    />
+    <v-btn @click="getHTML"> get HTML </v-btn>
+    <v-btn @click="setHTML"> set HTML </v-btn>
+    
+    <br>
+    HTML 
+    <p>
+      {{htmlTEXT}}
+    </p>
   </div>
 </template>
+
 
 <style scoped>
   .editor {
@@ -14,7 +23,6 @@
 
 
 <script>
-
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
@@ -29,32 +37,39 @@ export default {
     quillEditor
 	},
 	methods: {
-		
+		getHTML : function () {
+      var out = this.$refs.quill.quill.getText() ? this.$refs.quill.quill.root.innerHTML : '';
+      this.htmlTEXT = out;
+    },
+		setHTML : function () {
+      this.$refs.quill.quill.root.innerHTML = this.htmlTEXT;
+    }
 	},
 	data: () => ({
+    htmlTEXT : "",
 		editorOption: {
-    modules: {
-      toolbar: [
-        ['bold', 'italic', 'underline', 'strike'],
-        ['blockquote', 'code-block'],
-        [{ 'header': 1 }, { 'header': 2 }],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        [{ 'script': 'sub' }, { 'script': 'super' }],
-        [{ 'indent': '-1' }, { 'indent': '+1' }],
-        [{ 'direction': 'rtl' }],
-        [{ 'size': ['small', false, 'large', 'huge'] }],
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        [{ 'font': [] }],
-        [{ 'color': [] }, { 'background': [] }],
-        [{ 'align': [] }],
-        ['clean'],
-        ['link', 'image', 'video'],
-      ],
-      syntax: {
-        highlight: text => hljs.highlightAuto(text).value
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote', 'code-block'],
+          [{ 'header': 1 }, { 'header': 2 }],
+          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+          [{ 'script': 'sub' }, { 'script': 'super' }],
+          [{ 'indent': '-1' }, { 'indent': '+1' }],
+          [{ 'direction': 'rtl' }],
+          [{ 'size': ['small', false, 'large', 'huge'] }],
+          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+          [{ 'font': [] }],
+          [{ 'color': [] }, { 'background': [] }],
+          [{ 'align': [] }],
+          ['clean'],
+          ['link', 'image', 'video'],
+        ],
+        syntax: {
+          highlight: text => hljs.highlightAuto(text).value
+        }
       }
-    }
-  },
+    },
 	}),
 };
 </script>
