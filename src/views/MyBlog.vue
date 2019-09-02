@@ -69,7 +69,8 @@ const createRepository = function(_this = this) {
 		modal.ok = "확인";
 		modal.okClick = () => {
 			modal.hide();
-			_this.$router.go(_this.$router.path);
+			let iframe = document.querySelector('iframe');
+			iframe.src = `https://${user.name}.github.io`;
 		};
 		modal.show();
 	}).catch(() => {

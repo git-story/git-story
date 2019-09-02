@@ -10,6 +10,11 @@
 		</v-toolbar-title>
 		<v-spacer></v-spacer>
 
+		<div v-if="this.$store.getters.postMode.includes('view-blog')" style="margin-right:1em;">
+			<v-btn text @click="">글 수정</v-btn>
+			<v-btn text color="error" @click="">글 삭제</v-btn>
+		</div>
+
 		<div v-if="isLogin(true)">
 			<span class="body-1" style="text-transform: none;">{{ user().displayName }}</span>
 			<v-menu
@@ -41,18 +46,18 @@
 						</v-list-item-content>
 					</v-list-item>
 					<v-divider></v-divider>
-					<v-list-item @click="routeAssign('/my-blog')">
+					<v-list-item @click="routeAssign('/my-blog')" style="height:60px;">
 						<v-list-item-content>
 							<v-list-item-title>내 블로그</v-list-item-title>
 						</v-list-item-content>
 						<v-list-item-action>
-							<v-btn @click.stop="createPost" icon>
+							<v-btn v-if="isBlog" @click.stop="routeAssign('/edit')" icon>
 								<v-icon>mdi-border-color</v-icon>
 							</v-btn>
 						</v-list-item-action>
 					</v-list-item>
 					<v-divider></v-divider>
-					<v-list-item @click="routeAssign('/edit')">
+					<v-list-item @click="routeAssign('/edit')" style="height:60px;">
 						<v-list-item-content>
 							<v-list-item-title>편집기</v-list-item-title>
 						</v-list-item-content>
@@ -65,7 +70,7 @@
 					<v-divider></v-divider>
 					<v-list-item>
 						<v-list-item-content>
-							<v-list-item-subtitle align="end">
+							<v-list-item-subtitle class="text-right">
 								<v-btn text @click="logout">로그아웃</v-btn>
 							</v-list-item-subtitle>
 						</v-list-item-content>
@@ -120,11 +125,20 @@ const logoutGithub = function() {
 // 현재 로그인이 된 상태인지 확인
 // redirect 가 true면, 비로그인 상태일 때 '/' 디렉토리로 리다이렉트
 const isLoginCheck = function(redirect = false) {
-	if ( redirect === true ) {
+	let isLogin = this.$store.getters.token !== null;
+	if ( isLogin === false && redirect === true ) {
 		routeAssignUrl('/', this);
 	}
-	return this.$store.getters.token !== null;
+	return isLogin;
 };
+
+// 현재 my-blog 페이지인지 검사
+const isBlogCheck = function(_this) {
+	let realThis = this || _this;
+	if ( realThis ) {
+		realThis.isBlog = realThis.$router.history.current.path == '/my-blog';
+	}
+}
 
 // 새 글 작성 클릭
 const createPostClick = function(/*e*/) {
@@ -137,14 +151,22 @@ export default {
 	methods: {
 		signIn: signInGithub,
 		isLogin: isLoginCheck,
+		isBlogCheck: isBlogCheck,
 		openNewTab: openNewTabUrl,
 		routeAssign: routeAssignUrl,
 		createPost: createPostClick,
 		logout: logoutGithub
 	},
+	created: function() {
+		isBlogCheck(this);
+	},
+	watch: {
+		'$route': 'isBlogCheck'
+	},
 	data: () => ({
 		user: function() { return this.$store.getters.user },
 		github: function() { return this.$store.getters.github },
+		isBlog: false
 	}),
 };
 </script>
