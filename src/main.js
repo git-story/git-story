@@ -7,6 +7,25 @@ import vuetify from './plugins/vuetify';
 import router from './modules/router.js'
 import store from './modules/store.js'
 
+import Vueditor from 'vueditor'
+import 'vueditor/dist/style/vueditor.min.css'
+
+
+let config = {
+	toolbar: [
+		'removeFormat', 'undo', 'redo', '|', 'code', 'element', 'fontName', 'fontSize', 'foreColor', 'backColor', 'divider', 'bold', 'italic', 'underline', 'strikeThrough',
+		'link', 'unLink', 'divider', 'subscript', 'superscript', 'divider', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
+		'|', 'indent', 'outdent', 'insertOrderedList', 'insertUnorderedList', '|', 'emoji', 'picture', 'table', '|', 'fullscreen', 'sourceCode', 'markdown'
+	],
+	fontName: [
+		{val: 'arial black'}, 
+		{val: 'times new roman'}, 
+		{val: 'Courier New'}
+	],
+	fontSize: ['12px', '14px', '16px', '18px', '0.8rem', '1.0rem', '1.2rem', '1.5rem', '2.0rem'],
+	uploadUrl: ''
+};
+
 // firebase 초기화
 import firebase from 'firebase'
 const firebaseConfig = {
@@ -20,6 +39,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
+Vue.use(Vueditor, config);
 
 Vue.config.productionTip = false
 new Vue({
