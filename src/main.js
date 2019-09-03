@@ -6,6 +6,7 @@ import vuetify from './plugins/vuetify';
 // 직접 사용하는 모듈
 import router from './modules/router.js'
 import store from './modules/store.js'
+import { Vueditorkorean } from './modules/editorLanguage'
 
 import Vueditor from 'vueditor'
 import 'vueditor/dist/style/vueditor.min.css'
@@ -17,6 +18,7 @@ let config = {
 		'link', 'unLink', 'divider', 'subscript', 'superscript', 'divider', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
 		'|', 'indent', 'outdent', 'insertOrderedList', 'insertUnorderedList', '|', 'emoji', 'picture', 'table', '|', 'fullscreen', 'sourceCode', 'markdown'
 	],
+	lang: Vueditorkorean,
 	fontName: [
 		{val: 'arial black'}, 
 		{val: 'times new roman'}, 
