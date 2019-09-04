@@ -2,5 +2,11 @@
 	"api": "https://api.github.com",
 	"templates": [
 		"git-story-template-default"
+	],
+	"myblog": [
+		"posts",
+		"write",
+		"category",
+		"preview"
 	]
 }
