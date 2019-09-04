@@ -12,8 +12,8 @@
 </template>
 <script>
 import axios from 'axios';
-import Confirm from './Confirm';
-import Modal from './Modal';
+import Confirm from './Util/Confirm';
+import Modal from './Util/Modal';
 import { randomNumber, findChildByTagName, routeAssignUrl  } from '../modules/common.js';
 
 // 레포지토리 삭제. "유저/레포지토리" 형식으로 매개변수를 받음 그리고 store 정보를 받음
@@ -41,6 +41,9 @@ const removeRepository = function(repoFullPath, store) {
 	});
 };
 
+// 레포지토리 생성
+// TODO: git page Enable ( https://developer.github.com/v3/repos/pages/#enable-a-pages-site )
+// Delete _config.yml file in template 
 const createRepository = function(_this = this) {
 	if ( !_this ) return;
 
@@ -168,21 +171,7 @@ export default {
 	},
 	data: function() {
 		return {
-			isDialogShow: false,
-			dialog: {
-				title: '컨펌',
-				content: '내용',
-				ok: 'ok',
-				cancel: 'cancel',
-				okClick: () => { this.dialog.hide(); },
-				cancelClick: () => { this.dialog.hide(); },
-				show: () => {
-					this.isDialogShow = true;
-				},
-				hide: () => {
-					this.isDialogShow = false;
-				}
-			}
+			isDialogShow: false
 		}
 	},
 };
