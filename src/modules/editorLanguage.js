@@ -8,30 +8,30 @@ export const Vueditorkorean = {
     underline: { title: '밑줄' },
     strikeThrough: { title: '취소선' },
 
-    superscript: { title: 'Superscript' },
-    subscript: { title: 'Subscript' },
-    indent: { title: 'Indent' },
-    outdent: { title: 'Outdent' },
+    superscript: { title: '위 첨자' },
+    subscript: { title: '아래 첨자' },
+    indent: { title: '들여쓰기' },
+    outdent: { title: '내어쓰기' },
 
-    justifyLeft: { title: 'Justify left' },
-    justifyCenter: { title: 'Justify center' },
-    justifyRight: { title: 'Justify right' },
-    justifyFull: { title: 'Justify full' },
+    justifyLeft: { title: '왼쪽 정렬' },
+    justifyCenter: { title: '중앙 정렬' },
+    justifyRight: { title: '오른쪽 정렬' },
+    justifyFull: { title: '양쪽 정렬' },
 
-    insertOrderedList: { title: 'Insert ordered list' },
-    insertUnorderedList: { title: 'Insert unordered list' },
+    insertOrderedList: { title: '순어 있는 목록' },
+    insertUnorderedList: { title: '순서 없는 목록' },
 
     foreColor: {
-        title: 'Text color',
-        ok: 'ok',
-        colorCode: 'Color code',
-        invalidColorCodeMsg: 'Please enter the correct color code',
+        title: '글자 색상',
+        ok: '확인',
+        colorCode: '색상코드',
+        invalidColorCodeMsg: '올바른 색상코드를 입력해주세요.',
     },
     backColor: {
-        title: 'Background color',
-        ok: 'ok',
-        colorCode: 'Color code',
-        invalidColorCodeMsg: 'Please enter the correct color code',
+        title: '배경 색상',
+        ok: '확인',
+        colorCode: '색상코드',
+        invalidColorCodeMsg: '올바른 색상코드를 입력해주세요.',
     },
     fontName: {},
     fontSize: {},
@@ -41,28 +41,28 @@ export const Vueditorkorean = {
         ieMsg: 'You must select a text to use this feature in IE browser'
     },
     link: {
-        title: 'Add link',
-        ok: 'OK'
+        title: '링크 추가',
+        ok: '확인'
     },
     unLink: {
-        title: 'unlink'
+        title: '링크 제거'
     },
     markdown: {
-        title: 'markdown'
+        title: '마크다운'
     },
     picture: {
-        title: 'Insert Picture',
-        ok: 'OK',
-        cancel: 'Cancel',
-        invalidFile: 'No file selected or selected file is not a picture'
+        title: '사진 추가',
+        ok: '확인',
+        cancel: '취소',
+        invalidFile: '파일이 없거나 선택된 파일이 사진이 아닙니다.'
     },
     sourceCode: {
-        title: 'Source Code'
+        title: '소스편집'
     },
     fullscreen: {
-        title: 'Fullscreen'
+        title: '전체화면'
     },
-    table: { title: 'Table' },
-    undo: { title: 'Undo' },
-    redo: { title: 'Redo' }
+    table: { title: '표' },
+    undo: { title: '실행 취소' },
+    redo: { title: '다시 실행' }
 }
