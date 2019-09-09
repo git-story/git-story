@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import FooterComponent from './Footer';
+import FooterComponent from './Com/Footer';
 
 export default {
 	name: 'Home',
