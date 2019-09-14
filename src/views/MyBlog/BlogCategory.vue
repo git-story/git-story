@@ -5,9 +5,8 @@
 </template>
 <script>
 export default {
-	name: 'BlogList',
+	name: 'BlogCategory',
 	components: {
-		currentComponent: null,
 	},
 	created: function() {
 	},

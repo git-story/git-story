@@ -1,11 +1,11 @@
 <template>
 	<div>
-		sadfasdf
+		BlogTemplate
 	</div>
 </template>
 <script>
 export default {
-	name: 'BlogList',
+	name: 'BlogTemplate',
 	components: {
 	},
 	created: function() {

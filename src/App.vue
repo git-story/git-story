@@ -6,7 +6,7 @@
 	</v-app>
 </template>
 <script>
-import HeaderComponent from './views/Header';
+import HeaderComponent from './views/Com/Header';
 
 export default {
 	components: {

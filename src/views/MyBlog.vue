@@ -13,7 +13,7 @@
 			<v-col cols="3" class="pl-12 pr-6">
 				<!-- S:Blog Contentes -->
 				<v-card class="mx-auto">
-					<v-navigation-drawer style="width:100%">
+					<v-navigation-drawer permanent style="width:100%">
 						<v-list-item>
 							<v-list-item-content>
 								<v-list-item-title class="title">
@@ -25,7 +25,7 @@
 						<v-divider></v-divider>
 
 						<v-list dense nav>
-							<v-list-item link @click="contentChange('list')">
+							<v-list-item link @click="contentChange('BlogList')">
 								<v-list-item-icon>
 									<v-icon>mdi-playlist-edit</v-icon>
 								</v-list-item-icon>
@@ -36,7 +36,7 @@
 									</v-list-item-title>
 								</v-list-item-content>
 							</v-list-item>
-							<v-list-item link>
+							<v-list-item link @click="contentChange('BlogCategory')">
 								<v-list-item-icon>
 									<v-icon>mdi-shape</v-icon>
 								</v-list-item-icon>
@@ -47,7 +47,7 @@
 									</v-list-item-title>
 								</v-list-item-content>
 							</v-list-item>
-							<v-list-item link>
+							<v-list-item link @click="contentChange('BlogTemplate')">
 								<v-list-item-icon>
 									<v-icon>mdi-layers-triple</v-icon>
 								</v-list-item-icon>
@@ -58,7 +58,7 @@
 									</v-list-item-title>
 								</v-list-item-content>
 							</v-list-item>
-							<v-list-item link>
+							<v-list-item link @click="contentChange('BlogSetting')">
 								<v-list-item-icon>
 									<v-icon>mdi-settings</v-icon>
 								</v-list-item-icon>
@@ -91,8 +91,26 @@ import Confirm from './Util/Confirm';
 import Modal from './Util/Modal';
 import { randomNumber, findChildByTagName, routeAssignUrl  } from '../modules/common.js';
 
-import BlogList from './MyBlog/BlogList';
-import BlogCategory from './MyBlog/BlogCategory';
+const categoryList = {
+	"BlogList": ()=>import('./MyBlog/BlogList'),
+	"BlogCategory": ()=>import('./MyBlog/BlogCategory'),
+	"BlogTemplate": ()=>import('./MyBlog/BlogTemplate'),
+	"BlogSetting": ()=>import('./MyBlog/BlogSetting'),
+};
+
+// 블로그 메뉴 선택시 해당 매뉴 내용을 보여주는 숼스
+const contentChangeComponent = function(target, _this) {
+	_this = _this || this;
+	if ( typeof target === "string" ) {
+		let t = categoryList[target];
+		if ( t ) {
+			if ( typeof _this.currentComponent !== "undefined" ) {
+				_this.currentComponent = t;
+			}
+		}
+	}
+	_this.$forceUpdate();
+};
 
 // 레포지토리 삭제. "유저/레포지토리" 형식으로 매개변수를 받음 그리고 store 정보를 받음
 const removeRepository = function(repoFullPath, store) {
@@ -173,14 +191,13 @@ export default {
 	components: {
 		Confirm,
 		Modal,
-		currentComponent: null,
 	},
 	created: function() {
-		console.log(this);
 		//this.$store.commit('blogContent', BlogList);
-		this.currentComponent = BlogList;
+		contentChangeComponent('BlogList', this);
 	},
 	methods: {
+		contentChange: contentChangeComponent
 	},
 	mounted: function() {
 		//let iframe = document.querySelector('iframe');
@@ -257,7 +274,8 @@ export default {
 	},
 	data: function() {
 		return {
-			isDialogShow: false
+			isDialogShow: false,
+			currentComponent: null,
 		}
 	},
 };
