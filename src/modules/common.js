@@ -45,7 +45,6 @@ export const randomNumber = function(end, start = 0) {
 export const getPostsData = function(_this = this, axios) {
 	//GET /repos/:owner/:repo/contents/:path
 	let userName = _this.$store.getters.user.name;
-	let githubUrl = _this.$store.getters.github;
 	let apiUrl = _this.$store.getters.config.api;
 	let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents/posts.json`;
 
@@ -61,8 +60,8 @@ export const getPostsData = function(_this = this, axios) {
 			try {
 				let data = res.data;
 				let postsStr = Buffer.from(data.content, 'base64').toString('utf8');
-				let posts = JSON.parse(postsStr);
-				resolve(posts);
+				data.posts = JSON.parse(postsStr);
+				resolve(data);
 			}catch(err) {
 				reject(err);
 			}
@@ -99,7 +98,7 @@ export const getSubposts = (obj) => {
 Date.prototype.format = function(f) {
 	if (!this.valueOf()) return " ";
 
-	var d = this;
+	let d = this;
 
 	return f.replace(/(yyyy|yy|MM|dd|E|hh|mm|ss|a\/p)/gi, function($1) {
 		switch ($1) {
@@ -108,7 +107,7 @@ Date.prototype.format = function(f) {
 			case "MM": return (d.getMonth() + 1).zf(2);
 			case "dd": return d.getDate().zf(2);
 			case "HH": return d.getHours().zf(2);
-			case "hh": return ((h = d.getHours() % 12) ? h : 12).zf(2);
+			case "hh": return ((d.getHours() % 12) ? (d.getHours() % 12) : 12).zf(2);
 			case "mm": return d.getMinutes().zf(2);
 			case "ss": return d.getSeconds().zf(2);
 			default: return $1;

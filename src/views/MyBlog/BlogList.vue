@@ -4,8 +4,8 @@
 			<v-col cols="4"></v-col>
 			<v-col>
 				<v-list three-line>
-					<template v-for="(post, idx) in postList">
-						<v-list-item>
+					<template v-for="(post) in postList">
+						<v-list-item :key="post.href">
 							<v-list-item-avatar width="5rem" height="5rem">
 								<v-img :src="post.cover" ></v-img>
 							</v-list-item-avatar>
@@ -28,11 +28,11 @@ import { getPostsData, getSubposts } from '../../modules/common.js';
 export default {
 	name: 'BlogList',
 	components: {
-		postList: []
 	},
 	created: function() {
 		// get posts.json
-		getPostsData(this, axios).then(posts => {
+		getPostsData(this, axios).then(data => {
+			let posts = data.posts;
 			let postList = getSubposts(posts);
 			// TODO: postList 시간 최신순 정렬
 
@@ -46,6 +46,7 @@ export default {
 	},
 	data: function() {
 		return {
+			postList: []
 		}
 	},
 };

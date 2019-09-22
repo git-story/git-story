@@ -2,20 +2,22 @@
 	<v-content>
 		<v-row class="div-height">
 			<v-col>
-				<v-row style="height:10%">
-					<v-col cols="col-sm-1 col-lg-3"></v-col>
-					<v-col>
-						<v-text-field label="제목을 입력하세요."></v-text-field>
-					</v-col>
-					<v-col cols="col-sm-1 col-lg-3"></v-col>
-				</v-row>
-				<v-row style="height:90%">
-					<v-col cols="col-sm-1 col-lg-3"></v-col>
-					<v-col height="100%" class="pt-0">
-						<Vueditor id="editorcontiner" ref="vueditor" v-model="text"></Vueditor>
-					</v-col>
-					<v-col cols="col-sm-1 col-lg-3"></v-col>
-				</v-row>
+					<v-row style="height:80px">
+						<v-col cols="col-sm-1 col-lg-3"></v-col>
+						<v-col>
+							<v-text-field ref="input-title" label="제목을 입력하세요."></v-text-field>
+						</v-col>
+						<v-col cols="col-sm-1 col-lg-3"></v-col>
+					</v-row>
+					<v-row style="height:calc(100% - 80px)">
+						<v-col cols="col-sm-1 col-lg-3"></v-col>
+						<v-col height="100%" class="pt-0">
+							<v-card height="100%">
+								<Vueditor id="editorcontiner" ref="vueditor" v-model="text"></Vueditor>
+							</v-card>
+						</v-col>
+						<v-col cols="col-sm-1 col-lg-3"></v-col>
+					</v-row>
 			</v-col>
 		</v-row>
 
@@ -46,10 +48,11 @@
 </style>
 
 <script>
+/* eslint-disable */
 import axios from 'axios';
-import { getPostsData, genNowDate } from '../modules/common.js';
+import { getPostsData, genNowDate, routeAssignUrl } from '../modules/common.js';
 
-const getPathByCategory = function(posts, category="", deps=0) {
+const searchPostsByCategory = function(posts, category="", level=0, deps=0) {
 	let c = Object.keys(posts);
 	let clen = c.length;
 	let csplit = category.split(/\/#\//g);
@@ -65,52 +68,91 @@ const getPathByCategory = function(posts, category="", deps=0) {
 		let cname = c[i];
 		if ( cname === csplit[deps] ) {
 			let post = posts[cname];
-			if ( deps+1 === csplit.length ) {
+			if ( (deps+1) === (csplit.length-level) ) {
 				// deps와 csplit의 길이가 같으면 해당 경로 반환
-				return post.href;
+				return post;
 			}
 
 			// 아니면 하위 경로 탐색
 			if ( post.single === false ) {
-				return getPathByCategory(post.posts, category, deps+1);
+				return searchPostsByCategory(post.posts, category, level, deps+1);
 			} else {
 				// 싱글 카테고리라면 탐색 실패
 				return;
 			}
 		}
-	};
+	}
 };
 
 const doPostingContent = function() {
 	// get posts.json
-	getPostsData(this, axios).then(posts => {
+	getPostsData(this, axios).then(data => {
+		let posts = data.posts;
+		let sha = data.sha;
 		let userName = this.$store.getters.user.name;
-		let userEmail = this.$store.getters.user.email;
 
 		let selectedCategory = 'BLOG/#/Subcagegory';
 		let apiUrl = this.$store.getters.config.api;
-		let path = getPathByCategory(posts, selectedCategory);
+		let category = searchPostsByCategory(posts, selectedCategory);
+		let path = category.href;
 		let nowDate = genNowDate();
-		let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents${path}/${nowDate}/index.html`;
+		let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents${path}/${nowDate}/`;
 
-		let title = 'Hello World!';
+		let title = this.$refs['input-title'].internalValue;
 		let contentHTML = this.$refs.vueditor.getContent();
 		let b64Content = Buffer.from(contentHTML, "utf8").toString('base64');
 
+		// TODO: 글에서 대표 커버 찾아내는 알고리즘 추가
+		let coverImg = null;
+		if ( coverImg ) {
+			
+		} else {
+			// 커버 이미지가 없으면 샘플에서 하나 선택
+			let coverImgs = this.$store.getters.config['cover-samples'];
+			let pickNum = Math.floor(Math.random() * coverImgs.length);
+			coverImg = coverImgs[pickNum];
+		}
+
+		category.posts.push({
+			cover: coverImg,
+			href: `${path}/${nowDate}`,
+			title: title,
+		});
+
+		let postsStr = JSON.stringify(posts, null, '\t');
+		let b64posts = Buffer.from(postsStr, "utf8").toString('base64');
 
 		// PUT /repos/:owner/:repo/contents/:path
 		axios({
-			url: reqUrl,
+			url: `${apiUrl}/repos/${userName}/${userName}.github.io/contents/posts.json`,
 			method: 'put',
 			headers: {
 				'Authorization': `Token ${this.$store.getters.token}`
 			},
 			data: {
-				message: `${title} posting`,
-				content: b64Content
+				message: `${title} posting : posts.json`,
+				content: b64posts,
+				sha: sha
 			}
 		}).then(res => {
-			console.log(res);
+			axios({
+				url: `${reqUrl}index.html`,
+				method: 'put',
+				headers: {
+					'Authorization': `Token ${this.$store.getters.token}`
+				},
+				data: {
+					message: `${title} posting`,
+					content: b64Content
+				}
+			}).then(res => {
+				//
+				routeAssignUrl('/my-blog', this);
+			}).catch(err => {
+				// TODO: 글 올리기 실패시 예외 처리
+			});
+		}).catch(err => {
+			// TODO: 글 올리기 실패시 예외 처리
 		});
 	});
 };
@@ -125,8 +167,6 @@ export default {
 		}
 	},
 	mounted: function() {
-		console.log(Date.format);
-
 	},
 	data: () => ({
 		text: "Test"

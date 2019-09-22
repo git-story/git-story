@@ -3,10 +3,11 @@
 	"templates": [
 		"git-story-template-default"
 	],
-	"myblog": [
-		"posts",
-		"write",
-		"category",
-		"preview"
+	"cover-samples": [
+		"https://cdn.pixabay.com/photo/2015/01/08/18/26/write-593333_960_720.jpg",
+		"https://cdn.pixabay.com/photo/2016/01/19/17/53/writing-1149962_960_720.jpg",
+		"https://cdn.pixabay.com/photo/2016/01/09/18/28/old-1130743_960_720.jpg",
+		"https://cdn.pixabay.com/photo/2015/05/31/15/08/blank-792125_960_720.jpg",
+		"https://cdn.pixabay.com/photo/2016/11/22/23/09/fountain-pen-1851096_960_720.jpg"
 	]
 }
