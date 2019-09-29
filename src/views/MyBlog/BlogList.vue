@@ -23,7 +23,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { getPostsData, getSubposts } from '../../modules/common.js';
+import { getGitJsonData, getSubposts } from '../../modules/common.js';
 
 export default {
 	name: 'BlogList',
@@ -31,8 +31,8 @@ export default {
 	},
 	created: function() {
 		// get posts.json
-		getPostsData(this, axios).then(data => {
-			let posts = data.posts;
+		getGitJsonData(this, axios, "posts.json").then(data => {
+			let posts = data.json;
 			let postList = getSubposts(posts);
 			// TODO: postList 시간 최신순 정렬
 

@@ -147,7 +147,7 @@ const createRepository = function(_this = this) {
 	let user = store.getters.user;
 	let modal = findChildByTagName(_this, "Modal");
 	let apiUrl = store.getters.config.api;
-	let userName = store.getters.user.name;
+	//let userName = store.getters.user.name;
 
 	let templates = store.getters.config.templates;
 	let template = templates[randomNumber(templates.length)];

@@ -50,7 +50,7 @@
 <script>
 /* eslint-disable */
 import axios from 'axios';
-import { getPostsData, genNowDate, routeAssignUrl } from '../modules/common.js';
+import { getGitJsonData, genNowDate, routeAssignUrl } from '../modules/common.js';
 
 const searchPostsByCategory = function(posts, category="", level=0, deps=0) {
 	let c = Object.keys(posts);
@@ -84,10 +84,54 @@ const searchPostsByCategory = function(posts, category="", level=0, deps=0) {
 	}
 };
 
+const buildContentHTML = function(_this = this) {
+	return new Promise((resolve, reject) => {
+		let contentHTML = _this.$refs.vueditor.getContent();
+		getGitJsonData(_this, axios, "config.json").then(data => {
+			let html = document.createElement('html');
+			let cfg = data.json;
+
+			const createChildElement = (e) => {
+				let child = document.createElement(e.tag);
+				let attrs = Object.keys(e.attr);
+				attrs.forEach(a => {
+					child.setAttribute(a, e.attr[a]);
+				});
+				return child;
+			};
+
+			let head = document.createElement('head');
+			cfg.head.forEach(e => {
+				let child = createChildElement(e);
+				head.appendChild(child);
+			});
+			html.appendChild(head);
+
+			let body = document.createElement('body');
+			cfg.body.start.forEach(e => {
+				let child = createChildElement(e);
+				body.appendChild(child);
+			});
+
+			let bodyContent = document.createElement('main');
+			bodyContent.innerHTML = contentHTML;
+			body.appendChild(bodyContent);
+
+			cfg.body.end.forEach(e => {
+				let child = createChildElement(e);
+				body.appendChild(child);
+			});
+			html.appendChild(body);
+			resolve(html.outerHTML);
+		}).catch(() => {
+		});
+	});
+};
+
 const doPostingContent = function() {
 	// get posts.json
-	getPostsData(this, axios).then(data => {
-		let posts = data.posts;
+	getGitJsonData(this, axios, "posts.json").then(data => {
+		let posts = data.json;
 		let sha = data.sha;
 		let userName = this.$store.getters.user.name;
 
@@ -99,8 +143,7 @@ const doPostingContent = function() {
 		let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents${path}/${nowDate}/`;
 
 		let title = this.$refs['input-title'].internalValue;
-		let contentHTML = this.$refs.vueditor.getContent();
-		let b64Content = Buffer.from(contentHTML, "utf8").toString('base64');
+
 
 		// TODO: 글에서 대표 커버 찾아내는 알고리즘 추가
 		let coverImg = null;
@@ -115,7 +158,7 @@ const doPostingContent = function() {
 
 		category.posts.push({
 			cover: coverImg,
-			href: `${path}/${nowDate}`,
+			href: `${path}/${nowDate}/`,
 			title: title,
 		});
 
@@ -135,21 +178,24 @@ const doPostingContent = function() {
 				sha: sha
 			}
 		}).then(res => {
-			axios({
-				url: `${reqUrl}index.html`,
-				method: 'put',
-				headers: {
-					'Authorization': `Token ${this.$store.getters.token}`
-				},
-				data: {
-					message: `${title} posting`,
-					content: b64Content
-				}
-			}).then(res => {
-				//
-				routeAssignUrl('/my-blog', this);
-			}).catch(err => {
-				// TODO: 글 올리기 실패시 예외 처리
+			buildContentHTML(this).then(contentHTML => {
+				let b64Content = Buffer.from(contentHTML, "utf8").toString('base64');
+				axios({
+					url: `${reqUrl}index.html`,
+					method: 'put',
+					headers: {
+						'Authorization': `Token ${this.$store.getters.token}`
+					},
+					data: {
+						message: `${title} posting`,
+						content: b64Content
+					}
+				}).then(res => {
+					//
+					routeAssignUrl('/my-blog', this);
+				}).catch(err => {
+					// TODO: 글 올리기 실패시 예외 처리
+				});
 			});
 		}).catch(err => {
 			// TODO: 글 올리기 실패시 예외 처리

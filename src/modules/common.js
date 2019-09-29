@@ -42,11 +42,11 @@ export const randomNumber = function(end, start = 0) {
 }
 
 // posts.json 정보 가져오기 axios 인자 필요
-export const getPostsData = function(_this = this, axios) {
+export const getGitJsonData = function(_this = this, axios, path="") {
 	//GET /repos/:owner/:repo/contents/:path
 	let userName = _this.$store.getters.user.name;
 	let apiUrl = _this.$store.getters.config.api;
-	let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents/posts.json`;
+	let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents/${path}`;
 
 	return new Promise((resolve, reject) => {
 		axios({
@@ -60,7 +60,7 @@ export const getPostsData = function(_this = this, axios) {
 			try {
 				let data = res.data;
 				let postsStr = Buffer.from(data.content, 'base64').toString('utf8');
-				data.posts = JSON.parse(postsStr);
+				data.json = JSON.parse(postsStr);
 				resolve(data);
 			}catch(err) {
 				reject(err);
