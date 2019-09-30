@@ -140,7 +140,7 @@ const doPostingContent = function() {
 		let category = searchPostsByCategory(posts, selectedCategory);
 		let path = category.href;
 		let nowDate = genNowDate();
-		let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents${path}/${nowDate}/`;
+		let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents${path}${nowDate}/`;
 
 		let title = this.$refs['input-title'].internalValue;
 
@@ -158,7 +158,7 @@ const doPostingContent = function() {
 
 		category.posts.push({
 			cover: coverImg,
-			href: `${path}/${nowDate}/`,
+			href: `${path}${nowDate}/`,
 			title: title,
 		});
 
