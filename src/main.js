@@ -8,8 +8,8 @@ import router from './modules/router.js'
 import store from './modules/store.js'
 import { Vueditorkorean } from './modules/editorLanguage'
 
-import Vueditor from 'vueditor'
-import 'vueditor/dist/style/vueditor.min.css'
+import Vueditor from 'vueditor_custom'
+import 'vueditor_custom/dist/style/vueditor.min.css'
 
 
 let config = {
