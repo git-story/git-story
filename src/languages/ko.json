@@ -1,0 +1,35 @@
+{
+	"error": "에러",
+	"notification": "알림",
+	"ok": "예",
+	"no": "아니오",
+	"confirm": "확인",
+	"not_have_repo": "블로그 레포지토리가 존재하지 않습니다.\r\n레포지토리 생성하시겠습니까?\r\n\r\n취소하시면 메인 화면으로 돌아갑니다.",
+	"have_repo_but": "블로그 레포지토리는 존재하나, 활성화 된 페이지가 없습니다.\r\n\r\n레포지토리 삭제 후 다시 생성하시겠습니까?\r\n취소하시면 메인 화면으로 돌아갑니다.",
+	"success_create_blog": "블로그 생성에 성공하였습니다!",
+	"can_not_create_blog": "블로그 생성에 실패하였습니다.",
+	"can_not_del_repo": "레포지토리를 삭제할 수 없습니다.",
+
+
+
+	"header.myblog": "내 블로그",
+	"header.logout": "로그아웃",
+
+
+
+	"home.banner": "당신의 이야기를 꾸미세요!",
+	"home.des1.title": "언제 어디서나 가능한 포스팅!",
+	"home.des1.content": "PC든, 모바일이든 인터넷만 된다면, Git과 레포지토리가 다운받아져 있지 않아도 언제든지 포스팅을 작성할 수 있습니다.",
+
+
+
+	"editor.input-title": "제목을 입력하세요.",
+	"editor.post": "포스팅",
+
+
+	"myblog.side.content": "블로그 콘텐츠",
+	"myblog.side.manage_post": "글 목록 관리",
+	"myblog.side.manage_category": "카테고리 관리",
+	"myblog.side.manage_template": "템플릿 관리",
+	"myblog.side.setting_blog": "블로그 설정"
+}

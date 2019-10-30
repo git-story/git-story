@@ -17,7 +17,7 @@
 						<v-list-item>
 							<v-list-item-content>
 								<v-list-item-title class="title">
-									블로그 콘텐츠
+									{{ Lang('myblog.side.content') }}
 								</v-list-item-title>
 							</v-list-item-content>
 						</v-list-item>
@@ -32,7 +32,7 @@
 
 								<v-list-item-content>
 									<v-list-item-title>
-										글 목록 관리
+										{{ Lang('myblog.side.manage_post') }}
 									</v-list-item-title>
 								</v-list-item-content>
 							</v-list-item>
@@ -43,7 +43,7 @@
 
 								<v-list-item-content>
 									<v-list-item-title>
-										카테고리 관리
+										{{ Lang('myblog.side.manage_category') }}
 									</v-list-item-title>
 								</v-list-item-content>
 							</v-list-item>
@@ -54,7 +54,7 @@
 
 								<v-list-item-content>
 									<v-list-item-title>
-										템플릿 관리
+										{{ Lang('myblog.side.manage_template') }}
 									</v-list-item-title>
 								</v-list-item-content>
 							</v-list-item>
@@ -65,7 +65,7 @@
 
 								<v-list-item-content>
 									<v-list-item-title>
-										블로그 설정
+										{{ Lang('myblog.side.setting_blog') }}
 									</v-list-item-title>
 								</v-list-item-content>
 							</v-list-item>
@@ -90,6 +90,7 @@ import axios from 'axios';
 import Confirm from './Util/Confirm';
 import Modal from './Util/Modal';
 import { randomNumber, findChildByTagName, routeAssignUrl  } from '../modules/common.js';
+import Lang from '../languages/Lang.js';
 
 const categoryList = {
 	"BlogList": ()=>import('./MyBlog/BlogList'),
@@ -165,17 +166,17 @@ const createRepository = function(_this = this) {
 			'private': false
 		}
 	}).then(() => {
-		modal.title = "알림";
-		modal.content = "블로그 생성에 성공하였습니다!";
-		modal.ok = "확인";
+		modal.title = Lang('notification');
+		modal.content = Lang('success_create_blog');
+		modal.ok = Lang('confirm');
 		modal.okClick = () => {
 			modal.hide();
 		};
 		modal.show();
 	}).catch(() => {
-		modal.title = "에러";
-		modal.content = "블로그 생성에 실패하였습니다.";
-		modal.ok = "확인";
+		modal.title = Lang('error');
+		modal.content = Lang('can_not_create_blog');
+		modal.ok = Lang('confirm');
 		modal.okClick = () => {
 			modal.hide();
 			routeAssignUrl('/');
@@ -195,7 +196,8 @@ export default {
 		contentChangeComponent('BlogList', this);
 	},
 	methods: {
-		contentChange: contentChangeComponent
+		contentChange: contentChangeComponent,
+		Lang
 	},
 	mounted: function() {
 		//let iframe = document.querySelector('iframe');
@@ -221,20 +223,18 @@ export default {
 					//iframe.src = url;
 				} else {
 					// Git page 없음
-					confirm.title = "알림"
-					confirm.content = '블로그 레포지토리는 존재하나, 활성화 된 페이지가 없습니다.<br><br>'+
-						'레포지토리 삭제 후 다시 생성하시겠습니까? <br>'+
-						'취소하시면 메인 화면으로 돌아갑니다.'
-					confirm.ok = "예";
-					confirm.cancel = "아니오";
+					confirm.title = Lang('notification');
+					confirm.content = Lang('have_repo_but');
+					confirm.ok = Lang('ok');
+					confirm.cancel = Lang('no');
 					confirm.okClick = () => {
 						// 레포지토리 삭제 후 생성
 						removeRepository(repo.full_name, this.$store).then(() => {
 							createRepository(this);
 						}).catch(() => {
-							modal.title = "에러";
-							modal.content = "레포지토리를 삭제할 수 없습니다.";
-							modal.ok = "확인";
+							modal.title = Lang('error');
+							modal.content = Lang('can_not_del_repo');
+							modal.ok = Lang('confirm');
 							modal.okClick = () => {
 								modal.hide();
 								routeAssignUrl('/');
@@ -251,12 +251,10 @@ export default {
 				}
 			} else {
 				// 블로그 레포지토리가 없을 때
-				confirm.title = "알림"
-				confirm.content = '블로그 레포지토리가 존재하지 않습니다.\r\n'+
-					'레포지토리 생성하시겠습니까?\r\n\r\n'+
-					'취소하시면 메인 화면으로 돌아갑니다.'
-				confirm.ok = "예";
-				confirm.cancel = "아니오";
+				confirm.title = Lang('notification');
+				confirm.content = Lang('not_have_repo');
+				confirm.ok = Lang('ok');
+				confirm.cancel = Lang('no'); 
 				confirm.okClick = () => {
 					// 레포지토리 생성
 					confirm.hide();

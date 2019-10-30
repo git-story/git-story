@@ -5,7 +5,7 @@
 					<v-row style="height:80px">
 						<v-col cols="col-sm-1 col-lg-3"></v-col>
 						<v-col>
-							<v-text-field ref="input-title" label="제목을 입력하세요."></v-text-field>
+							<v-text-field ref="input-title" :label="Lang('editor.input-title')"></v-text-field>
 						</v-col>
 						<v-col cols="col-sm-1 col-lg-3"></v-col>
 					</v-row>
@@ -27,7 +27,7 @@
 				<v-col></v-col>
 				<v-col align="end">
 					<v-btn @click="doPosting" large color="teal darken-4" style="color:white;">
-						포스팅
+						{{ Lang('editor.post') }}
 					</v-btn>
 				</v-col>
 			</v-row>
@@ -51,6 +51,7 @@
 /* eslint-disable */
 import axios from 'axios';
 import { getGitJsonData, genNowDate, routeAssignUrl } from '../modules/common.js';
+import Lang from '../languages/Lang.js';
 
 const searchPostsByCategory = function(posts, category="", level=0, deps=0) {
 	let c = Object.keys(posts);
@@ -210,7 +211,8 @@ export default {
 		doPosting: doPostingContent,
 		getContent : function() {
 			this.text = this.$refs.vueditor.getContent()
-		}
+		},
+		Lang
 	},
 	mounted: function() {
 	},
