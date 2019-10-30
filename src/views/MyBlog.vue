@@ -83,13 +83,15 @@
 
 		<Confirm/>
 		<Modal/>
+		<PLoading/>
 	</v-content>
 </template>
 <script>
 import axios from 'axios';
 import Confirm from './Util/Confirm';
 import Modal from './Util/Modal';
-import { randomNumber, findChildByTagName, routeAssignUrl  } from '../modules/common.js';
+import PLoading from './Util/PLoading';
+import { randomNumber, findChildByTagName, routeAssignUrl, removeRepository, getGitJsonData  } from '../modules/common.js';
 import Lang from '../languages/Lang.js';
 
 const categoryList = {
@@ -113,31 +115,6 @@ const contentChangeComponent = function(target, _this) {
 	_this.$forceUpdate();
 };
 
-// 레포지토리 삭제. "유저/레포지토리" 형식으로 매개변수를 받음 그리고 store 정보를 받음
-const removeRepository = function(repoFullPath, store) {
-	return new Promise((resolve, reject) => {
-		if ( repoFullPath && store ) {
-			axios({
-				url: `${store.getters.config.api}/repos/${repoFullPath}`,
-				method: 'delete',
-				headers: {
-					'Authorization': `Token ${store.getters.token}`
-				}
-			}).then(res => {
-				if ( res.status === 204 ) {
-					resolve();
-				} else {
-					reject();
-				}
-			}).catch(err => {
-				reject(err);
-			});
-		} else {
-			reject();
-		}
-	});
-};
-
 // 레포지토리 생성
 // TODO: git page Enable ( https://developer.github.com/v3/repos/pages/#enable-a-pages-site )
 // Delete _config.yml file in template 
@@ -147,6 +124,7 @@ const createRepository = function(_this = this) {
 	let store = _this.$store;
 	let user = store.getters.user;
 	let modal = findChildByTagName(_this, "Modal");
+	let ploading = findChildByTagName(_this, "PLoading");
 	let apiUrl = store.getters.config.api;
 	//let userName = store.getters.user.name;
 
@@ -166,14 +144,17 @@ const createRepository = function(_this = this) {
 			'private': false
 		}
 	}).then(() => {
+		ploading.hide();
 		modal.title = Lang('notification');
 		modal.content = Lang('success_create_blog');
 		modal.ok = Lang('confirm');
 		modal.okClick = () => {
 			modal.hide();
+			location.reload();
 		};
 		modal.show();
 	}).catch(() => {
+		ploading.hide();
 		modal.title = Lang('error');
 		modal.content = Lang('can_not_create_blog');
 		modal.ok = Lang('confirm');
@@ -190,6 +171,7 @@ export default {
 	components: {
 		Confirm,
 		Modal,
+		PLoading
 	},
 	created: function() {
 		//this.$store.commit('blogContent', BlogList);
@@ -211,6 +193,8 @@ export default {
 		}).then(res => {
 			let confirm = findChildByTagName(this, "Confirm");
 			let modal = findChildByTagName(this, "Modal");
+			let ploading = findChildByTagName(this, "PLoading");
+
 			let repos = res.data;
 			let ridx = repos.findIndex(r => r.name === `${this.$store.getters.user.name}.github.io`);
 			if ( ridx >= 0 ) {
@@ -221,6 +205,36 @@ export default {
 					// Git Page 있음
 					//let url = `https://${this.$store.getters.user.name}.github.io`;
 					//iframe.src = url;
+					getGitJsonData(this, axios, "posts.json").then(() => {
+					}).catch(() => {
+						// posts.json 이 없을 때 
+						confirm.title = Lang('notification');
+						confirm.content = Lang('have_repo_but');
+						confirm.ok = Lang('ok');
+						confirm.cancel = Lang('no');
+						confirm.okClick = () => {
+							// 레포지토리 삭제 후 생성
+							ploading.show();
+							removeRepository(repo.full_name, this.$store, axios).then(() => {
+								createRepository(this);
+							}).catch(() => {
+								modal.title = Lang('error');
+								modal.content = Lang('can_not_del_repo');
+								modal.ok = Lang('confirm');
+								modal.okClick = () => {
+									modal.hide();
+									routeAssignUrl('/');
+								};
+								modal.show();
+							});
+							confirm.hide();
+						}
+						confirm.cancelClick = () => {
+							routeAssignUrl('/', this);
+							confirm.hide();
+						}
+						confirm.show();
+					});
 				} else {
 					// Git page 없음
 					confirm.title = Lang('notification');
@@ -229,7 +243,8 @@ export default {
 					confirm.cancel = Lang('no');
 					confirm.okClick = () => {
 						// 레포지토리 삭제 후 생성
-						removeRepository(repo.full_name, this.$store).then(() => {
+						ploading.show();
+						removeRepository(repo.full_name, this.$store, axios).then(() => {
 							createRepository(this);
 						}).catch(() => {
 							modal.title = Lang('error');
@@ -257,6 +272,7 @@ export default {
 				confirm.cancel = Lang('no'); 
 				confirm.okClick = () => {
 					// 레포지토리 생성
+					ploading.show();
 					confirm.hide();
 					createRepository(this);
 				}

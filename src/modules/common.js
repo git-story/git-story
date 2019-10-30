@@ -121,3 +121,29 @@ Number.prototype.zf = function(len){return this.toString().zf(len);};
 export const genNowDate = function() {
 	return new Date().format('yyyy-MM-dd-HH-mm-ss');
 }
+
+// 레포지토리 삭제. "유저/레포지토리" 형식으로 매개변수를 받음 그리고 store 정보를 받음
+export const removeRepository = function(repoFullPath, store, axios) {
+	return new Promise((resolve, reject) => {
+		if ( repoFullPath && store ) {
+			axios({
+				url: `${store.getters.config.api}/repos/${repoFullPath}`,
+				method: 'delete',
+				headers: {
+					'Authorization': `Token ${store.getters.token}`
+				}
+			}).then(res => {
+				if ( res.status === 204 ) {
+					resolve();
+				} else {
+					reject();
+				}
+			}).catch(err => {
+				reject(err);
+			});
+		} else {
+			reject();
+		}
+	});
+}
+

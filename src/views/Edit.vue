@@ -33,6 +33,8 @@
 			</v-row>
 		</v-footer>
 		<!-- E:Footer -->
+
+		<PLoading/>
 	</v-content>
 </template>
 
@@ -50,7 +52,8 @@
 <script>
 /* eslint-disable */
 import axios from 'axios';
-import { getGitJsonData, genNowDate, routeAssignUrl } from '../modules/common.js';
+import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl } from '../modules/common.js';
+import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 
 const searchPostsByCategory = function(posts, category="", level=0, deps=0) {
@@ -166,6 +169,8 @@ const doPostingContent = function() {
 		let postsStr = JSON.stringify(posts, null, '\t');
 		let b64posts = Buffer.from(postsStr, "utf8").toString('base64');
 
+		let ploading = findChildByTagName(this, "PLoading");
+		ploading.show();
 		// PUT /repos/:owner/:repo/contents/:path
 		axios({
 			url: `${apiUrl}/repos/${userName}/${userName}.github.io/contents/posts.json`,
@@ -192,7 +197,7 @@ const doPostingContent = function() {
 						content: b64Content
 					}
 				}).then(res => {
-					//
+					ploading.hide();
 					routeAssignUrl('/my-blog', this);
 				}).catch(err => {
 					// TODO: 글 올리기 실패시 예외 처리
@@ -201,12 +206,15 @@ const doPostingContent = function() {
 		}).catch(err => {
 			// TODO: 글 올리기 실패시 예외 처리
 		});
-	});
+	}).catch((err) => {});
 };
 
 
 export default {
 	name: 'Edit',
+	components: {
+		PLoading
+	},
 	methods: {
 		doPosting: doPostingContent,
 		getContent : function() {

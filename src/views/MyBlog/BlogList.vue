@@ -19,15 +19,22 @@
 				</v-list>
 			</v-col>
 		</v-row>
+		<Confirm/>
+		<PLoading/>
 	</v-container>
 </template>
 <script>
 import axios from 'axios';
-import { getGitJsonData, getSubposts } from '../../modules/common.js';
+import { getGitJsonData, getSubposts, routeAssignUrl, findChildByTagName, removeRepository } from '../../modules/common.js';
+import Confirm from '../Util/Confirm';
+import PLoading from '../Util/PLoading';
+import Lang from '../../languages/Lang.js';
 
 export default {
 	name: 'BlogList',
 	components: {
+		Confirm,
+		PLoading
 	},
 	created: function() {
 		// get posts.json
@@ -38,6 +45,30 @@ export default {
 
 			this.postList = postList;
 			this.$forceUpdate();
+		}).catch(() => {
+			let confirm = findChildByTagName(this, "Confirm");
+			let ploading = findChildByTagName(this, "PLoading");
+
+			confirm.title = Lang('notification');
+			confirm.content = Lang('have_repo_but');
+			confirm.ok = Lang('ok');
+			confirm.cancel = Lang('no');
+			confirm.okClick = () => {
+				let full_name = `${this.$store.getters.user.name}/${this.$store.getters.user.name}.github.io`;
+				// 레포지토리 생성
+				ploading.show();
+				confirm.hide();
+
+				removeRepository(full_name, this.$store, axios).finally(() => {
+					ploading.hide();
+					this.$forceUpdate();
+				});
+			};
+			confirm.cancelClick = () => {
+				routeAssignUrl('/', this);
+				confirm.hide();
+			};
+			confirm.show();
 		});
 	},
 	methods: {
