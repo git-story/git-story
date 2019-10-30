@@ -1,77 +1,125 @@
 <template>
-	<v-container>
+	<v-container class="pa-0">
 		<v-row>
-			<v-col cols="4"></v-col>
 			<v-col>
-				<v-list three-line>
-					<template v-for="(post) in postList">
-						<v-list-item :key="post.href">
-							<v-list-item-avatar width="5rem" height="5rem">
-								<v-img :src="post.cover" ></v-img>
-							</v-list-item-avatar>
-							<v-list-item-content>
-								<v-list-item-title>
-									<h1>{{ post.title }}</h1>
-								</v-list-item-title>
-							</v-list-item-content>
-						</v-list-item>
-					</template>
-				</v-list>
+				<v-card>
+					<v-list three-line>
+						<template v-for="(post) in postList">
+							<v-list-item :key="post.href">
+								<v-list-item-avatar width="3rem" height="3rem">
+									<v-img :src="post.cover" ></v-img>
+								</v-list-item-avatar>
+								<v-list-item-content>
+									<v-list-item-title>
+										<p class="headline">{{ post.title }}</p>
+									</v-list-item-title>
+								</v-list-item-content>
+								<v-list-item-action>
+									<v-tooltip top>
+										<template v-slot:activator="{ on }">
+											<v-btn icon v-on="on">
+												<v-icon>mdi-pencil</v-icon> 
+											</v-btn>
+										</template>
+										<span>{{ Lang('modify') }}</span>
+									</v-tooltip>
+								</v-list-item-action>
+								<v-list-item-action>
+									<v-tooltip top>
+										<template v-slot:activator="{ on }">
+											<v-btn icon v-on="on" @click="deletePost(post)">
+												<v-icon>mdi-trash-can</v-icon> 
+											</v-btn>
+										</template>
+										<span>{{ Lang('delete') }}</span>
+									</v-tooltip>
+								</v-list-item-action>
+							</v-list-item>
+						</template>
+					</v-list>
+				</v-card>
 			</v-col>
+			<v-col cols="4"></v-col>
 		</v-row>
 		<Confirm/>
 		<PLoading/>
+		<Modal/>
 	</v-container>
 </template>
 <script>
 import axios from 'axios';
-import { getGitJsonData, getSubposts, routeAssignUrl, findChildByTagName, removeRepository } from '../../modules/common.js';
+import { getGitJsonData, getSubposts, routeAssignUrl, findChildByTagName, removePost } from '../../modules/common.js';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
+import Modal from '../Util/Modal';
 import Lang from '../../languages/Lang.js';
+
+const loadPost = function(_this = this) {
+	getGitJsonData(_this, axios, "posts.json").then(data => {
+		let posts = data.json;
+		posts.sha = data.sha;
+		let postList = getSubposts(posts);
+		// TODO: postList 시간 최신순 정렬
+
+		_this.postList = postList;
+		_this.posts = posts;
+		_this.$forceUpdate();
+	}).catch(() => {
+	});
+}
+
+const deletePost = function(post) {
+	let ploading = findChildByTagName(this, "PLoading");
+	let modal = findChildByTagName(this, "Modal");
+	let confirm = findChildByTagName(this, "Confirm");
+
+	confirm.title = Lang('notification');
+	confirm.content = Lang('myblog.list.delete_post');
+	confirm.ok = Lang('ok');
+	confirm.cancel = Lang('no');
+	confirm.okClick = () => {
+		confirm.hide();
+		ploading.content = Lang('myblog.list.progress_delete');
+		ploading.show();
+		removePost(post, axios, this).then(() => {
+			ploading.hide();
+			modal.title = Lang('notification');
+			modal.content = Lang('myblog.list.success_del_post');
+			modal.ok = Lang('confirm');
+			modal.okClick = () => {
+				modal.hide();
+				loadPost(this);
+			};
+			modal.show();
+		}).catch(() => {
+			ploading.hide();
+			modal.title = Lang('error');
+			modal.content = Lang('myblog.list.fail_del_post');
+			modal.ok = Lang('confirm');
+			modal.okClick = () => {
+				modal.hide();
+				routeAssignUrl('/');
+			};
+			modal.show();
+		});
+	};
+	confirm.show();
+};
 
 export default {
 	name: 'BlogList',
 	components: {
 		Confirm,
-		PLoading
+		PLoading,
+		Modal
 	},
 	created: function() {
 		// get posts.json
-		getGitJsonData(this, axios, "posts.json").then(data => {
-			let posts = data.json;
-			let postList = getSubposts(posts);
-			// TODO: postList 시간 최신순 정렬
-
-			this.postList = postList;
-			this.$forceUpdate();
-		}).catch(() => {
-			let confirm = findChildByTagName(this, "Confirm");
-			let ploading = findChildByTagName(this, "PLoading");
-
-			confirm.title = Lang('notification');
-			confirm.content = Lang('have_repo_but');
-			confirm.ok = Lang('ok');
-			confirm.cancel = Lang('no');
-			confirm.okClick = () => {
-				let full_name = `${this.$store.getters.user.name}/${this.$store.getters.user.name}.github.io`;
-				// 레포지토리 생성
-				ploading.show();
-				confirm.hide();
-
-				removeRepository(full_name, this.$store, axios).finally(() => {
-					ploading.hide();
-					this.$forceUpdate();
-				});
-			};
-			confirm.cancelClick = () => {
-				routeAssignUrl('/', this);
-				confirm.hide();
-			};
-			confirm.show();
-		});
+		loadPost(this);
 	},
 	methods: {
+		Lang,
+		deletePost
 	},
 	mounted: function() {
 	},

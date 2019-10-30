@@ -75,7 +75,7 @@
 				<!-- S:Blog Contentes -->
 			</v-col>
 			<!-- E:Side menus -->
-			<v-col class="pr-12">
+			<v-col class="pr-12 pt-0">
 				<!-- <component :is="this.$store.getters.blogContent"></component> -->
 				<component :is="this.currentComponent"></component>
 			</v-col>
