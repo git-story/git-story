@@ -3,38 +3,40 @@
 		<v-row>
 			<v-col>
 				<v-card>
-					<v-list three-line>
+					<v-list>
 						<template v-for="(post) in postList">
-							<v-list-item :key="post.href">
-								<v-list-item-avatar width="3rem" height="3rem">
-									<v-img :src="post.cover" ></v-img>
-								</v-list-item-avatar>
-								<v-list-item-content>
-									<v-list-item-title>
-										<p class="headline">{{ post.title }}</p>
-									</v-list-item-title>
-								</v-list-item-content>
-								<v-list-item-action>
-									<v-tooltip top>
-										<template v-slot:activator="{ on }">
-											<v-btn icon v-on="on">
-												<v-icon>mdi-pencil</v-icon> 
-											</v-btn>
-										</template>
-										<span>{{ Lang('modify') }}</span>
-									</v-tooltip>
-								</v-list-item-action>
-								<v-list-item-action>
-									<v-tooltip top>
-										<template v-slot:activator="{ on }">
-											<v-btn icon v-on="on" @click="deletePost(post)">
-												<v-icon>mdi-trash-can</v-icon> 
-											</v-btn>
-										</template>
-										<span>{{ Lang('delete') }}</span>
-									</v-tooltip>
-								</v-list-item-action>
-							</v-list-item>
+							<v-list-item-group :key="post.href">
+								<v-list-item :key="post.href">
+									<v-list-item-avatar width="3rem" height="3rem">
+										<v-img :src="post.cover" ></v-img>
+									</v-list-item-avatar>
+									<v-list-item-content>
+										<v-list-item-title>
+											<p class="headline">{{ post.title }}</p>
+										</v-list-item-title>
+									</v-list-item-content>
+									<v-list-item-action>
+										<v-tooltip top>
+											<template v-slot:activator="{ on }">
+												<v-btn icon v-on="on">
+													<v-icon>mdi-pencil</v-icon> 
+												</v-btn>
+											</template>
+											<span>{{ Lang('modify') }}</span>
+										</v-tooltip>
+									</v-list-item-action>
+									<v-list-item-action>
+										<v-tooltip top>
+											<template v-slot:activator="{ on }">
+												<v-btn icon v-on="on" @click="deletePost(post)">
+													<v-icon>mdi-trash-can</v-icon> 
+												</v-btn>
+											</template>
+											<span>{{ Lang('delete') }}</span>
+										</v-tooltip>
+									</v-list-item-action>
+								</v-list-item>
+							</v-list-item-group>
 						</template>
 					</v-list>
 				</v-card>

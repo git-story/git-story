@@ -205,6 +205,14 @@ export const removePost = function(post, axios, _this = this) {
 		}
 		posts.splice(pidx, 1);
 
+		let sha = null;
+		if ( _this.posts.sha ) {
+			sha = _this.posts.sha;
+			delete _this.posts.sha
+		} else {
+			reject(new Error('not have content sha'));
+		}
+
 		let postsString = JSON.stringify(_this.posts, null, '\t');
 		let postsBase64 = Buffer.from(postsString, 'utf8').toString('base64');
 
@@ -217,7 +225,7 @@ export const removePost = function(post, axios, _this = this) {
 			data: {
 				'message': commitMsg,
 				'content': postsBase64,
-				'sha': _this.posts.sha
+				'sha': sha
 			}
 		}).then(res => {
 			resolve(res);
