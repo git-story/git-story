@@ -1,6 +1,8 @@
 {
 	"error": "에러",
 	"notification": "알림",
+	"warning": "경고",
+	"apply": "적용",
 	"ok": "예",
 	"no": "아니오",
 	"confirm": "확인",
@@ -40,5 +42,11 @@
 	"myblog.list.delete_post": "정말 포스팅을 삭제하시겠습니까?",
 	"myblog.list.progress_delete": "포스팅을 삭제중입니다.",
 	"myblog.list.success_del_post": "포스팅 삭제에 성공했습니다!",
-	"myblog.list.fail_del_post": "포스팅 삭제에 실패했습니다."
+	"myblog.list.fail_del_post": "포스팅 삭제에 실패했습니다.",
+
+	"myblog.category.add_category": "카테고리 추가",
+	"myblog.category.modify_category": "선택한 카테고리 수정",
+	"myblog.category.delete_category": "선택한 카테고리 삭제",
+	"myblog.category.not_selected": "선택된 카테고리가 없습니다.",
+	"myblog.category.delete_check": "카테고리 및 하위 카테고리까지 전부 삭제하시겠습니까?"
 }

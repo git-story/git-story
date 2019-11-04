@@ -265,3 +265,27 @@ export const removePost = function(post, axios, _this = this) {
 	});
 }
 
+/**
+ * @function getObject
+ * @param {String} key
+ * '.' 를 기준으로 key 하위 오브젝트를 한 번에 반환한다.
+ * 특수상황 ( posts 파싱 ) 시의 예외도 둔다.
+ */
+export const getObject = (obj, key, midx=0, rtn = obj) => {
+	if ( Array.isArray(key) ) {
+		if ( rtn === undefined || key.length-midx <= 0 ) {
+			if ( key.length > 0 ) {
+				return {d: rtn, k: key[0]};
+			}
+			return rtn;
+		} else {
+			rtn = rtn[key.shift()];
+			if ( rtn === undefined ) {
+				return undefined;
+			}
+		}
+	} else if ( typeof key === "string" ) {
+		key = key.split('.');
+	}
+	return getObject(obj, key, midx, rtn);
+};
