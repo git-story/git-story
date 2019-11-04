@@ -51,7 +51,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { getGitJsonData, routeAssignUrl, findChildByTagName, getObject } from '../../modules/common.js';
+import { getGitJsonData, findChildByTagName, getObject } from '../../modules/common.js';
 import Prompt from '../Util/Prompt';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
@@ -62,7 +62,7 @@ const createCategoryItems = function(posts, id="") {
 	let keys = Object.keys(posts);
 	let obj = [];
 
-	keys.forEach((k, i) => {
+	keys.forEach((k) => {
 		let cat = posts[k];
 		let po  = { // push object target
 			id: id+k,
@@ -105,6 +105,7 @@ const createCategory = function() {
 				}
 
 				if ( typeof parent.single === "boolean" && parent.single === false ) {
+					// DO NOTING
 				} else {
 					parent.single = false;
 					parent.posts = {};
@@ -178,7 +179,7 @@ const renameCategory = function() {
 
 			let target = d[k];
 			let oriHref = target.href;
-			let regex = new RegExp(`${k.toLowerCase()}(?=\/$)`);
+			let regex = new RegExp(`${k.toLowerCase()}(?=/$)`);
 			target.href = target.href.replace(regex, rename.toLowerCase());
 			allChangeHref(target, oriHref, target.href);
 
@@ -245,7 +246,7 @@ const applyCategory = function() {
 			content: b64posts,
 			sha: this.posts_ori.sha
 		}
-	}).then(res => {
+	}).then(() => {
 	}).finally(() => {
 		ploading.hide();
 	});
@@ -277,17 +278,6 @@ export default {
 			updateCategory(this, posts);
 		});
 		return { active:[], items:[]};
-	},
-	computed: {
-		selected () {
-			if ( this.active.length > 0 ){
-				console.log(this.active);
-			}
-			return true;
-		}
-	},
-	watch: {
-		selected: () => {}
-	},
+	}
 };
 </script>
