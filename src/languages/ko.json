@@ -13,6 +13,7 @@
 	"can_not_del_repo": "레포지토리를 삭제할 수 없습니다.",
 	"modify": "수정",
 	"delete": "삭제",
+	"cancel": "취소",
 
 
 
@@ -28,7 +29,9 @@
 
 
 	"editor.input-title": "제목을 입력하세요.",
-	"editor.post": "포스팅",
+	"editor.post": "작성",
+	"editor.category": "카테고리",
+	"editor.select": "선택해 주세요.",
 
 
 	"myblog.side.content": "블로그 콘텐츠",

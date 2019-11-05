@@ -2,7 +2,7 @@
 	<v-content>
 		<v-row class="div-height">
 			<v-col>
-				<v-row style="height:80px">
+				<v-row style="height:80px; overflow-y:auto;">
 					<v-col sm="1" md="3"></v-col>
 					<v-col>
 						<v-text-field ref="input-title" color="secondery" :label="Lang('editor.input-title')"></v-text-field>
@@ -22,9 +22,54 @@
 			<v-row align="center">
 				<v-col></v-col>
 				<v-col align="end">
-					<v-btn @click="doPosting" elevation="5" tile large color="grey darken-3" style="color:white;">
-						{{ Lang('editor.post') }}
-					</v-btn>
+					<!-- S:Posting -->
+					<v-menu
+						v-model="menu"
+						max-width="500px"
+						min-width="500px"
+						:close-on-content-click="false"
+						transition="slide-y-transition"
+						top
+						left
+						:offset-y="true">
+						<template v-slot:activator="{ on }">
+							<v-btn @click="" v-on="on" elevation="5" tile large color="grey darken-3" style="color:white;">
+								{{ Lang('editor.post') }}
+							</v-btn>
+						</template>
+
+						<!-- S:Posting Menu -->
+						<v-card class="">
+							<v-card-text>
+								<v-container>
+									<v-row align="center">
+										<v-col cols="4">
+											<v-subheader>{{ Lang('editor.category') }}</v-subheader>
+										</v-col>
+										<v-col>
+											<v-select
+												v-model="c_sel"
+												:items="categoryItem"
+												item-text="name"
+												item-value="value"
+												:label="Lang('editor.select')"
+												return-object
+												single-line></v-select>
+										</v-col>
+									</v-row>
+								</v-container>
+							</v-card-text>
+
+							<v-card-actions>
+								<v-spacer></v-spacer>
+
+								<v-btn text @click="menu = false">{{ Lang('cancel') }}</v-btn>
+								<v-btn color="success" text @click="menu = false; doPosting()">{{ Lang('ok') }}</v-btn>
+							</v-card-actions>
+						</v-card>
+						<!-- E:Posting Menu -->
+					</v-menu>
+					<!-- E:Posting -->
 				</v-col>
 			</v-row>
 		</v-footer>
@@ -38,6 +83,7 @@
 body {
 	min-width: 800px;
 	background-color: white;
+	overflow-y: hidden;
 }
 div.v-application {
 	background-color: white !important;
@@ -56,13 +102,13 @@ div.v-application {
 .v-text-field .v-label--active {
 	transform: translateY(-20px) scale(0.5);
 }
-.v-text-field input {
+.v-text-field .v-text-field__slot input {
 	font-size: 2rem;
 	max-height: 100px;
 	line-height: 40px;
 	margin-top: 10px;
 }
-.v-text-field label {
+.v-text-field .v-text-field__slot label {
 	height:70px !important;
 	line-height: 50px !important;
 	font-size: 2rem;
@@ -87,7 +133,7 @@ div.v-application {
 <script>
 /* eslint-disable */
 import axios from 'axios';
-import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl } from '../modules/common.js';
+import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObject } from '../modules/common.js';
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 
@@ -169,14 +215,18 @@ const buildContentHTML = function(_this = this) {
 
 const doPostingContent = function() {
 	// get posts.json
-	getGitJsonData(this, axios, "posts.json").then(data => {
-		let posts = data.json;
-		let sha = data.sha;
+	if ( this.posts ) {
+		let posts = this.posts;
+		let sha = this.posts_ori.sha;
 		let userName = this.$store.getters.user.name;
 
-		let selectedCategory = 'BLOG/#/Subcagegory';
+		//let selectedCategory = 'BLOG/#/Subcagegory';
+		//let category = searchPostsByCategory(posts, selectedCategory);
+
+		let selectedCategory = this.c_sel.value;
+		let category = getObject(posts, selectedCategory);
+
 		let apiUrl = this.$store.getters.config.api;
-		let category = searchPostsByCategory(posts, selectedCategory);
 		let path = category.href;
 		let nowDate = genNowDate();
 		let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents${path}${nowDate}/`;
@@ -241,7 +291,30 @@ const doPostingContent = function() {
 		}).catch(err => {
 			// TODO: 글 올리기 실패시 예외 처리
 		});
-	}).catch((err) => {});
+	}
+};
+
+const createCategoryItems = function(posts, id="", level=0) {
+	let keys = Object.keys(posts);
+	let obj = [];
+
+	keys.forEach((k) => {
+		let cat = posts[k];
+		let po  = { // push object target
+			value: id+k,
+			name: ` ${"-".repeat(level)} ${k}`
+		};
+
+		obj.push(po);
+		if ( typeof cat.single === 'boolean' && cat.single === false ) {
+			let next_id = `${id}${k}.posts.`;
+			let child = createCategoryItems(cat.posts, next_id, level+1);
+			obj = obj.concat(child);
+		}
+
+	});
+
+	return obj;
 };
 
 export default {
@@ -257,8 +330,17 @@ export default {
 		Lang
 	},
 	mounted: function() {
-		// 임시적으로 에디터 툴바 메뉴의 위치를 옮김
+		getGitJsonData(this, axios, "posts.json").then(res => {
+			this.posts = res.json;
+			this.posts_ori = res;
 
+			this.categoryItem = createCategoryItems(this.posts);
+			this.c_sel = this.categoryItem[0];
+			console.log(this);
+		}).catch((err) => {});
+
+
+		// 임시적으로 에디터 툴바 메뉴의 위치를 옮김
 		let selectMenus = document.querySelectorAll('div.vueditor div.ve-toolbar div.ve-select');
 		const S_CODE_HLT = 0;
 		const S_TAG = 1;
@@ -313,7 +395,10 @@ export default {
 		console.log(this);
 	},
 	data: () => ({
-		text: "Test"
+		text: "Test",
+		c_sel: {},
+		categoryItem: ['test', 'test2'],
+		menu: false
 	}),
 };
 </script>
