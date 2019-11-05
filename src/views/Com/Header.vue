@@ -14,6 +14,7 @@
 		<div v-if="isLogin(true)">
 			<span class="body-1" style="text-transform: none;">{{ user().displayName }}</span>
 			<v-menu
+				v-model="menu"
 				transition="slide-y-transition"
 				bottom
 				min-width="200px"
@@ -47,18 +48,7 @@
 							<v-list-item-title>{{ Lang('header.myblog') }}</v-list-item-title>
 						</v-list-item-content>
 						<v-list-item-action>
-							<v-btn v-if="isBlog" @click.stop="routeAssign('/edit')" icon>
-								<v-icon>mdi-border-color</v-icon>
-							</v-btn>
-						</v-list-item-action>
-					</v-list-item>
-					<v-divider></v-divider>
-					<v-list-item @click="routeAssign('/edit')" style="height:60px;">
-						<v-list-item-content>
-							<v-list-item-title>편집기</v-list-item-title>
-						</v-list-item-content>
-						<v-list-item-action>
-							<v-btn @click.stop="createPost" icon>
+							<v-btn v-if="isBlog" @click.stop="routeAssign('/edit'); menu = false;" icon>
 								<v-icon>mdi-border-color</v-icon>
 							</v-btn>
 						</v-list-item-action>
@@ -165,7 +155,8 @@ export default {
 	data: () => ({
 		user: function() { return this.$store.getters.user },
 		github: function() { return this.$store.getters.github },
-		isBlog: false
+		isBlog: false,
+		menu: false
 	}),
 };
 </script>

@@ -84,18 +84,22 @@ body {
 	min-width: 800px;
 	background-color: white;
 }
+
 div.v-application {
 	background-color: white !important;
 }
-
 
 .vueditor > .ve-toolbar {
 	width: 100%;
 	left: 0;
 	position: fixed;
 	top: 64px;
-	z-index: 7; /* back to icon menu, front to content input */
+	z-index: 4; /* back to header and back to icon menu, front to content input */
 	box-shadow: 0px 0px 5px #cacaca;
+}
+
+.vueditor > .ve-design {
+	margin-top: 20px;
 }
 
 .custom-title.v-text-field .v-label--active {

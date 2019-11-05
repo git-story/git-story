@@ -2,69 +2,77 @@
 	<v-content style="overflow:hidden">
 		<v-row class="mt-12">
 			<!-- S:Side menus -->
-			<v-col cols="3" class="pl-12 pr-6">
-				<!-- S:Blog Contentes -->
-				<v-card class="mx-auto">
-					<v-navigation-drawer permanent style="width:100%">
-						<v-list-item>
-							<v-list-item-content>
-								<v-list-item-title class="title">
-									{{ Lang('myblog.side.content') }}
-								</v-list-item-title>
-							</v-list-item-content>
-						</v-list-item>
+			<v-col cols="3" align="right" class="pl-12 pr-6">
+				<!-- S:New Posting -->
+				<v-row>
+					<v-col class="pa-0"></v-col>
+					<v-col md="12" lg="6" class="pa-0">
+						<v-btn @click="routeAssignUrl('/edit')" block class="mb-3" color="grey darken-3" dark hover large>{{ Lang('myblog.newpost') }}</v-btn>
+						<!-- E:New Posting -->
+						<!-- S:Blog Contentes -->
+						<v-card class="mx-auto">
+							<v-navigation-drawer permanent style="width:100%">
+								<v-list-item>
+									<v-list-item-content>
+										<v-list-item-title class="title">
+											{{ Lang('myblog.side.content') }}
+										</v-list-item-title>
+									</v-list-item-content>
+								</v-list-item>
 
-						<v-divider></v-divider>
+								<v-divider></v-divider>
 
-						<v-list dense nav>
-							<v-list-item link @click="contentChange('BlogList')">
-								<v-list-item-icon>
-									<v-icon>mdi-playlist-edit</v-icon>
-								</v-list-item-icon>
+								<v-list dense nav>
+									<v-list-item link @click="contentChange('BlogList')">
+										<v-list-item-icon>
+											<v-icon>mdi-playlist-edit</v-icon>
+										</v-list-item-icon>
 
-								<v-list-item-content>
-									<v-list-item-title>
-										{{ Lang('myblog.side.manage_post') }}
-									</v-list-item-title>
-								</v-list-item-content>
-							</v-list-item>
-							<v-list-item link @click="contentChange('BlogCategory')">
-								<v-list-item-icon>
-									<v-icon>mdi-shape</v-icon>
-								</v-list-item-icon>
+										<v-list-item-content>
+											<v-list-item-title>
+												{{ Lang('myblog.side.manage_post') }}
+											</v-list-item-title>
+										</v-list-item-content>
+									</v-list-item>
+									<v-list-item link @click="contentChange('BlogCategory')">
+										<v-list-item-icon>
+											<v-icon>mdi-shape</v-icon>
+										</v-list-item-icon>
 
-								<v-list-item-content>
-									<v-list-item-title>
-										{{ Lang('myblog.side.manage_category') }}
-									</v-list-item-title>
-								</v-list-item-content>
-							</v-list-item>
-							<v-list-item link @click="contentChange('BlogTemplate')">
-								<v-list-item-icon>
-									<v-icon>mdi-layers-triple</v-icon>
-								</v-list-item-icon>
+										<v-list-item-content>
+											<v-list-item-title>
+												{{ Lang('myblog.side.manage_category') }}
+											</v-list-item-title>
+										</v-list-item-content>
+									</v-list-item>
+									<v-list-item link @click="contentChange('BlogTemplate')">
+										<v-list-item-icon>
+											<v-icon>mdi-layers-triple</v-icon>
+										</v-list-item-icon>
 
-								<v-list-item-content>
-									<v-list-item-title>
-										{{ Lang('myblog.side.manage_template') }}
-									</v-list-item-title>
-								</v-list-item-content>
-							</v-list-item>
-							<v-list-item link @click="contentChange('BlogSetting')">
-								<v-list-item-icon>
-									<v-icon>mdi-settings</v-icon>
-								</v-list-item-icon>
+										<v-list-item-content>
+											<v-list-item-title>
+												{{ Lang('myblog.side.manage_template') }}
+											</v-list-item-title>
+										</v-list-item-content>
+									</v-list-item>
+									<v-list-item link @click="contentChange('BlogSetting')">
+										<v-list-item-icon>
+											<v-icon>mdi-settings</v-icon>
+										</v-list-item-icon>
 
-								<v-list-item-content>
-									<v-list-item-title>
-										{{ Lang('myblog.side.setting_blog') }}
-									</v-list-item-title>
-								</v-list-item-content>
-							</v-list-item>
-						</v-list>
-					</v-navigation-drawer>
-				</v-card>
-				<!-- S:Blog Contentes -->
+										<v-list-item-content>
+											<v-list-item-title>
+												{{ Lang('myblog.side.setting_blog') }}
+											</v-list-item-title>
+										</v-list-item-content>
+									</v-list-item>
+								</v-list>
+							</v-navigation-drawer>
+						</v-card>
+						<!-- S:Blog Contentes -->
+					</v-col>
+				</v-row>
 			</v-col>
 			<!-- E:Side menus -->
 			<v-col class="pr-12 pt-0">
@@ -205,10 +213,21 @@ export default {
 	},
 	methods: {
 		contentChange: contentChangeComponent,
-		Lang
+		Lang,
+		routeAssignUrl
 	},
 	mounted: function() {
-		//let iframe = document.querySelector('iframe');
+		let wallpapers = this.$store.getters.config.wallpapers;
+		let wnum = randomNumber(wallpapers.length);
+
+		console.log(wallpapers[wnum]);
+		let vContent = document.querySelector('main.v-content');
+		vContent.style.background = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${wallpapers[wnum]}')`;
+		vContent.style.backgroundRepeat = "no-repeat";
+		vContent.style.backgroundPosition = "center center";
+		vContent.style.backgroundSize = "cover";
+
+
 		axios({
 			url: `${this.$store.getters.config.api}/users/${this.$store.getters.user.name}/repos`,
 			method: 'get',
