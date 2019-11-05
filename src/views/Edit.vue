@@ -2,31 +2,27 @@
 	<v-content>
 		<v-row class="div-height">
 			<v-col>
-					<v-row style="height:80px">
-						<v-col cols="col-sm-1 col-lg-3"></v-col>
-						<v-col>
-							<v-text-field ref="input-title" :label="Lang('editor.input-title')"></v-text-field>
-						</v-col>
-						<v-col cols="col-sm-1 col-lg-3"></v-col>
-					</v-row>
-					<v-row style="height:calc(100% - 80px)">
-						<v-col cols="col-sm-1 col-lg-3"></v-col>
-						<v-col height="100%" class="pt-0">
-							<v-card height="100%">
-								<Vueditor id="editorcontiner" ref="vueditor" v-model="text"></Vueditor>
-							</v-card>
-						</v-col>
-						<v-col cols="col-sm-1 col-lg-3"></v-col>
-					</v-row>
+				<v-row style="height:80px">
+					<v-col sm="1" md="3"></v-col>
+					<v-col>
+						<v-text-field ref="input-title" color="secondery" :label="Lang('editor.input-title')"></v-text-field>
+						<Vueditor id="editorcontiner" ref="vueditor" v-model="text"></Vueditor>
+					</v-col>
+					<v-col sm="1" md="3"></v-col>
+				</v-row>
+				<v-row class="mt-10" style="height:calc(100% - 80px)">
+					<v-col height="100%" class="pt-0">
+					</v-col>
+				</v-row>
 			</v-col>
 		</v-row>
 
 		<!-- S:Footer -->
-		<v-footer height="80" fixed class="font-width-medium pl-12 pr-12">
+		<v-footer height="80" color="grey lighten-4" fixed class="font-width-medium pl-12 pr-12">
 			<v-row align="center">
 				<v-col></v-col>
 				<v-col align="end">
-					<v-btn @click="doPosting" large color="teal darken-4" style="color:white;">
+					<v-btn @click="doPosting" elevation="5" tile large color="grey darken-3" style="color:white;">
 						{{ Lang('editor.post') }}
 					</v-btn>
 				</v-col>
@@ -38,14 +34,53 @@
 	</v-content>
 </template>
 
+<style>
+body {
+	min-width: 800px;
+	background-color: white;
+}
+div.v-application {
+	background-color: white !important;
+}
+
+
+.vueditor > .ve-toolbar {
+	width: 100%;
+	left: 0;
+	position: fixed;
+	top: 64px;
+	z-index: 7; /* back to icon menu, front to content input */
+	box-shadow: 0px 0px 5px #cacaca;
+}
+
+.v-text-field .v-label--active {
+	transform: translateY(-20px) scale(0.5);
+}
+.v-text-field input {
+	font-size: 2rem;
+	max-height: 100px;
+	line-height: 40px;
+	margin-top: 10px;
+}
+.v-text-field label {
+	height:70px !important;
+	line-height: 50px !important;
+	font-size: 2rem;
+}
+</style>
 
 <style scoped>
 .vueditor {
-	height: 100%;
+	background-color: transparent;
+	border: 0;
+	width:100%;
+	height: 750px;
 }
 .div-height {
 	height:calc( 100% - 64px );
 	padding-bottom: 15px;
+	margin-bottom: 400px;
+	padding-top: 100px;
 }
 </style>
 
@@ -209,7 +244,6 @@ const doPostingContent = function() {
 	}).catch((err) => {});
 };
 
-
 export default {
 	name: 'Edit',
 	components: {
@@ -223,6 +257,60 @@ export default {
 		Lang
 	},
 	mounted: function() {
+		// 임시적으로 에디터 툴바 메뉴의 위치를 옮김
+
+		let selectMenus = document.querySelectorAll('div.vueditor div.ve-toolbar div.ve-select');
+		const S_CODE_HLT = 0;
+		const S_TAG = 1;
+		const S_FONT = 2;
+		const S_FONT_SIZE = 3;
+		// code highlight
+		let code_hlt = document.querySelector('div.vueditor div.ve-dropdown._10cV1loMgUSCh2Gf6O8hsF_0');
+		let code_hlt_sel = selectMenus[S_CODE_HLT];
+		if ( code_hlt && code_hlt_sel ) {
+			code_hlt_sel.addEventListener('click', (e) => {
+				let rect = code_hlt_sel.getBoundingClientRect();
+				code_hlt.style.position = "fixed";
+				code_hlt.style.top = (rect.y + rect.height) + "px";
+				code_hlt.style.left = rect.x + "px";
+			});
+		}
+
+		// tag
+		let tag = document.querySelector('div.vueditor div.ve-dropdown._2ddaIaDnYon4oaNo9HwhTU_0');
+		let tag_sel = selectMenus[S_TAG];
+		if ( tag && tag_sel ) {
+			tag_sel.addEventListener('click', (e) => {
+				let rect = tag_sel.getBoundingClientRect();
+				tag.style.position = "fixed";
+				tag.style.top = (rect.y + rect.height) + "px";
+				tag.style.left = rect.x + "px";
+			});
+		}
+
+		// font
+		let font = document.querySelector('div.vueditor div.ve-dropdown.XlQ1oyUFxq9sfpmr-kqea_0');
+		let font_sel = selectMenus[S_FONT];
+		if ( font && font_sel ) {
+			font_sel.addEventListener('click', (e) => {
+				let rect = font_sel.getBoundingClientRect();
+				font.style.position = "fixed";
+				font.style.top = (rect.y + rect.height) + "px";
+				font.style.left = rect.x + "px";
+			});
+		}
+
+		let font_size = document.querySelector('div.vueditor div.ve-dropdown._2gMMU7OLy1ok1hmmAGzabR_0');
+		let font_size_sel = selectMenus[S_FONT_SIZE];
+		if ( font_size && font_size_sel ) {
+			font_size_sel.addEventListener('click', (e) => {
+				let rect = font_size_sel.getBoundingClientRect();
+				font_size.style.position = "fixed";
+				font_size.style.top = (rect.y + rect.height) + "px";
+				font_size.style.left = rect.x + "px";
+			});
+		}
+		console.log(this);
 	},
 	data: () => ({
 		text: "Test"
