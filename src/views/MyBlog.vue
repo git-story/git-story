@@ -107,6 +107,40 @@ const contentChangeComponent = function(target, _this) {
 	_this.$forceUpdate();
 };
 
+const authorUpdate = (_this = this) => {
+	return new Promise((resolve, reject) => {
+		getGitJsonData(_this, axios, "config.json").then((res) => {
+			let config = res.json;
+			let user = _this.$store.getters.user;
+			if ( config['author'] === "" ) {
+				config['author'] = user.name;
+
+				let configStr = JSON.stringify(config, null, '\t');
+				let b64config = Buffer.from(configStr, "utf8").toString('base64');
+
+
+				let apiUrl = _this.$store.getters.config.api;
+				let reqUrl = `${apiUrl}/repos/${user.name}/${user.name}.github.io/contents/config.json`;
+				axios({
+					url: reqUrl,
+					method: 'put',
+					headers: {
+						'Authorization': `Token ${_this.$store.getters.token}`
+					},
+					data: {
+						message: `[GITSTORY] author update : config.json`,
+						content: b64config,
+						sha: res.sha
+					}
+				}).then(() => {
+					resolve();
+				}).catch(reject);
+			}
+		}).catch(() => {
+		});
+	});
+};
+
 // 레포지토리 생성
 // TODO: git page Enable ( https://developer.github.com/v3/repos/pages/#enable-a-pages-site )
 // Delete _config.yml file in template 
@@ -198,6 +232,8 @@ export default {
 					//let url = `https://${this.$store.getters.user.name}.github.io`;
 					//iframe.src = url;
 					getGitJsonData(this, axios, "posts.json").then(() => {
+						// 모두 정상적으로 있음.
+						authorUpdate(this);	
 					}).catch(() => {
 						// posts.json 이 없을 때 
 						confirm.title = Lang('notification');
