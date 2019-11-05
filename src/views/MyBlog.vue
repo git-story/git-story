@@ -1,12 +1,12 @@
 <template>
-	<v-content style="overflow:hidden">
+	<v-content>
 		<v-row class="mt-12">
 			<!-- S:Side menus -->
 			<v-col cols="3" align="right" class="pl-12 pr-6">
 				<!-- S:New Posting -->
 				<v-row>
 					<v-col class="pa-0"></v-col>
-					<v-col md="12" lg="6" class="pa-0">
+					<v-col sm="12" md="10" lg="8" xl="6" class="pa-0">
 						<v-btn @click="routeAssignUrl('/edit')" block class="mb-3" color="grey darken-3" dark hover large>{{ Lang('myblog.newpost') }}</v-btn>
 						<!-- E:New Posting -->
 						<!-- S:Blog Contentes -->

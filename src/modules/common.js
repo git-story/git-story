@@ -19,12 +19,29 @@ export const findChildByTagName = (target, tagName, result) => {
 	return result;
 }
 
+const findRootComponent = (com) => {
+	if ( com ) {
+		let options = com.$options;
+		if ( options ) {
+			if ( !options._componentTag ) {
+				return com;
+			} else {
+				let parent = options.parent;
+				return findRootComponent(parent);
+			}
+		}
+	}
+};
+
 // Vue route 이동
 export const routeAssignUrl = function(url, _this) {
 	let router = (this && this.$router) || (_this && _this.$router);
 	if ( typeof url === "string" && router ) {
 		if ( router.history.current.path !== url ) {
 			router.push({ path: url });
+			
+			let root = findRootComponent(this);
+			root.isHome = (router.history.current.name === "Home");
 		}
 	}
 }

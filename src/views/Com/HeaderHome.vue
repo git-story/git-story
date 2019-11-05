@@ -2,10 +2,10 @@
 <template>
 	<!-- v-app-bar -->
 	<v-app-bar 
-		color="white"
+		color="transparent"
+		absolute
 		:flat="true"
 		height="64px"
-		style="border-bottom: 1px solid #dadada !important"
 		:app="true">
 		<v-toolbar-title class="headline text-uppercase">
 			<router-link to="#" @click.native="routeAssign('/')" class="font-weight-light" style="text-decoration:none; color:black;">Git Story</router-link>

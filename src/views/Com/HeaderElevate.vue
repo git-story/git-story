@@ -3,10 +3,10 @@
 	<!-- v-app-bar -->
 	<v-app-bar 
 		color="white"
-		:flat="true"
 		height="64px"
-		style="border-bottom: 1px solid #dadada !important"
-		:app="true">
+		absolute
+		inverted-scroll
+		scroll-target="#router-view">
 		<v-toolbar-title class="headline text-uppercase">
 			<router-link to="#" @click.native="routeAssign('/')" class="font-weight-light" style="text-decoration:none; color:black;">Git Story</router-link>
 		</v-toolbar-title>

@@ -1,6 +1,6 @@
 <template>
-	<v-content>
-		<v-parallax src="../assets/home-banner.png">
+	<v-content class="pt-0">
+		<v-parallax height="600" src="../assets/home-banner.png">
 			<v-row
 				align="start"
 				justify="start"
