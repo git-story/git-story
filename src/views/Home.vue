@@ -5,7 +5,7 @@
 				align="start"
 				justify="start"
 				style="padding-left:8%">
-				<v-col style="margin-top:5rem">
+				<v-col style="margin-top:7rem">
 					<v-row>
 						<h1 class="font-weight-black" style="color:#880E4F; font-size:65px;">GIT STORY</h1>
 					</v-row>

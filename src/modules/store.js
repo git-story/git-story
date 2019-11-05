@@ -7,10 +7,19 @@ import config from '../config'
 
 Vue.use(Vuex);
 
+
+var prepareUser = null;
+var prepareToken = sessionStorage.getItem('token');
+
+let s_user = sessionStorage.getItem('user');
+if ( s_user ) {
+	prepareUser = JSON.parse(s_user);
+}
+
 export default new Vuex.Store({
 	state: {
-		userToken: null,
-		user: null ,
+		userToken: prepareToken,
+		user: prepareUser,
 		github: null,
 		config: config,
 		postMode: '',
@@ -44,11 +53,16 @@ export default new Vuex.Store({
 			state.user.name = name;
 			state.userToken = token;
 			state.github = html_url;
+
+			let userInfoStr = JSON.stringify(state.user);
+			sessionStorage.setItem("token", token);
+			sessionStorage.setItem("user", userInfoStr);
 		},
 		logout: (state) => {
 			state.userToken = null;
 			state.user = null;
 			state.github = null;
+			sessionStorage.clear();
 		},
 		postMode: (state, mode) => {
 			state.postMode = mode;

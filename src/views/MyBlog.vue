@@ -220,7 +220,6 @@ export default {
 		let wallpapers = this.$store.getters.config.wallpapers;
 		let wnum = randomNumber(wallpapers.length);
 
-		console.log(wallpapers[wnum]);
 		let vContent = document.querySelector('main.v-content');
 		vContent.style.background = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${wallpapers[wnum]}')`;
 		vContent.style.backgroundRepeat = "no-repeat";
