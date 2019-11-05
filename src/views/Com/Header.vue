@@ -26,7 +26,7 @@
 						outlined 
 						color="grey darken-3"
 						v-on="on">
-						<v-avatar>
+						<v-avatar size="40">
 							<img :src="user().photoURL"/>
 						</v-avatar>
 					</v-btn>
@@ -43,7 +43,7 @@
 					<v-divider></v-divider>
 					<v-list-item @click="routeAssign('/my-blog')" style="height:60px;">
 						<v-list-item-content>
-							<v-list-item-title>내 블로그</v-list-item-title>
+							<v-list-item-title>{{ Lang('header.myblog') }}</v-list-item-title>
 						</v-list-item-content>
 						<v-list-item-action>
 							<v-btn v-if="isBlog" @click.stop="routeAssign('/edit')" icon>
@@ -66,7 +66,7 @@
 					<v-list-item>
 						<v-list-item-content>
 							<v-list-item-subtitle class="text-right">
-								<v-btn text @click="logout">로그아웃</v-btn>
+								<v-btn text @click="logout">{{ Lang('header.logout') }}</v-btn>
 							</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
@@ -88,6 +88,7 @@
 <script>
 import firebase from 'firebase';
 import { openNewTabUrl, routeAssignUrl } from '../../modules/common.js'
+import Lang from '../../languages/Lang.js'
 
 // Github 계정으로 로그인
 const signInGithub = function() {
@@ -151,7 +152,8 @@ export default {
 		openNewTab: openNewTabUrl,
 		routeAssign: routeAssignUrl,
 		createPost: createPostClick,
-		logout: logoutGithub
+		logout: logoutGithub,
+		Lang
 	},
 	created: function() {
 		isBlogCheck(this);
