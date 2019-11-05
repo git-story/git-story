@@ -2,10 +2,10 @@
 	<v-content>
 		<v-row class="div-height">
 			<v-col>
-				<v-row style="height:80px; overflow-y:auto;">
+				<v-row style="height:80px;">
 					<v-col sm="1" md="3"></v-col>
 					<v-col>
-						<v-text-field ref="input-title" color="secondery" :label="Lang('editor.input-title')"></v-text-field>
+						<v-text-field ref="input-title" color="secondery" class="custom-title" :label="Lang('editor.input-title')"></v-text-field>
 						<Vueditor id="editorcontiner" ref="vueditor" v-model="text"></Vueditor>
 					</v-col>
 					<v-col sm="1" md="3"></v-col>
@@ -83,7 +83,6 @@
 body {
 	min-width: 800px;
 	background-color: white;
-	overflow-y: hidden;
 }
 div.v-application {
 	background-color: white !important;
@@ -99,16 +98,16 @@ div.v-application {
 	box-shadow: 0px 0px 5px #cacaca;
 }
 
-.v-text-field .v-label--active {
+.custom-title.v-text-field .v-label--active {
 	transform: translateY(-20px) scale(0.5);
 }
-.v-text-field .v-text-field__slot input {
+.custom-title.v-text-field .v-text-field__slot input {
 	font-size: 2rem;
 	max-height: 100px;
 	line-height: 40px;
 	margin-top: 10px;
 }
-.v-text-field .v-text-field__slot label {
+.custom-title.v-text-field .v-text-field__slot label {
 	height:70px !important;
 	line-height: 50px !important;
 	font-size: 2rem;
@@ -136,38 +135,6 @@ import axios from 'axios';
 import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObject } from '../modules/common.js';
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
-
-const searchPostsByCategory = function(posts, category="", level=0, deps=0) {
-	let c = Object.keys(posts);
-	let clen = c.length;
-	let csplit = category.split(/\/#\//g);
-
-	// /#/ 기준으로 레벨을 나눈다.
-	// csplit[deps] 가 현재 카테고리를 뜻한다.
-	// posts 는 현재 deps 의 posts 를 가져온다.
-	if ( csplit.length === 0 ) {
-		return;
-	}
-
-	for (let i=0;i<clen;i++) {
-		let cname = c[i];
-		if ( cname === csplit[deps] ) {
-			let post = posts[cname];
-			if ( (deps+1) === (csplit.length-level) ) {
-				// deps와 csplit의 길이가 같으면 해당 경로 반환
-				return post;
-			}
-
-			// 아니면 하위 경로 탐색
-			if ( post.single === false ) {
-				return searchPostsByCategory(post.posts, category, level, deps+1);
-			} else {
-				// 싱글 카테고리라면 탐색 실패
-				return;
-			}
-		}
-	}
-};
 
 const buildContentHTML = function(_this = this) {
 	return new Promise((resolve, reject) => {
@@ -219,9 +186,6 @@ const doPostingContent = function() {
 		let posts = this.posts;
 		let sha = this.posts_ori.sha;
 		let userName = this.$store.getters.user.name;
-
-		//let selectedCategory = 'BLOG/#/Subcagegory';
-		//let category = searchPostsByCategory(posts, selectedCategory);
 
 		let selectedCategory = this.c_sel.value;
 		let category = getObject(posts, selectedCategory);
@@ -302,13 +266,15 @@ const createCategoryItems = function(posts, id="", level=0) {
 		let cat = posts[k];
 		let po  = { // push object target
 			value: id+k,
-			name: ` ${"-".repeat(level)} ${k}`
+			name: ` ${">".repeat(level)} ${k}`
 		};
 
 		obj.push(po);
-		if ( typeof cat.single === 'boolean' && cat.single === false ) {
-			let next_id = `${id}${k}.posts.`;
-			let child = createCategoryItems(cat.posts, next_id, level+1);
+		let subs = cat.sub;
+		let skeys = Object.keys(subs);
+		if ( skeys.length > 0 ) {
+			let next_id = `${id}${k}.sub.`;
+			let child = createCategoryItems(subs, next_id, level+1);
 			obj = obj.concat(child);
 		}
 

@@ -85,24 +85,25 @@ export const getGitJsonData = function(_this = this, axios, path="") {
 
 // posts.json 에서 블로그 글 리스트를 만든다.
 export const getSubposts = (obj) => {
-	let rtn = [];
-	if ( Array.isArray(obj.posts) ) {
-		return obj.posts;
-	}
+    let rtn = [];
 
-	let target = obj;
-	if ( typeof obj.posts === "object" ) {
-		target = obj.posts;
-	}
+    let target = obj;
+    if ( typeof obj.sub === "object" ) {
+        target = obj.sub;
+    }
 
-	let keys = Object.keys(target);
-	keys.forEach(k => {
-		if ( typeof target[k] === "object" ) {
-			rtn = rtn.concat(getSubposts(target[k]));
-		}
-	});
-	return rtn;
-}
+    let keys = Object.keys(target);
+    keys.forEach(k => {
+        if ( typeof target[k] === "object" ) {
+            rtn = rtn.concat(getSubposts(target[k]));                                                                                                                                               
+        }
+    });
+
+    if ( Array.isArray(obj.posts) ) {
+        rtn = rtn.concat(obj.posts);
+    }
+    return rtn;
+};
 
 
 /** date formating function **/

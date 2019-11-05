@@ -69,9 +69,11 @@ const createCategoryItems = function(posts, id="") {
 			name: k
 		};
 
-		if ( typeof cat.single === 'boolean' && cat.single === false ) {
-			let next_id = `${id}${k}.posts.`;
-			let child = createCategoryItems(cat.posts, next_id);
+		let subs = cat.sub;
+		let skeys = Object.keys(subs);
+		if ( skeys.length > 0 ) {
+			let next_id = `${id}${k}.sub.`;
+			let child = createCategoryItems(subs, next_id);
 			po['children'] = child;
 		}
 
@@ -104,21 +106,15 @@ const createCategory = function() {
 					return;
 				}
 
-				if ( typeof parent.single === "boolean" && parent.single === false ) {
-					// DO NOTING
-				} else {
-					parent.single = false;
-					parent.posts = {};
-				}
-				parent.posts[category] = {
-					"single" : true,
+				parent.sub[category] = {
 					"href" : `${parent.href}${category}/`,
+					"sub": {},
 					"posts" : []
 				}
 			} else {
 				parent[category] = {
-					"single" : true,
 					"href" : `/posts/${category}/`,
+					"sub": {},
 					"posts" : []
 				}
 			}
@@ -141,14 +137,14 @@ const allChangeHref = (obj, ori, dst) => {
 	} else if ( typeof obj === "object" ) {
 		if ( obj.href ) {
 			obj.href = obj.href.replace(ori, dst);
-			if ( typeof obj.posts === "object" ) {
-				let keys = Object.keys(obj.posts);
+			if ( typeof obj.sub === "object" ) {
+				let keys = Object.keys(obj.sub);
 				keys.forEach(k => {
-					allChangeHref(obj.posts[k], ori, dst);
+					allChangeHref(obj.sub[k], ori, dst);
 				});
-			} else {
-				allChangeHref(obj.posts, ori, dst);
 			}
+
+			allChangeHref(obj.posts, ori, dst);
 		}
 	}
 }

@@ -1,13 +1,5 @@
 <template>
 	<v-content style="overflow:hidden">
-		<!--
-		<iframe 
-			src=""
-			frameBorder="0" 
-			crossorigin="anonymous" 
-			style="width:100% ; border:0; height:100%;"></iframe>
-		-->
-
 		<v-row class="mt-12">
 			<!-- S:Side menus -->
 			<v-col cols="3" class="pl-12 pr-6">
