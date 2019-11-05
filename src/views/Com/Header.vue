@@ -4,6 +4,7 @@
 	<v-app-bar 
 		:dark="true"
 		:flat="true"
+		height="64px"
 		:app="true">
 		<v-toolbar-title class="headline text-uppercase">
 			<router-link to="/" class="font-weight-light" style="text-decoration:none; color:white;">Git Story</router-link>
