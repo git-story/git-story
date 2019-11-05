@@ -33,7 +33,7 @@
 						left
 						:offset-y="true">
 						<template v-slot:activator="{ on }">
-							<v-btn @click="" v-on="on" elevation="5" tile large color="grey darken-3" style="color:white;">
+							<v-btn v-on="on" elevation="5" tile large color="grey darken-3" style="color:white;">
 								{{ Lang('editor.post') }}
 							</v-btn>
 						</template>
