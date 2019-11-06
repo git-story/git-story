@@ -1,8 +1,52 @@
 <template>
 	<v-container class="pa-0">
+		<v-dialog
+			v-model="dialog"
+			width="70%"
+			max-width="500px"
+			@click:outside="outClick()"
+			class="pa-0">
+			<v-card class="ma-0 pa-0">
+				<v-card-text class="ma-0 pa-0">
+					<v-list-item link @click="createCategory">
+						<v-list-item-icon>
+							<v-icon color="info">mdi-pencil-plus</v-icon>
+						</v-list-item-icon>
+
+						<v-list-item-content>
+							<v-list-item-title>
+								{{ Lang('myblog.category.add_category') }}
+							</v-list-item-title>
+						</v-list-item-content>
+					</v-list-item>
+					<v-list-item link @click="renameCategory">
+						<v-list-item-icon>
+							<v-icon color="secondary">mdi-pencil-outline</v-icon>
+						</v-list-item-icon>
+
+						<v-list-item-content>
+							<v-list-item-title>
+								{{ Lang('myblog.category.modify_category') }}
+							</v-list-item-title>
+						</v-list-item-content>
+					</v-list-item>
+					<v-list-item link @click="deleteCategory">
+						<v-list-item-icon>
+							<v-icon color="error">mdi-pencil-minus</v-icon>
+						</v-list-item-icon>
+
+						<v-list-item-content>
+							<v-list-item-title>
+								{{ Lang('myblog.category.delete_category') }}
+							</v-list-item-title>
+						</v-list-item-content>
+					</v-list-item>
+				</v-card-text>
+			</v-card>
+		</v-dialog>
 		<v-row>
 			<v-col>
-				<v-card class="pa-2">
+				<v-card class="pa-2 d-none d-md-flex">
 					<v-row>
 						<v-col cols="auto" class="mr-auto">
 							<v-btn 
@@ -27,6 +71,20 @@
 						</v-col>
 					</v-row>
 				</v-card>
+				<v-container class="pa-0 ma-0 d-md-none">
+					<v-row class="pa-0 ma-0" align="center">
+						<v-col class="pa-0 ma-0" style="color: white">
+							<v-icon color="white">mdi-book-minus-multiple</v-icon>&nbsp;
+							{{ Lang('myblog.side.manage_category') }}
+						</v-col>
+						<v-col class="pa-0 ma-0" align="right">
+							<v-btn
+								color="success"
+								tile
+								@click="applyCategory">{{ Lang('apply') }}</v-btn>
+						</v-col>
+					</v-row>
+				</v-container>
 			</v-col>
 		</v-row>
 		<v-row>
@@ -90,6 +148,14 @@ const updateCategory = function(_this = this, posts = {}) {
 };
 
 const createCategory = function() {
+	let active = this.active;
+
+	let vMobile = this.$store.getters.vMobile;
+	if ( vMobile === true ) {
+		this.dialog = false;
+		this.active = [];
+	}
+
 	let prompt = findChildByTagName(this, "Prompt");
 	if ( prompt ) {
 		prompt.input = "";
@@ -98,8 +164,8 @@ const createCategory = function() {
 			let parent = posts;
 			let category = prompt.input;
 
-			if ( this.active.length > 0 ) {
-				let search = this.active[0];
+			if ( active.length > 0 ) {
+				let search = active[0];
 				parent = getObject(posts, search);
 				if ( !parent ) {
 					prompt.hide();
@@ -150,7 +216,15 @@ const allChangeHref = (obj, ori, dst) => {
 }
 
 const renameCategory = function() {
-	if ( this.active.length <= 0 ) {
+	let active = this.active;
+
+	let vMobile = this.$store.getters.vMobile;
+	if ( vMobile === true ) {
+		this.dialog = false;
+		this.active = [];
+	}
+
+	if ( active.length <= 0 ) {
 		let modal = findChildByTagName(this, "Modal");
 		modal.title = Lang("notification");
 		modal.content = Lang("myblog.category.not_selected");
@@ -160,7 +234,7 @@ const renameCategory = function() {
 	}
 
 	let posts = this.posts;
-	let search = this.active[0];
+	let search = active[0];
 	let { k, d } = getObject(posts, search, 1);
 
 	let prompt = findChildByTagName(this, "Prompt");
@@ -191,7 +265,15 @@ const renameCategory = function() {
 };
 
 const deleteCategory = function() {
-	if ( this.active.length <= 0 ) {
+	let active = this.active;
+
+	let vMobile = this.$store.getters.vMobile;
+	if ( vMobile === true ) {
+		this.dialog = false;
+		this.active = [];
+	}
+
+	if ( active.length <= 0 ) {
 		let modal = findChildByTagName(this, "Modal");
 		modal.title = Lang("notification");
 		modal.content = Lang("myblog.category.not_selected");
@@ -201,7 +283,7 @@ const deleteCategory = function() {
 	}
 
 	let posts = this.posts;
-	let search = this.active[0];
+	let search = active[0];
 	let { k, d } = getObject(posts, search, 1);
 
 	let confirm = findChildByTagName(this, "Confirm");
@@ -257,23 +339,49 @@ export default {
 		Modal
 	},
 	created: function() {
+		getGitJsonData(this, axios, "posts.json").then(res => {
+			let posts = res.json;
+			this.posts_ori = res;
+			updateCategory(this, posts);
+		});
 	},
 	methods: {
 		Lang,
 		createCategory,
 		renameCategory,
 		deleteCategory,
-		applyCategory
+		applyCategory,
+		outClick: function() {
+			let vMobile = this.$store.getters.vMobile;
+			if ( vMobile === true ) {
+				this.active = [];
+			}
+		}
 	},
 	mounted: function() {
 	},
 	data: function() {
-		getGitJsonData(this, axios, "posts.json").then(res => {
-			let posts = res.json;
-			this.posts_ori = res;
-			updateCategory(this, posts);
-		});
-		return { active:[], items:[]};
+		return { 
+			active:[],
+			items:[],
+			dialog: false
+		};
+	},
+	computed: {
+		selected () {
+			let active = this.active;
+			if ( active.length > 0 ) {
+				let vMobile = this.$store.getters.vMobile;
+				if ( vMobile === true ) {
+					this.dialog = true;
+				}
+			}
+			return true;
+		}
+	},
+	watch: {
+		// for call computed function
+		selected: () => {}
 	}
 };
 </script>

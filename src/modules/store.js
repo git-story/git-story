@@ -22,7 +22,7 @@ export default new Vuex.Store({
 		user: prepareUser,
 		github: null,
 		config: config,
-		postMode: '',
+		vMobile: false, // mobile view flag
 	},
 	getters: {
 		token: state => {
@@ -37,8 +37,8 @@ export default new Vuex.Store({
 		config: state => {
 			return state.config;
 		},
-		postMode: state => {
-			return state.postMode;
+		vMobile: state => {
+			return state.vMobile;
 		}
 	},
 	mutations: {
@@ -64,8 +64,8 @@ export default new Vuex.Store({
 			state.github = null;
 			sessionStorage.clear();
 		},
-		postMode: (state, mode) => {
-			state.postMode = mode;
+		vMobile: (state, mode) => {
+			state.vMobile = mode;
 		}
 	}
 });

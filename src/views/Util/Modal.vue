@@ -2,7 +2,8 @@
 	<v-dialog
 		v-model="isShow"
 		persistent
-		max-width="30%">
+		max-width="500px"
+		width="70%">
 		<v-card>
 			<v-card-title class="headline">{{ title }}</v-card-title>
 			<v-card-text><pre>{{ content }}</pre></v-card-text>

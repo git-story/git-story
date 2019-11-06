@@ -5,15 +5,17 @@
 		color="white"
 		:flat="true"
 		height="64px"
-		style="border-bottom: 1px solid #dadada !important"
+		style="border-bottom: 1px solid #dadada !important; z-index:10;"
 		:app="true">
 		<v-toolbar-title class="headline text-uppercase">
 			<router-link to="#" @click.native="routeAssign('/')" class="font-weight-light" style="text-decoration:none; color:black;">Git Story</router-link>
+			<v-app-bar-nav-icon v-if="isBlog" class="d-md-none" @click.stop="sideBarToggle()"></v-app-bar-nav-icon>
 		</v-toolbar-title>
 		<v-spacer></v-spacer>
 
 		<div v-if="isLogin(true)">
 			<span class="body-1" style="text-transform: none;">{{ user().displayName }}</span>
+			<v-btn v-if="isBlog" color="grey darken-3" dark hover tile class="mr-2 d-md-none" @click.stop="routeAssign('/edit')">{{ Lang('myblog.newpost') }}</v-btn>
 			<v-menu
 				v-model="menu"
 				transition="slide-y-transition"
@@ -81,6 +83,7 @@
 import firebase from 'firebase';
 import { openNewTabUrl, routeAssignUrl } from '../../modules/common.js'
 import Lang from '../../languages/Lang.js'
+import EventBus from '../../modules/event-bus.js'
 
 // Github 계정으로 로그인
 const signInGithub = function() {
@@ -130,7 +133,8 @@ const isBlogCheck = function(_this) {
 }
 
 // 새 글 작성 클릭
-const createPostClick = function(/*e*/) {
+const sideBarToggle = function() {
+	EventBus.$emit("sidebarToggle");
 };
 
 export default {
@@ -143,12 +147,21 @@ export default {
 		isBlogCheck: isBlogCheck,
 		openNewTab: openNewTabUrl,
 		routeAssign: routeAssignUrl,
-		createPost: createPostClick,
 		logout: logoutGithub,
-		Lang
+		Lang,
+		sideBarToggle
 	},
 	created: function() {
 		isBlogCheck(this);
+
+		// browser width check
+		let width = document.body.offsetWidth;
+		let SMALL_CONTENT = 960;
+		if ( width < SMALL_CONTENT ) {
+			this.$store.commit('vMobile', true);
+		} else {
+			this.$store.commit('vMobile', false);
+		}
 	},
 	watch: {
 		'$route': 'isBlogCheck'

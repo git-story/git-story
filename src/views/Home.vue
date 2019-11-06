@@ -1,29 +1,30 @@
 <template>
 	<v-content class="pt-0">
-		<v-parallax height="600" src="../assets/home-banner.png">
+		<v-img src="../assets/home-banner.png">
 			<v-row
 				align="start"
 				justify="start"
 				style="padding-left:8%">
-				<v-col style="margin-top:7rem">
+				<v-col style="margin-top:6.5vw">
 					<v-row>
-						<h1 class="font-weight-black" style="color:#880E4F; font-size:65px;">GIT STORY</h1>
+						<h1 class="font-weight-black" style="color:#880E4F; font-size:6vw;">GIT STORY</h1>
 					</v-row>
 					<v-row>
-						<h2 class="display-1 font-weight-medium" style="color:#C51162;">{{ Lang('home.banner') }}</h2>
+						<h2 class="display-1 font-weight-medium" style="color:#C51162; font-size:4vw !important;">{{ Lang('home.banner') }}</h2>
 					</v-row>
 				</v-col>
 			</v-row>
-		</v-parallax>
+		</v-img>
 		<v-row 
 			align="center"
 			style="height:800px;">
 			<v-col 
-				:cols="5"
+				sm="12"
+				md="5"
 				style="padding:0">
 				<v-img width="100%" src="../assets/home-image-1.png"></v-img>
 			</v-col>
-			<v-col align="start" style="padding-right:10%">
+			<v-col align="start" style="padding-left:10%; padding-right:10%">
 				<v-row>
 					<h1 class="display-1 font-weight-bold"> {{ Lang('home.des1.title') }} </h1>
 				</v-row>
@@ -48,6 +49,13 @@ export default {
 	},
 	methods: {
 		Lang
+	},
+	mounted: function() {
+		let curPName = this.$router.history.current.name;
+		if ( curPName === "Home" ) {
+			let vContent = document.querySelector('#router-view');
+			vContent.style.background = "white";
+		}
 	},
 	data: () => ({
 		//

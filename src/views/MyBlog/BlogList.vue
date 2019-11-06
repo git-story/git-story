@@ -1,6 +1,6 @@
 <template>
 	<v-container class="pa-0">
-		<v-row>
+		<v-row align="center" class="ma-0">
 			<v-col>
 				<v-card>
 					<v-list>
@@ -41,7 +41,7 @@
 					</v-list>
 				</v-card>
 			</v-col>
-			<v-col cols="4"></v-col>
+			<v-col cols="4" class="d-none d-md-flex"></v-col>
 		</v-row>
 		<Confirm/>
 		<PLoading/>

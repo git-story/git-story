@@ -81,7 +81,6 @@
 
 <style>
 body {
-	min-width: 800px;
 	background-color: white;
 }
 
@@ -300,69 +299,74 @@ export default {
 		Lang
 	},
 	mounted: function() {
-		getGitJsonData(this, axios, "posts.json").then(res => {
-			this.posts = res.json;
-			this.posts_ori = res;
+		let curPName = this.$router.history.current.name;
+		if ( curPName === "Edit" ) {
+			let vContent = document.querySelector('#router-view');
+			vContent.style.background = "white";
 
-			this.categoryItem = createCategoryItems(this.posts);
-			this.c_sel = this.categoryItem[0];
-			console.log(this);
-		}).catch((err) => {});
+			getGitJsonData(this, axios, "posts.json").then(res => {
+				this.posts = res.json;
+				this.posts_ori = res;
+
+				this.categoryItem = createCategoryItems(this.posts);
+				this.c_sel = this.categoryItem[0];
+				console.log(this);
+			}).catch((err) => {});
 
 
-		// 임시적으로 에디터 툴바 메뉴의 위치를 옮김
-		let selectMenus = document.querySelectorAll('div.vueditor div.ve-toolbar div.ve-select');
-		const S_CODE_HLT = 0;
-		const S_TAG = 1;
-		const S_FONT = 2;
-		const S_FONT_SIZE = 3;
-		// code highlight
-		let code_hlt = document.querySelector('div.vueditor div.ve-dropdown._10cV1loMgUSCh2Gf6O8hsF_0');
-		let code_hlt_sel = selectMenus[S_CODE_HLT];
-		if ( code_hlt && code_hlt_sel ) {
-			code_hlt_sel.addEventListener('click', (e) => {
-				let rect = code_hlt_sel.getBoundingClientRect();
-				code_hlt.style.position = "fixed";
-				code_hlt.style.top = (rect.y + rect.height) + "px";
-				code_hlt.style.left = rect.x + "px";
-			});
+			// 임시적으로 에디터 툴바 메뉴의 위치를 옮김
+			let selectMenus = document.querySelectorAll('div.vueditor div.ve-toolbar div.ve-select');
+			const S_CODE_HLT = 0;
+			const S_TAG = 1;
+			const S_FONT = 2;
+			const S_FONT_SIZE = 3;
+			// code highlight
+			let code_hlt = document.querySelector('div.vueditor div.ve-dropdown._10cV1loMgUSCh2Gf6O8hsF_0');
+			let code_hlt_sel = selectMenus[S_CODE_HLT];
+			if ( code_hlt && code_hlt_sel ) {
+				code_hlt_sel.addEventListener('click', (e) => {
+					let rect = code_hlt_sel.getBoundingClientRect();
+					code_hlt.style.position = "fixed";
+					code_hlt.style.top = (rect.y + rect.height) + "px";
+					code_hlt.style.left = rect.x + "px";
+				});
+			}
+
+			// tag
+			let tag = document.querySelector('div.vueditor div.ve-dropdown._2ddaIaDnYon4oaNo9HwhTU_0');
+			let tag_sel = selectMenus[S_TAG];
+			if ( tag && tag_sel ) {
+				tag_sel.addEventListener('click', (e) => {
+					let rect = tag_sel.getBoundingClientRect();
+					tag.style.position = "fixed";
+					tag.style.top = (rect.y + rect.height) + "px";
+					tag.style.left = rect.x + "px";
+				});
+			}
+
+			// font
+			let font = document.querySelector('div.vueditor div.ve-dropdown.XlQ1oyUFxq9sfpmr-kqea_0');
+			let font_sel = selectMenus[S_FONT];
+			if ( font && font_sel ) {
+				font_sel.addEventListener('click', (e) => {
+					let rect = font_sel.getBoundingClientRect();
+					font.style.position = "fixed";
+					font.style.top = (rect.y + rect.height) + "px";
+					font.style.left = rect.x + "px";
+				});
+			}
+
+			let font_size = document.querySelector('div.vueditor div.ve-dropdown._2gMMU7OLy1ok1hmmAGzabR_0');
+			let font_size_sel = selectMenus[S_FONT_SIZE];
+			if ( font_size && font_size_sel ) {
+				font_size_sel.addEventListener('click', (e) => {
+					let rect = font_size_sel.getBoundingClientRect();
+					font_size.style.position = "fixed";
+					font_size.style.top = (rect.y + rect.height) + "px";
+					font_size.style.left = rect.x + "px";
+				});
+			}
 		}
-
-		// tag
-		let tag = document.querySelector('div.vueditor div.ve-dropdown._2ddaIaDnYon4oaNo9HwhTU_0');
-		let tag_sel = selectMenus[S_TAG];
-		if ( tag && tag_sel ) {
-			tag_sel.addEventListener('click', (e) => {
-				let rect = tag_sel.getBoundingClientRect();
-				tag.style.position = "fixed";
-				tag.style.top = (rect.y + rect.height) + "px";
-				tag.style.left = rect.x + "px";
-			});
-		}
-
-		// font
-		let font = document.querySelector('div.vueditor div.ve-dropdown.XlQ1oyUFxq9sfpmr-kqea_0');
-		let font_sel = selectMenus[S_FONT];
-		if ( font && font_sel ) {
-			font_sel.addEventListener('click', (e) => {
-				let rect = font_sel.getBoundingClientRect();
-				font.style.position = "fixed";
-				font.style.top = (rect.y + rect.height) + "px";
-				font.style.left = rect.x + "px";
-			});
-		}
-
-		let font_size = document.querySelector('div.vueditor div.ve-dropdown._2gMMU7OLy1ok1hmmAGzabR_0');
-		let font_size_sel = selectMenus[S_FONT_SIZE];
-		if ( font_size && font_size_sel ) {
-			font_size_sel.addEventListener('click', (e) => {
-				let rect = font_size_sel.getBoundingClientRect();
-				font_size.style.position = "fixed";
-				font_size.style.top = (rect.y + rect.height) + "px";
-				font_size.style.left = rect.x + "px";
-			});
-		}
-		console.log(this);
 	},
 	data: () => ({
 		text: "Test",
