@@ -109,7 +109,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { getGitJsonData, findChildByTagName, getObject } from '../../modules/common.js';
+import { getGitJsonData, findChildByTagName, getObject, commitGitData } from '../../modules/common.js';
 import Prompt from '../Util/Prompt';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
@@ -308,26 +308,16 @@ const applyCategory = function() {
 	let reqUrl = `${apiUrl}/repos/${user.name}/${user.name}.github.io/contents/posts.json`;
 
 	let posts = this.posts;
-	let postsStr = JSON.stringify(posts, null, '\t');
-	let b64posts = Buffer.from(postsStr, "utf8").toString('base64');
+	let commitMsg = `📚 [GITSTORY] 📜 CATEGORY UPDATE : [posts.json]`;
 
 	let ploading = findChildByTagName(this, "PLoading");
 	ploading.show();
-	axios({
-		url: reqUrl,
-		method: 'put',
-		headers: {
-			'Authorization': `Token ${this.$store.getters.token}`
-		},
-		data: {
-			message: `[GITSTORY] category edit : posts.json`,
-			content: b64posts,
-			sha: this.posts_ori.sha
-		}
-	}).then(() => {
-	}).finally(() => {
-		ploading.hide();
-	});
+	commitGitData(this, axios, '/posts.json', posts, this.posts_ori.sha, commitMsg)
+		.then(() => {
+			ploading.hide();
+		}).catch(() => {
+			ploading.hide();
+		});
 };
 
 export default {
@@ -373,6 +363,7 @@ export default {
 			if ( active.length > 0 ) {
 				let vMobile = this.$store.getters.vMobile;
 				if ( vMobile === true ) {
+					// eslint-disable-next-line
 					this.dialog = true;
 				}
 			}

@@ -6,15 +6,15 @@
 			<!-- E:SM Sidebar -->
 
 			<!-- S:Side menus -->
-			<v-col md="3" align="right" class="pl-12 pr-12 d-none d-md-flex">
+			<v-col md="3" align="right" class="pl-12 d-none d-md-flex">
 				<!-- S:New Posting -->
 				<v-row>
-					<v-col class="pa-0"></v-col>
-					<v-col sm="12" md="10" lg="8" xl="6" class="pa-0">
-						<v-btn @click="routeAssignUrl('/edit')" block class="mb-3" color="grey darken-3" dark hover large>{{ Lang('myblog.newpost') }}</v-btn>
+					<v-col class="pa-0 d-none d-lg-flex"></v-col>
+					<v-col sm="12" md="12" lg="8" xl="6" class="pa-0">
+						<v-btn tile @click="routeAssignUrl('/edit')" block color="grey darken-3" dark hover large>{{ Lang('myblog.newpost') }}</v-btn>
 						<!-- E:New Posting -->
 						<!-- S:Blog Contentes -->
-						<v-card class="mx-auto">
+						<v-card tile class="mx-auto mt-3">
 							<v-navigation-drawer permanent style="width:100%">
 								<v-list-item>
 									<v-list-item-content>
@@ -49,6 +49,25 @@
 											</v-list-item-title>
 										</v-list-item-content>
 									</v-list-item>
+								</v-list>
+							</v-navigation-drawer>
+						</v-card>
+						<!-- E:Blog Contentes -->
+						<!-- S:Blog Setting -->
+						<v-card tile class="mx-auto mt-3">
+							<v-navigation-drawer permanent style="width:100%">
+								<v-list-item>
+									<v-list-item-content>
+										<v-list-item-title class="title">
+											{{ Lang('myblog.side.setting_blog') }}
+										</v-list-item-title>
+									</v-list-item-content>
+								</v-list-item>
+
+								<v-divider></v-divider>
+
+								<v-list dense nav>
+									<!-- S:Blog Template -->
 									<v-list-item link @click="contentChange('BlogTemplate')">
 										<v-list-item-icon>
 											<v-icon>mdi-layers-triple</v-icon>
@@ -60,6 +79,34 @@
 											</v-list-item-title>
 										</v-list-item-content>
 									</v-list-item>
+									<!-- E:Blog Template -->
+									<!-- S:Blog Include -->
+									<v-list-item link @click="contentChange('BlogInclude')">
+										<v-list-item-icon>
+											<v-icon>mdi-book-open-variant</v-icon>
+										</v-list-item-icon>
+
+										<v-list-item-content>
+											<v-list-item-title>
+												{{ Lang('myblog.side.setting_include') }}
+											</v-list-item-title>
+										</v-list-item-content>
+									</v-list-item>
+									<!-- E:Blog Include -->
+									<!-- S:Blog Comment -->
+									<v-list-item link @click="contentChange('BlogComment')">
+										<v-list-item-icon>
+											<v-icon>mdi-comment-multiple</v-icon>
+										</v-list-item-icon>
+
+										<v-list-item-content>
+											<v-list-item-title>
+												{{ Lang('myblog.side.setting_comment') }}
+											</v-list-item-title>
+										</v-list-item-content>
+									</v-list-item>
+									<!-- E:Blog Comment -->
+									<!-- S:Blog ETC -->
 									<v-list-item link @click="contentChange('BlogSetting')">
 										<v-list-item-icon>
 											<v-icon>mdi-settings</v-icon>
@@ -67,14 +114,15 @@
 
 										<v-list-item-content>
 											<v-list-item-title>
-												{{ Lang('myblog.side.setting_blog') }}
+												{{ Lang('myblog.side.setting_etc') }}
 											</v-list-item-title>
 										</v-list-item-content>
 									</v-list-item>
+									<!-- E:Blog ETC -->
 								</v-list>
 							</v-navigation-drawer>
 						</v-card>
-						<!-- S:Blog Contentes -->
+						<!-- E:Blog Setting -->
 					</v-col>
 				</v-row>
 			</v-col>
@@ -95,7 +143,7 @@ import axios from 'axios';
 import Confirm from './Util/Confirm';
 import Modal from './Util/Modal';
 import PLoading from './Util/PLoading';
-import { randomNumber, findChildByTagName, routeAssignUrl, removeRepository, getGitJsonData, mobileCheck  } from '../modules/common.js';
+import { randomNumber, findChildByTagName, routeAssignUrl, removeRepository, getGitJsonData, mobileCheck, commitGitData  } from '../modules/common.js';
 import Lang from '../languages/Lang.js';
 import BlogSideBar from './MyBlog/BlogSideBar';
 import EventBus from '../modules/event-bus.js';
@@ -104,6 +152,8 @@ const categoryList = {
 	"BlogList": ()=>import('./MyBlog/BlogList'),
 	"BlogCategory": ()=>import('./MyBlog/BlogCategory'),
 	"BlogTemplate": ()=>import('./MyBlog/BlogTemplate'),
+	"BlogInclude": ()=>import('./MyBlog/BlogInclude'),
+	"BlogComment": ()=>import('./MyBlog/BlogComment'),
 	"BlogSetting": ()=>import('./MyBlog/BlogSetting'),
 };
 
@@ -129,26 +179,14 @@ const authorUpdate = (_this = this) => {
 			if ( config['author'] === "" ) {
 				config['author'] = user.name;
 
-				let configStr = JSON.stringify(config, null, '\t');
-				let b64config = Buffer.from(configStr, "utf8").toString('base64');
+				let commitMsg = "📚 [GITSTORY] 👤 AUTHOR UPDATE : [config.json]";
 
-
-				let apiUrl = _this.$store.getters.config.api;
-				let reqUrl = `${apiUrl}/repos/${user.name}/${user.name}.github.io/contents/config.json`;
-				axios({
-					url: reqUrl,
-					method: 'put',
-					headers: {
-						'Authorization': `Token ${_this.$store.getters.token}`
-					},
-					data: {
-						message: `[GITSTORY] author update : config.json`,
-						content: b64config,
-						sha: res.sha
-					}
-				}).then(() => {
-					resolve();
-				}).catch(reject);
+				commitGitData(_this, axios, '/config.json', config, res.sha, commitMsg)
+					.then((res) => {
+						resolve(res);
+					}).catch((err) => {
+						reject(err);
+					});
 			}
 		}).catch(() => {
 		});
@@ -180,7 +218,7 @@ const createRepository = function(_this = this) {
 		data: {
 			'owner':  user.name,
 			'name': `${user.name}.github.io`,
-			'description': 'my github blog',
+			'description': '📚 [GITSTORY] 🚥 Writing post easier and faster',
 			'private': false
 		}
 	}).then(() => {

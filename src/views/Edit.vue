@@ -135,68 +135,61 @@ div.v-application {
 <script>
 /* eslint-disable */
 import axios from 'axios';
-import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObject } from '../modules/common.js';
+import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObject, commitGitData } from '../modules/common.js';
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
+import beautify from 'js-beautify'
 
 const buildContentHTML = function(_this = this) {
-	return new Promise((resolve, reject) => {
-		let contentHTML = _this.$refs.vueditor.getContent();
-		getGitJsonData(_this, axios, "config.json").then(data => {
-			let html = document.createElement('html');
-			let cfg = data.json;
+	let contentHTML = _this.$refs.vueditor.getContent();
+	let html = document.createElement('html');
+	let cfg = _this.config;
 
-			const createChildElement = (e) => {
-				let child = document.createElement(e.tag);
-				let attrs = Object.keys(e.attr);
-				attrs.forEach(a => {
-					child.setAttribute(a, e.attr[a]);
-				});
-				return child;
-			};
+	const createChildElement = (e) => {
+		let child = document.createElement('div');
+		child.innerHTML = e;
+		return child.lastElementChild;
+	};
 
-			let head = document.createElement('head');
-			cfg.head.forEach(e => {
-				let child = createChildElement(e);
-				head.appendChild(child);
-			});
-			html.appendChild(head);
-
-			let body = document.createElement('body');
-			cfg.body.start.forEach(e => {
-				let child = createChildElement(e);
-				body.appendChild(child);
-			});
-
-			let bodyContent = document.createElement('main');
-			bodyContent.innerHTML = contentHTML;
-			body.appendChild(bodyContent);
-
-			cfg.body.end.forEach(e => {
-				let child = createChildElement(e);
-				body.appendChild(child);
-			});
-			html.appendChild(body);
-			resolve(html.outerHTML);
-		}).catch(() => {
-		});
+	let head = document.createElement('head');
+	cfg.head.forEach(e => {
+		let child = createChildElement(e);
+		head.appendChild(child);
 	});
+	html.appendChild(head);
+
+	let body = document.createElement('body');
+	cfg.body.start.forEach(e => {
+		let child = createChildElement(e);
+		body.appendChild(child);
+	});
+
+	let bodyContent = document.createElement('main');
+	bodyContent.innerHTML = contentHTML;
+	body.appendChild(bodyContent);
+
+	cfg.body.end.forEach(e => {
+		let child = createChildElement(e);
+		body.appendChild(child);
+	});
+	html.appendChild(body);
+	let outerHTML = html.outerHTML;
+	let beautyHTML = beautify.html(outerHTML, true);
+	return beautyHTML;
 };
 
 const doPostingContent = function() {
 	// get posts.json
 	if ( this.posts ) {
 		let posts = this.posts;
-		let sha = this.posts_ori.sha;
+		let posts_sha = this.posts_ori.sha;
 		let userName = this.$store.getters.user.name;
 
 		let selectedCategory = this.c_sel.value;
 		let category = getObject(posts, selectedCategory);
 
-		let apiUrl = this.$store.getters.config.api;
 		let path = category.href;
 		let nowDate = genNowDate();
-		let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents${path}${nowDate}/`;
 
 		let title = this.$refs['input-title'].internalValue;
 
@@ -218,46 +211,22 @@ const doPostingContent = function() {
 			title: title,
 		});
 
-		let postsStr = JSON.stringify(posts, null, '\t');
-		let b64posts = Buffer.from(postsStr, "utf8").toString('base64');
 
+		let commitMsg = `📚 [GITSTORY] 📝 POSTING : [${title.toUpperCase()}]`;
 		let ploading = findChildByTagName(this, "PLoading");
 		ploading.show();
-		// PUT /repos/:owner/:repo/contents/:path
-		axios({
-			url: `${apiUrl}/repos/${userName}/${userName}.github.io/contents/posts.json`,
-			method: 'put',
-			headers: {
-				'Authorization': `Token ${this.$store.getters.token}`
-			},
-			data: {
-				message: `${title} posting : posts.json`,
-				content: b64posts,
-				sha: sha
-			}
-		}).then(res => {
-			buildContentHTML(this).then(contentHTML => {
-				let b64Content = Buffer.from(contentHTML, "utf8").toString('base64');
-				axios({
-					url: `${reqUrl}index.html`,
-					method: 'put',
-					headers: {
-						'Authorization': `Token ${this.$store.getters.token}`
-					},
-					data: {
-						message: `${title} posting`,
-						content: b64Content
-					}
-				}).then(res => {
-					ploading.hide();
-					routeAssignUrl('/my-blog', this);
-				}).catch(err => {
-					// TODO: 글 올리기 실패시 예외 처리
-				});
+
+		// posting
+		commitGitData(this, axios, '/posts.json', posts, posts_sha, commitMsg)
+			.then(() => {
+				let contentHTML = buildContentHTML(this);
+				let reqUrl = `${path}${nowDate}/index.html`;
+				commitGitData(this, axios, reqUrl, contentHTML, null, commitMsg)
+					.then(() => {
+						ploading.hide();
+						routeAssignUrl('/my-blog', this);
+					});
 			});
-		}).catch(err => {
-			// TODO: 글 올리기 실패시 예외 처리
-		});
 	}
 };
 
@@ -310,8 +279,13 @@ export default {
 
 				this.categoryItem = createCategoryItems(this.posts);
 				this.c_sel = this.categoryItem[0];
-				console.log(this);
-			}).catch((err) => {});
+			});
+
+
+			getGitJsonData(this, axios, "config.json").then(res => {
+				this.config = res.json;
+				this.config_ori = res;
+			});
 
 
 			// 임시적으로 에디터 툴바 메뉴의 위치를 옮김
