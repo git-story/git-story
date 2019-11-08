@@ -303,10 +303,6 @@ const deleteCategory = function() {
 };
 
 const applyCategory = function() {
-	let user = this.$store.getters.user;
-	let apiUrl = this.$store.getters.config.api;
-	let reqUrl = `${apiUrl}/repos/${user.name}/${user.name}.github.io/contents/posts.json`;
-
 	let posts = this.posts;
 	let commitMsg = `📚 [GITSTORY] 📜 CATEGORY UPDATE : [posts.json]`;
 

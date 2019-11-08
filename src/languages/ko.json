@@ -58,6 +58,9 @@
 	"myblog.category.not_selected": "선택된 카테고리가 없습니다.",
 	"myblog.category.delete_check": "카테고리 및 하위 카테고리까지 전부 삭제하시겠습니까?",
 
+	"myblog.template.blog_header": "블로그 스킨",
+	"myblog.template.blog_content": "본인의 이야기를 아름답게 꾸며보세요.",
+	"myblog.template.change_theme": "블로그 테마를 변경하시겠습니까?",
 
 
 	"myblog.include.modify_tag": "태그 수정",

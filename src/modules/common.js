@@ -60,11 +60,19 @@ export const randomNumber = function(end, start = 0) {
 	return Math.floor(Math.random() * end) + start;
 }
 
-export const getGitData = function(_this = this, axios, path="") {
+export const getGitData = function(_this = this, axios, path="", other = false) {
 	//GET /repos/:owner/:repo/contents/:path
 	let userName = _this.$store.getters.user.name;
 	let apiUrl = _this.$store.getters.config.api;
-	let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents/${path}`;
+	let slash = "/";
+	if ( path[0] === "/" ) {
+		slash = "";
+	}
+
+	let reqUrl = `${apiUrl}/repos/${userName}/${userName}.github.io/contents${slash}${path}`;
+	if ( other === true ) {
+		reqUrl = path;
+	}
 
 	return new Promise((resolve, reject) => {
 		axios({
@@ -76,8 +84,12 @@ export const getGitData = function(_this = this, axios, path="") {
 			},
 		}).then(res => {
 			let data = res.data;
-			data.decodeData = Buffer.from(data.content, 'base64').toString('utf8');
-			resolve(data);
+			if ( Array.isArray(data) ) {
+				resolve(data);
+			} else {
+				data.decodeData = Buffer.from(data.content, 'base64').toString('utf8');
+				resolve(data);
+			}
 		}).catch(err => {
 			reject(err);
 		});
@@ -85,10 +97,10 @@ export const getGitData = function(_this = this, axios, path="") {
 }
 
 // posts.json 정보 가져오기 axios 인자 필요
-export const getGitJsonData = function(_this = this, axios, path="") {
+export const getGitJsonData = function(_this = this, axios, path="", other) {
 	//GET /repos/:owner/:repo/contents/:path
 	return new Promise((resolve, reject) => {
-		getGitData(_this, axios, path).then(data => {
+		getGitData(_this, axios, path, other).then(data => {
 			try {
 				data.json = JSON.parse(data.decodeData);
 				resolve(data);
@@ -269,17 +281,88 @@ export const mobileCheck = function() {
 	return check;
 };
 
+const globalCommitQueue = [];
+var globalCommitMutex = false;
+var globalCommitMutexDate;
+
+const runCommitQueue = (axios, date) => {
+	if ( globalCommitMutex ) {
+		if ( globalCommitMutexDate !== date ) {
+			return;
+		}
+	}
+
+	if ( globalCommitQueue.length > 0 ) {
+		date = new Date().getTime();
+		globalCommitMutexDate = date;
+		globalCommitMutex = true;
+		let q = globalCommitQueue.shift();
+		if ( q !== undefined ) {
+			axios(q).then(() => {
+				setTimeout(() => {
+					runCommitQueue(axios, date)
+				}, 0);
+			});
+		} 
+	} else {
+		globalCommitMutex = false;
+	}
+	return;
+};
+export const commitGitDataQueue = function(_this, axios, encoding, path, val, sha, msg) {
+	let user = _this.$store.getters.user;
+	let valStr = val.toString();
+	if ( typeof val === "object" ) {
+		valStr = JSON.stringify(val, null, '\t');
+	}
+	let b64val = val;
+	if ( encoding !== "base64" ) {
+		b64val = Buffer.from(valStr, encoding).toString('base64');
+	}
+
+	let slash = "/";
+	if ( path[0] === "/" ) {
+		slash = "";
+	}
+
+	let apiUrl = _this.$store.getters.config.api;
+	let reqUrl = `${apiUrl}/repos/${user.name}/${user.name}.github.io/contents${slash}${path}`;
+
+	globalCommitQueue.push({
+		url: reqUrl,
+		method: 'put',
+		headers: {
+			'Authorization': `Token ${_this.$store.getters.token}`
+		},
+		data: {
+			message: msg || `📚 [GITSTORY] 📑 UPDATE  : [${path}]`,
+			content: b64val,
+			committer: {
+				"name": "GIT STORY",
+				"email": "asdf@sdaf.com"
+			},
+			sha: sha
+		}
+	});
+	runCommitQueue(axios);
+}
+
 export const commitGitData = function(_this, axios, path, val, sha, msg) {
 	return new Promise((resolve, reject) => {
-		let apiUrl = _this.$store.getters.config.api;
 		let user = _this.$store.getters.user;
-		let reqUrl = `${apiUrl}/repos/${user.name}/${user.name}.github.io/contents${path}`;
-
 		let valStr = val.toString();
 		if ( typeof val === "object" ) {
 			valStr = JSON.stringify(val, null, '\t');
 		}
 		let b64val = Buffer.from(valStr, 'utf8').toString('base64');
+
+		let slash = "/";
+		if ( path[0] === "/" ) {
+			slash = "";
+		}
+
+		let apiUrl = _this.$store.getters.config.api;
+		let reqUrl = `${apiUrl}/repos/${user.name}/${user.name}.github.io/contents${slash}${path}`;
 
 		axios({
 			url: reqUrl,
@@ -298,4 +381,84 @@ export const commitGitData = function(_this, axios, path, val, sha, msg) {
 			reject(err);
 		});
 	});
+}
+
+export const getAllGSThemes = function(_this, axios) {
+	return new Promise((resolve, reject) => {
+		let reqUrl = `${_this.$store.getters.config.api}/search/repositories?`;
+		reqUrl += 'q=git-story-template-';
+		reqUrl += '&sort=updated';
+		axios({
+			url: reqUrl,
+			headers: {
+				'Accept': 'application/vnd.github.mercy-preview+json'
+			},
+		}).then((res) => {
+			let repos = res.data.items;
+			let rtn = [];
+			repos.forEach((r) => {
+				if ( r.name.match(/^git-story-template-/) ) {
+					rtn.push(r);
+				}
+			});
+			resolve(rtn);
+		}).catch(reject);
+	});
+};
+
+const globalDeleteQueue = [];
+var globalDeleteMutex = false;
+var globalDeleteMutexDate;
+
+const runDeleteQueue = (axios, callback, date) => {
+	if ( globalDeleteMutex ) {
+		if ( globalDeleteMutexDate !== date ) {
+			return;
+		}
+	}
+
+	if ( globalDeleteQueue.length > 0 ) {
+		date = new Date().getTime();
+		globalDeleteMutexDate = date;
+		globalDeleteMutex = true;
+		let q = globalDeleteQueue.shift();
+		if ( q !== undefined ) {
+			axios(q).then(() => {
+				runDeleteQueue(axios, callback, date)
+			}).catch(() => {
+				runDeleteQueue(axios, callback, date)
+			});
+		} 
+	} else {
+		globalDeleteMutex = false;
+		if ( typeof callback === "function" ) {
+			callback();
+		}
+	}
+	return;
+};
+
+export const deleteGitFileQueue = function(_this, axios, path, sha, callback) {
+	let config = _this.$store.getters.config;
+	let user = _this.$store.getters.user;
+	let slash = "/";
+	if ( path[0] === "/" ) {
+		slash = "";
+	}
+
+	let reqUrl = `${config.api}/repos/${user.name}/${user.name}.github.io/contents${slash}${path}`;
+	let key = _this.$store.getters.token;
+
+	globalDeleteQueue.push({
+		url: reqUrl,
+		method: 'delete',
+		headers: {
+			'Authorization': `Token ${key}`,
+		},
+		data: {
+			message: `📚  [GITSTORY] ❎ DELETE FILE : [${path}]`,
+			sha: sha
+		}
+	});
+	runDeleteQueue(axios, callback);
 }
