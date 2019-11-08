@@ -14,6 +14,7 @@
 	"modify": "수정",
 	"delete": "삭제",
 	"cancel": "취소",
+	"add": "추가",
 
 
 
@@ -40,6 +41,9 @@
 	"myblog.side.manage_category": "카테고리 관리",
 	"myblog.side.manage_template": "템플릿 관리",
 	"myblog.side.setting_blog": "블로그 설정",
+	"myblog.side.setting_include": "포함 설정",
+	"myblog.side.setting_comment": "댓글 설정",
+	"myblog.side.setting_etc": "기타 설정",
 
 
 
@@ -52,5 +56,15 @@
 	"myblog.category.modify_category": "선택한 카테고리 수정",
 	"myblog.category.delete_category": "선택한 카테고리 삭제",
 	"myblog.category.not_selected": "선택된 카테고리가 없습니다.",
-	"myblog.category.delete_check": "카테고리 및 하위 카테고리까지 전부 삭제하시겠습니까?"
+	"myblog.category.delete_check": "카테고리 및 하위 카테고리까지 전부 삭제하시겠습니까?",
+
+	"myblog.template.blog_header": "블로그 스킨",
+	"myblog.template.blog_content": "본인의 이야기를 아름답게 꾸며보세요.",
+	"myblog.template.change_theme": "블로그 테마를 변경하시겠습니까?",
+
+
+	"myblog.include.modify_tag": "태그 수정",
+	"myblog.include.new_tag": "새 태그 추가",
+	"myblog.include.delete_tag": "정말 태그를 삭제하시겠습니까?",
+	"myblog.include.success_apply": "수정 사항이 적용되었습니다."
 }

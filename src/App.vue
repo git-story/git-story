@@ -24,7 +24,6 @@ div.v-sheet main.v-content {
 import HeaderComponent from './views/Com/Header';
 import HeaderElevate from './views/Com/HeaderElevate';
 import HeaderHome from './views/Com/HeaderHome';
-import BlogSideBar from './views/MyBlog/BlogSideBar';
 
 export default {
 	name: 'App',
@@ -32,7 +31,6 @@ export default {
 		Header: HeaderComponent,
 		HeaderElevate,
 		HeaderHome,
-		BlogSideBar
 	},
 	data: function() {
 		return {

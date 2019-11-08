@@ -1,8 +1,8 @@
 <template>
-	<v-container class="pa-0">
+	<v-container class="px-0">
 		<v-row align="center" class="ma-0">
-			<v-col>
-				<v-card>
+			<v-col class="pa-0">
+				<v-card style="width:100%" flat>
 					<v-list>
 						<template v-for="(post) in postList">
 							<v-list-item-group :key="post.href">
