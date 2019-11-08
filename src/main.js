@@ -13,6 +13,7 @@ import 'vueditor_custom/dist/style/vueditor.min.css'
 
 
 let config = {
+	spellcheck: false,
 	toolbar: [
 		'removeFormat', 'undo', 'redo', '|', 'code', 'element', 'fontName', 'fontSize', 'foreColor', 'backColor', 'divider', 'bold', 'italic', 'underline', 'strikeThrough',
 		'link', 'unLink', 'divider', 'subscript', 'superscript', 'divider', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
