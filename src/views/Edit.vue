@@ -1,12 +1,707 @@
+<!-- 2019-11-11 9:55:56 AM
+Edit.vue 파일은 Edit/ 폴더 안에 있는 build.js 스크립트로 만들어졌습니다.
+build.js 는 해당 폴더의 특정 파일들의 변화를 감시하여 Edit.vue 파일로 만듭니다.
+Edit.vue 파일의 모듈화보단 하나의 파일로 만드는 것이 더욱 소스관리에 용이합니다.
+
+해당 파일은 vueditor 컴포넌트를 일부 커스텀하는 코드가 들어있기 때문에
+vueditor와의 의존성이 매우 큽니다.
+
+단, toolbarLoad.js 는 예외로
+mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주는 스크립트입니다.
+
+절대 Edit.vue를 수정하는 게 아닌, Edit 폴더 안 파일을 수정해 주세요.
+-->
 <template>
 	<v-content>
+		<!-- S:New Editor Toolbar -->
+		<div class="custom-toolbar">
+			<v-toolbar id="toolbar-1" class="custom-toolbar" dense>
+				<!-- S:Work Flow -->
+				<v-divider vertical></v-divider>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon tile v-on="on">
+							<v-icon>mdi-eraser</v-icon>
+						</v-btn>
+					</template>
+					<span>{{ Lang('editor.toolbar.erase') }}</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon tile v-on="on">
+							<v-icon>mdi-undo</v-icon>
+						</v-btn>
+					</template>
+					<span>{{ Lang('editor.toolbar.undo') }}</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon tile v-on="on">
+							<v-icon>mdi-redo</v-icon>
+						</v-btn>
+					</template>
+					<span>{{ Lang('editor.toolbar.redo') }}</span>
+				</v-tooltip>
+				<!-- E:Work Flow -->
+				<v-divider vertical></v-divider>
+				<!-- S:Text Align -->
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon tile class="d-md-none" v-on="on" @click="changeAlign">
+							<v-icon v-text="'mdi-format-align-' + tb.align[tb.toggle.align]"></v-icon>
+						</v-btn>
+					</template>
+					<span v-text="Lang('editor.toolbar.align-' + tb.align[tb.toggle.align])"></span>
+				</v-tooltip>
+				<v-btn-toggle
+					v-model="tb.toggle.align"
+					class="custom d-none d-lg-flex pa-0"
+					dense
+					group
+					madatory>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-align-left</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.align-left') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-align-center</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.align-center') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-align-right</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.align-right') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-align-justify</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.align-justify') }}</span>
+					</v-tooltip>
+				</v-btn-toggle>
+				<!-- E:Text Align -->
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon tile class="d-md-none" active-class="white" v-on="on">
+							<v-icon>mdi-format-title</v-icon>
+						</v-btn>
+					</template>
+					<span>{{ Lang('editor.toolbar.text-menu') }}</span>
+				</v-tooltip>
+				<!-- S:Text Color -->
+				<div class="d-none d-lg-flex pa-0">
+					<v-divider vertical></v-divider>
+					<v-menu 
+						:close-on-content-click="false"
+						offset-y
+						transition="slide-y-transition"
+						color="white"
+						v-model="tb.toggle.tColorView[0]"
+						fixed
+						bottom>
+						<template v-slot:activator="{ on: menu }">
+							<v-tooltip bottom>
+								<template v-slot:activator="{ on: tooltip }">
+									<v-btn icon tile v-on="{ ...tooltip, ...menu }">
+										<v-icon>mdi-format-color-text</v-icon>
+									</v-btn>
+								</template>
+								<span>{{ Lang('editor.toolbar.text-color') }}</span>
+							</v-tooltip>
+						</template>
+						<v-color-picker
+							:hide-mode-switch="true"
+							v-model="tb.toggle.tColor"
+							class="custom-picker"
+							mode="hexa"
+							show-swatches></v-color-picker>
+						<v-card tile color="white" align="right">
+							<v-btn text color="grey darken-1" @click="tb.toggle.tColorView[0]=false;" tile>{{ Lang('apply') }}</v-btn>
+						</v-card>
+					</v-menu>
+					<v-menu 
+						:close-on-content-click="false"
+						offset-y
+						transition="slide-y-transition"
+						color="white"
+						v-model="tb.toggle.bColorView[0]"
+						fixed
+						bottom>
+						<v-color-picker 
+							:hide-mode-switch="true"
+							v-model="tb.toggle.tColor"
+							class="custom-picker"
+							mode="hexa"
+							show-swatches></v-color-picker>
+						<template v-slot:activator="{ on: menu }">
+							<v-tooltip bottom>
+								<template v-slot:activator="{ on: tooltip }">
+									<v-btn icon tile v-on="{ ...tooltip, ...menu }">
+										<v-icon>mdi-format-color-fill</v-icon>
+									</v-btn>
+								</template>
+								<span>{{ Lang('editor.toolbar.bg-color') }}</span>
+							</v-tooltip>
+						</template>
+						<v-card tile color="white" align="right">
+							<v-btn text color="grey darken-1" @click="tb.toggle.bColorView[0]=false;" tile>{{ Lang('apply') }}</v-btn>
+						</v-card>
+					</v-menu>
+				</div>
+				<!-- E:Text Color -->
+				<!-- S:Utility -->
+				<div class="d-flex pa-0">
+					<v-divider vertical class="d-flex d-md-none d-lg-flex"></v-divider>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-image-multiple</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.picture') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-table-large-plus</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.table') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-xml</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.source') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-markdown</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.markdown') }}</span>
+					</v-tooltip>
+				</div>
+				<!-- E:Utility -->
+				<!-- S:Text Etc -->
+				<div class="d-none d-md-flex pa-0">
+					<v-divider vertical></v-divider>
+					<v-overflow-btn
+						depressed
+						label="Code"
+						style="max-width:110px"
+						hide-details
+						class="pa-0"
+						overflow
+						></v-overflow-btn>
+					<v-overflow-btn
+						depressed
+						label="Tag"
+						style="max-width:100px"
+						hide-details
+						class="pa-0"
+						overflow
+						></v-overflow-btn>
+					<v-overflow-btn
+						depressed
+						label="Font"
+						style="max-width:150px"
+						hide-details
+						class="pa-0"
+						overflow
+						></v-overflow-btn>
+					<v-overflow-btn
+						depressed
+						label="Size"
+						style="max-width:130px"
+						hide-details
+						class="pa-0"
+						overflow
+						></v-overflow-btn>
+				</div>
+				<!-- E:Text Etc -->
+				<!-- S:Text Format -->
+				<v-btn-toggle 
+					v-model="tb.toggle.format"
+					class="d-none d-lg-flex pa-0 custom"
+					dense
+					group
+					multiple
+					madatory>
+					<v-divider vertical></v-divider>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-bold</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.bold') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-italic</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.italic') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-underline</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.underline') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-strikethrough-variant</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.strike') }}</span>
+					</v-tooltip>
+				</v-btn-toggle>
+				<v-btn-toggle 
+					v-model="tb.toggle.super_sub"
+					class="d-none d-lg-flex pa-0 custom"
+					dense
+					group
+					madatory>
+					<v-divider vertical></v-divider>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-subscript</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.sub') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-superscript</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.super') }}</span>
+					</v-tooltip>
+				</v-btn-toggle>
+				<div class="d-none d-lg-flex pa-0">
+					<v-divider vertical></v-divider>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-link-variant-plus</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.link') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-link-variant-minus</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.unlink') }}</span>
+					</v-tooltip>
+				</div>
+				<!-- E:Text Format -->
+			</v-toolbar>
+			<v-toolbar id="toolbar-2" class="custom-toolbar d-none d-md-flex d-lg-none" dense>
+				<!-- S:Text Align -->
+				<v-btn-toggle
+					v-model="tb.toggle.align"
+					class="custom d-flex pa-0"
+					dense
+					group
+					madatory>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-align-left</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.align-left') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-align-center</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.align-center') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-align-right</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.align-right') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-align-justify</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.align-justify') }}</span>
+					</v-tooltip>
+				</v-btn-toggle>
+				<!-- E:Text Align -->
+				<!-- S:Text Color -->
+				<v-divider vertical></v-divider>
+					<v-menu 
+						:close-on-content-click="false"
+						offset-y
+						transition="slide-y-transition"
+						color="white"
+						v-model="tb.toggle.tColorView[1]"
+						fixed
+						bottom>
+						<template v-slot:activator="{ on: menu }">
+							<v-tooltip bottom>
+								<template v-slot:activator="{ on: tooltip }">
+									<v-btn icon tile v-on="{ ...tooltip, ...menu }">
+										<v-icon>mdi-format-color-text</v-icon>
+									</v-btn>
+								</template>
+								<span>{{ Lang('editor.toolbar.text-color') }}</span>
+							</v-tooltip>
+						</template>
+						<v-color-picker 
+							:hide-mode-switch="true"
+							v-model="tb.toggle.bColor"
+							class="custom-picker"
+							mode="hexa"
+							show-swatches></v-color-picker>
+						<v-card tile color="white" align="right">
+							<v-btn text color="grey darken-1" @click="tb.toggle.tColorView[1]=false;" tile>{{ Lang('apply') }}</v-btn>
+						</v-card>
+					</v-menu>
+					<v-menu 
+						:close-on-content-click="false"
+						offset-y
+						transition="slide-y-transition"
+						color="white"
+						v-model="tb.toggle.bColorView[1]"
+						fixed
+						bottom>
+						<v-color-picker 
+							:hide-mode-switch="true"
+							v-model="tb.toggle.tColor"
+							class="custom-picker"
+							mode="hexa"
+							show-swatches></v-color-picker>
+						<template v-slot:activator="{ on: menu }">
+							<v-tooltip bottom>
+								<template v-slot:activator="{ on: tooltip }">
+									<v-btn icon tile v-on="{ ...tooltip, ...menu }">
+										<v-icon>mdi-format-color-fill</v-icon>
+									</v-btn>
+								</template>
+								<span>{{ Lang('editor.toolbar.bg-color') }}</span>
+							</v-tooltip>
+						</template>
+						<v-card tile color="white" align="right">
+							<v-btn text color="grey darken-1" @click="tb.toggle.bColorView[1]=false;" tile>{{ Lang('apply') }}</v-btn>
+						</v-card>
+					</v-menu>
+				<!-- E:Text Color -->
+				<!-- S:Text Format -->
+				<v-divider vertical></v-divider>
+				<v-btn-toggle 
+					v-model="tb.toggle.format"
+					class="pa-0 custom"
+					dense
+					group
+					multiple
+					madatory>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-bold</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.bold') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-italic</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.italic') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-underline</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.underline') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-strikethrough-variant</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.strike') }}</span>
+					</v-tooltip>
+				</v-btn-toggle>
+				<v-btn-toggle 
+					v-model="tb.toggle.super_sub"
+					class="pa-0 custom"
+					dense
+					group
+					madatory>
+					<v-divider vertical></v-divider>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-subscript</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.sub') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-superscript</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.super') }}</span>
+					</v-tooltip>
+				</v-btn-toggle>
+				<v-divider vertical></v-divider>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon tile v-on="on">
+							<v-icon>mdi-link-variant-plus</v-icon>
+						</v-btn>
+					</template>
+					<span>{{ Lang('editor.toolbar.link') }}</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon tile v-on="on">
+							<v-icon>mdi-link-variant-minus</v-icon>
+						</v-btn>
+					</template>
+					<span>{{ Lang('editor.toolbar.unlink') }}</span>
+				</v-tooltip>
+				<!-- E:Text Format -->
+			</v-toolbar>
+			<v-toolbar id="toolbar-text" class="custom-toolbar d-md-none" v-if="tb.select === 'text'" dense>
+				<v-divider vertical></v-divider>
+				<!-- S:Text Color -->
+				<v-menu 
+					:close-on-content-click="false"
+					offset-y
+					transition="slide-y-transition"
+					color="white"
+					v-model="tb.toggle.tColorView[2]"
+					fixed
+					bottom>
+					<template v-slot:activator="{ on: menu }">
+						<v-tooltip bottom>
+							<template v-slot:activator="{ on: tooltip }">
+								<v-btn icon tile v-on="{ ...tooltip, ...menu }">
+									<v-icon>mdi-format-color-text</v-icon>
+								</v-btn>
+							</template>
+							<span>{{ Lang('editor.toolbar.text-color') }}</span>
+						</v-tooltip>
+					</template>
+					<v-color-picker 
+						:hide-mode-switch="true"
+						v-model="tb.toggle.bColor"
+						class="custom-picker"
+						mode="hexa"
+						show-swatches></v-color-picker>
+					<v-card tile color="white" align="right">
+						<v-btn text color="grey darken-1" @click="tb.toggle.tColorView[2]=false;" tile>{{ Lang('apply') }}</v-btn>
+					</v-card>
+				</v-menu>
+				<v-menu 
+					:close-on-content-click="false"
+					offset-y
+					transition="slide-y-transition"
+					color="white"
+					v-model="tb.toggle.bColorView[2]"
+					fixed
+					bottom>
+					<v-color-picker 
+						:hide-mode-switch="true"
+						v-model="tb.toggle.tColor"
+						class="custom-picker"
+						mode="hexa"
+						show-swatches></v-color-picker>
+					<template v-slot:activator="{ on: menu }">
+						<v-tooltip bottom>
+							<template v-slot:activator="{ on: tooltip }">
+								<v-btn icon tile v-on="{ ...tooltip, ...menu }">
+									<v-icon>mdi-format-color-fill</v-icon>
+								</v-btn>
+							</template>
+							<span>{{ Lang('editor.toolbar.bg-color') }}</span>
+						</v-tooltip>
+					</template>
+					<v-card tile color="white" align="right">
+						<v-btn text color="grey darken-1" @click="tb.toggle.bColorView[2]=false;" tile>{{ Lang('apply') }}</v-btn>
+					</v-card>
+				</v-menu>
+				<!-- S:Text Color -->
+				<!-- S:Text Etc -->
+				<div class="d-flex pa-0">
+					<v-divider vertical></v-divider>
+					<v-overflow-btn
+						depressed
+						label="Code"
+						style="max-width:110px"
+						hide-details
+						class="pa-0"
+						overflow
+						></v-overflow-btn>
+					<v-overflow-btn
+						depressed
+						label="Tag"
+						style="max-width:100px"
+						hide-details
+						class="pa-0"
+						overflow
+						></v-overflow-btn>
+					<v-overflow-btn
+						depressed
+						label="Font"
+						style="max-width:150px"
+						hide-details
+						class="pa-0"
+						overflow
+						></v-overflow-btn>
+					<v-overflow-btn
+						depressed
+						label="Size"
+						style="max-width:130px"
+						hide-details
+						class="pa-0"
+						overflow
+						></v-overflow-btn>
+				</div>
+				<!-- E:Text Etc -->
+				<!-- S:Text Format -->
+				<v-divider vertical></v-divider>
+				<v-btn-toggle 
+					v-model="tb.toggle.format"
+					class="d-flex d-md-none pa-0 custom"
+					dense
+					group
+					multiple
+					madatory>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-bold</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.bold') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-italic</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.italic') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-underline</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.underline') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-strikethrough-variant</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.strike') }}</span>
+					</v-tooltip>
+				</v-btn-toggle>
+				<v-btn-toggle 
+					v-model="tb.toggle.super_sub"
+					class="d-flex d-md-none pa-0 custom"
+					dense
+					group
+					madatory>
+					<v-divider vertical></v-divider>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-subscript</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.sub') }}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile v-on="on">
+								<v-icon>mdi-format-superscript</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.super') }}</span>
+					</v-tooltip>
+				</v-btn-toggle>
+				<v-divider vertical></v-divider>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon tile v-on="on">
+							<v-icon>mdi-link-variant-plus</v-icon>
+						</v-btn>
+					</template>
+					<span>{{ Lang('editor.toolbar.link') }}</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon tile v-on="on">
+							<v-icon>mdi-link-variant-minus</v-icon>
+						</v-btn>
+					</template>
+					<span>{{ Lang('editor.toolbar.unlink') }}</span>
+				</v-tooltip>
+				<!-- E:Text Format -->
+			</v-toolbar>
+		</div>
+		<!-- E:New Editor Toolbar -->
+		
+		<!-- S:Vueditor -->
 		<v-row class="div-height">
 			<v-col>
 				<v-row style="height:80px;">
 					<v-col sm="1" md="3"></v-col>
 					<v-col>
 						<v-text-field ref="input-title" color="secondery" class="custom-title" :label="Lang('editor.input-title')"></v-text-field>
-						<Vueditor id="editorcontiner" ref="vueditor" v-model="text"></Vueditor>
+						<Vueditor id="editorcontiner" ref="vueditor" class="custom" v-model="text"></Vueditor>
 					</v-col>
 					<v-col sm="1" md="3"></v-col>
 				</v-row>
@@ -16,7 +711,8 @@
 				</v-row>
 			</v-col>
 		</v-row>
-
+		<!-- E:Vueditor -->
+		
 		<!-- S:Footer -->
 		<v-footer height="80" color="grey lighten-4" fixed class="font-width-medium pl-12 pr-12">
 			<v-row align="center">
@@ -37,7 +733,7 @@
 								{{ Lang('editor.post') }}
 							</v-btn>
 						</template>
-
+		
 						<!-- S:Posting Menu -->
 						<v-card class="">
 							<v-card-text>
@@ -59,10 +755,10 @@
 									</v-row>
 								</v-container>
 							</v-card-text>
-
+		
 							<v-card-actions>
 								<v-spacer></v-spacer>
-
+		
 								<v-btn text @click="menu = false">{{ Lang('cancel') }}</v-btn>
 								<v-btn color="success" text @click="menu = false; doPosting()">{{ Lang('ok') }}</v-btn>
 							</v-card-actions>
@@ -74,11 +770,13 @@
 			</v-row>
 		</v-footer>
 		<!-- E:Footer -->
-
+		
+		<!-- S:Util Component -->
 		<PLoading/>
+		<!-- E:Util Component -->
+		
 	</v-content>
 </template>
-
 <style>
 body {
 	background-color: white;
@@ -91,10 +789,11 @@ div.v-application {
 .vueditor > .ve-toolbar {
 	width: 100%;
 	left: 0;
-	position: fixed;
-	top: 64px;
-	z-index: 4; /* back to header and back to icon menu, front to content input */
+	position: absolute;
+	top: 0;
+	z-index: -1;
 	box-shadow: 0px 0px 5px #cacaca;
+	display:none;
 }
 
 .vueditor > .ve-design {
@@ -115,30 +814,78 @@ div.v-application {
 	line-height: 50px !important;
 	font-size: 2rem;
 }
-</style>
 
-<style scoped>
-.vueditor {
+div.custom-toolbar {
+	position: fixed;
+	z-index: 4;
+	width: 100%;
+	-webkit-box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+	box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+}
+
+div.custom-toolbar header.v-toolbar {
+	-webkit-box-shadow: unset;
+	box-shadow: unset;
+	border-bottom: 1px solid rgb(218, 218, 218);
+	overflow-x:auto;
+	overflow-y:hidden;
+	scrollbar-width: none;
+}
+div.custom-toolbar header.v-toolbar div {
+	padding: 0;
+}
+div.custom-toolbar header.v-toolbar::-webkit-scrollbar,
+div.custom-toolbar header.v-toolbar::-webkit-scrollbar-thumb,
+div.custom-toolbar header.v-toolbar::-webkit-scrollbar-track {
+	display:none;
+}
+
+div.custom-picker {
+	border-radius: 0 !important;
+}
+
+div.v-btn-toggle.custom button {
+	border-top: 0 !important;
+	border-left: 0 !important;
+	border-right: 0 !important;
+	border-bottom: 1px solid rgb(218, 218, 218) !important;
+}
+div.v-btn-toggle.custom button i {
+	color: rgba(0, 0, 0, 0.54) !important;
+}
+
+div.vueditor.custom {
 	background-color: transparent;
 	border: 0;
 	width:100%;
-	height: 750px;
 }
+div.vueditor.custom iframe {
+	width:100%;
+	position: relative;
+}
+
 .div-height {
 	height:calc( 100% - 64px );
 	padding-bottom: 15px;
-	margin-bottom: 400px;
 	padding-top: 100px;
 }
-</style>
 
+</style>
 <script>
-/* eslint-disable */
 import axios from 'axios';
 import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObject, commitGitData } from '../modules/common.js';
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
+import toolbarLoad from './Edit/toolbarLoad.js';
+
+const changeAlign = function() {
+	if ( this.tb.toggle.align === 3 ) {
+		this.tb.toggle.align = 0;
+	} else {
+		this.tb.toggle.align += 1;
+	}
+};
 
 const buildContentHTML = function(_this = this) {
 	let contentHTML = _this.$refs.vueditor.getContent();
@@ -183,7 +930,6 @@ const doPostingContent = function() {
 	if ( this.posts ) {
 		let posts = this.posts;
 		let posts_sha = this.posts_ori.sha;
-		let userName = this.$store.getters.user.name;
 
 		let selectedCategory = this.c_sel.value;
 		let category = getObject(posts, selectedCategory);
@@ -194,10 +940,9 @@ const doPostingContent = function() {
 		let title = this.$refs['input-title'].internalValue;
 
 
-		// TODO: 글에서 대표 커버 찾아내는 알고리즘 추가
 		let coverImg = null;
 		if ( coverImg ) {
-			
+			// TODO: 글에서 대표 커버 찾아내는 알고리즘 추가
 		} else {
 			// 커버 이미지가 없으면 샘플에서 하나 선택
 			let coverImgs = this.$store.getters.config['cover-samples'];
@@ -265,7 +1010,8 @@ export default {
 		getContent : function() {
 			this.text = this.$refs.vueditor.getContent()
 		},
-		Lang
+		Lang,
+		changeAlign
 	},
 	mounted: function() {
 		let curPName = this.$router.history.current.name;
@@ -288,65 +1034,33 @@ export default {
 			});
 
 
-			// 임시적으로 에디터 툴바 메뉴의 위치를 옮김
-			let selectMenus = document.querySelectorAll('div.vueditor div.ve-toolbar div.ve-select');
-			const S_CODE_HLT = 0;
-			const S_TAG = 1;
-			const S_FONT = 2;
-			const S_FONT_SIZE = 3;
-			// code highlight
-			let code_hlt = document.querySelector('div.vueditor div.ve-dropdown._10cV1loMgUSCh2Gf6O8hsF_0');
-			let code_hlt_sel = selectMenus[S_CODE_HLT];
-			if ( code_hlt && code_hlt_sel ) {
-				code_hlt_sel.addEventListener('click', (e) => {
-					let rect = code_hlt_sel.getBoundingClientRect();
-					code_hlt.style.position = "fixed";
-					code_hlt.style.top = (rect.y + rect.height) + "px";
-					code_hlt.style.left = rect.x + "px";
-				});
-			}
-
-			// tag
-			let tag = document.querySelector('div.vueditor div.ve-dropdown._2ddaIaDnYon4oaNo9HwhTU_0');
-			let tag_sel = selectMenus[S_TAG];
-			if ( tag && tag_sel ) {
-				tag_sel.addEventListener('click', (e) => {
-					let rect = tag_sel.getBoundingClientRect();
-					tag.style.position = "fixed";
-					tag.style.top = (rect.y + rect.height) + "px";
-					tag.style.left = rect.x + "px";
-				});
-			}
-
-			// font
-			let font = document.querySelector('div.vueditor div.ve-dropdown.XlQ1oyUFxq9sfpmr-kqea_0');
-			let font_sel = selectMenus[S_FONT];
-			if ( font && font_sel ) {
-				font_sel.addEventListener('click', (e) => {
-					let rect = font_sel.getBoundingClientRect();
-					font.style.position = "fixed";
-					font.style.top = (rect.y + rect.height) + "px";
-					font.style.left = rect.x + "px";
-				});
-			}
-
-			let font_size = document.querySelector('div.vueditor div.ve-dropdown._2gMMU7OLy1ok1hmmAGzabR_0');
-			let font_size_sel = selectMenus[S_FONT_SIZE];
-			if ( font_size && font_size_sel ) {
-				font_size_sel.addEventListener('click', (e) => {
-					let rect = font_size_sel.getBoundingClientRect();
-					font_size.style.position = "fixed";
-					font_size.style.top = (rect.y + rect.height) + "px";
-					font_size.style.left = rect.x + "px";
-				});
-			}
+			// 커스텀 툴바를, vueditor 와 연결
+			toolbarLoad(this);
 		}
 	},
 	data: () => ({
 		text: "Test",
 		c_sel: {},
 		categoryItem: ['test', 'test2'],
-		menu: false
+		menu: false,
+		tb: { //toolbar
+			select: 'text',
+			lang: 'bash',
+			tag: 'p',
+			font: 'arial black askdljasklfd',
+			fsize: '12px',
+			align: ['left', 'center', 'right', 'justify'],
+			toggle: {
+				align:0,
+				format: [],
+				super_sub: [],
+				tColor: '#000000',
+				tColorView: [false, false, false],
+				bColor: '#000000',
+				bColorView: [false, false, false],
+			},
+		}
 	}),
 };
+
 </script>
