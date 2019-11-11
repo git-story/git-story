@@ -1,4 +1,4 @@
-<!-- 2019-11-11 9:55:56 AM
+<!-- 2019-11-11 12:12:31 PM
 Edit.vue 파일은 Edit/ 폴더 안에 있는 build.js 스크립트로 만들어졌습니다.
 build.js 는 해당 폴더의 특정 파일들의 변화를 감시하여 Edit.vue 파일로 만듭니다.
 Edit.vue 파일의 모듈화보단 하나의 파일로 만드는 것이 더욱 소스관리에 용이합니다.
@@ -93,14 +93,20 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 					</v-tooltip>
 				</v-btn-toggle>
 				<!-- E:Text Align -->
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon tile class="d-md-none" active-class="white" v-on="on">
-							<v-icon>mdi-format-title</v-icon>
-						</v-btn>
-					</template>
-					<span>{{ Lang('editor.toolbar.text-menu') }}</span>
-				</v-tooltip>
+				<v-btn-toggle
+					class="custom pa-0"
+					dense
+					group
+					madatory>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile class="d-md-none" @click="textBarToggle" active-class="white" v-on="on">
+								<v-icon>mdi-format-title</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.text-menu') }}</span>
+					</v-tooltip>
+				</v-btn-toggle>
 				<!-- S:Text Color -->
 				<div class="d-none d-lg-flex pa-0">
 					<v-divider vertical></v-divider>
@@ -509,7 +515,7 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 				</v-tooltip>
 				<!-- E:Text Format -->
 			</v-toolbar>
-			<v-toolbar id="toolbar-text" class="custom-toolbar d-md-none" v-if="tb.select === 'text'" dense>
+			<v-toolbar id="toolbar-text" class="custom-toolbar d-md-none" v-if="tb.toggle.textBar" dense>
 				<v-divider vertical></v-divider>
 				<!-- S:Text Color -->
 				<v-menu 
@@ -877,7 +883,7 @@ import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObje
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
-import toolbarLoad from './Edit/toolbarLoad.js';
+import { toolbarInit, textToolbarInit } from './Edit/toolbarLoad.js';
 
 const changeAlign = function() {
 	if ( this.tb.toggle.align === 3 ) {
@@ -1000,6 +1006,16 @@ const createCategoryItems = function(posts, id="", level=0) {
 	return obj;
 };
 
+const textBarToggle = function() {
+	if ( this.tb.toggle.textBar === true ) {
+		this.tb.toggle.textBar = false;
+	} else {
+		this.tb.toggle.textBar = true;
+		// 즉시 실행하면 엘리먼트가 추가되기 전에 실행되어서 동작 안 함
+		setTimeout( textToolbarInit, 100 );
+	}
+};
+
 export default {
 	name: 'Edit',
 	components: {
@@ -1011,7 +1027,8 @@ export default {
 			this.text = this.$refs.vueditor.getContent()
 		},
 		Lang,
-		changeAlign
+		changeAlign,
+		textBarToggle
 	},
 	mounted: function() {
 		let curPName = this.$router.history.current.name;
@@ -1035,22 +1052,22 @@ export default {
 
 
 			// 커스텀 툴바를, vueditor 와 연결
-			toolbarLoad(this);
+			toolbarInit(this);
 		}
 	},
 	data: () => ({
 		text: "Test",
 		c_sel: {},
-		categoryItem: ['test', 'test2'],
+		categoryItem: [],
 		menu: false,
 		tb: { //toolbar
-			select: 'text',
 			lang: 'bash',
 			tag: 'p',
-			font: 'arial black askdljasklfd',
+			font: 'arial black',
 			fsize: '12px',
 			align: ['left', 'center', 'right', 'justify'],
 			toggle: {
+				textBar: false,
 				align:0,
 				format: [],
 				super_sub: [],

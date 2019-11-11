@@ -3,7 +3,7 @@ import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObje
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
-import toolbarLoad from './Edit/toolbarLoad.js';
+import { toolbarInit, textToolbarInit } from './Edit/toolbarLoad.js';
 
 const changeAlign = function() {
 	if ( this.tb.toggle.align === 3 ) {
@@ -126,6 +126,16 @@ const createCategoryItems = function(posts, id="", level=0) {
 	return obj;
 };
 
+const textBarToggle = function() {
+	if ( this.tb.toggle.textBar === true ) {
+		this.tb.toggle.textBar = false;
+	} else {
+		this.tb.toggle.textBar = true;
+		// 즉시 실행하면 엘리먼트가 추가되기 전에 실행되어서 동작 안 함
+		setTimeout( textToolbarInit, 100 );
+	}
+};
+
 export default {
 	name: 'Edit',
 	components: {
@@ -137,7 +147,8 @@ export default {
 			this.text = this.$refs.vueditor.getContent()
 		},
 		Lang,
-		changeAlign
+		changeAlign,
+		textBarToggle
 	},
 	mounted: function() {
 		let curPName = this.$router.history.current.name;
@@ -161,22 +172,22 @@ export default {
 
 
 			// 커스텀 툴바를, vueditor 와 연결
-			toolbarLoad(this);
+			toolbarInit(this);
 		}
 	},
 	data: () => ({
 		text: "Test",
 		c_sel: {},
-		categoryItem: ['test', 'test2'],
+		categoryItem: [],
 		menu: false,
 		tb: { //toolbar
-			select: 'text',
 			lang: 'bash',
 			tag: 'p',
-			font: 'arial black askdljasklfd',
+			font: 'arial black',
 			fsize: '12px',
 			align: ['left', 'center', 'right', 'justify'],
 			toggle: {
+				textBar: false,
 				align:0,
 				format: [],
 				super_sub: [],

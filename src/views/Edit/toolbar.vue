@@ -78,14 +78,20 @@
 			</v-tooltip>
 		</v-btn-toggle>
 		<!-- E:Text Align -->
-		<v-tooltip bottom>
-			<template v-slot:activator="{ on }">
-				<v-btn icon tile class="d-md-none" active-class="white" v-on="on">
-					<v-icon>mdi-format-title</v-icon>
-				</v-btn>
-			</template>
-			<span>{{ Lang('editor.toolbar.text-menu') }}</span>
-		</v-tooltip>
+		<v-btn-toggle
+			class="custom pa-0"
+			dense
+			group
+			madatory>
+			<v-tooltip bottom>
+				<template v-slot:activator="{ on }">
+					<v-btn icon tile class="d-md-none" @click="textBarToggle" active-class="white" v-on="on">
+						<v-icon>mdi-format-title</v-icon>
+					</v-btn>
+				</template>
+				<span>{{ Lang('editor.toolbar.text-menu') }}</span>
+			</v-tooltip>
+		</v-btn-toggle>
 		<!-- S:Text Color -->
 		<div class="d-none d-lg-flex pa-0">
 			<v-divider vertical></v-divider>
@@ -494,7 +500,7 @@
 		</v-tooltip>
 		<!-- E:Text Format -->
 	</v-toolbar>
-	<v-toolbar id="toolbar-text" class="custom-toolbar d-md-none" v-if="tb.select === 'text'" dense>
+	<v-toolbar id="toolbar-text" class="custom-toolbar d-md-none" v-if="tb.toggle.textBar" dense>
 		<v-divider vertical></v-divider>
 		<!-- S:Text Color -->
 		<v-menu 
