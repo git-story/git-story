@@ -37,6 +37,68 @@
 
 		<v-divider></v-divider>
 
+		<v-list-item>
+			<v-list-item-content>
+				<v-list-item-title class="headline">
+					{{ Lang('myblog.side.setting_blog') }}
+				</v-list-item-title>
+			</v-list-item-content>
+		</v-list-item>
+
+		<v-list dense>
+			<!-- S:Blog Template -->
+			<v-list-item link @click="contentChange('BlogTemplate')">
+				<v-list-item-icon>
+					<v-icon>mdi-layers-triple</v-icon>
+				</v-list-item-icon>
+
+				<v-list-item-content>
+					<v-list-item-title>
+						{{ Lang('myblog.side.manage_template') }}
+					</v-list-item-title>
+				</v-list-item-content>
+			</v-list-item>
+			<!-- E:Blog Template -->
+			<!-- S:Blog Include -->
+			<v-list-item link @click="contentChange('BlogInclude')">
+				<v-list-item-icon>
+					<v-icon>mdi-book-open-variant</v-icon>
+				</v-list-item-icon>
+
+				<v-list-item-content>
+					<v-list-item-title>
+						{{ Lang('myblog.side.setting_include') }}
+					</v-list-item-title>
+				</v-list-item-content>
+			</v-list-item>
+			<!-- E:Blog Include -->
+			<!-- S:Blog Comment -->
+			<v-list-item link @click="contentChange('BlogComment')">
+				<v-list-item-icon>
+					<v-icon>mdi-comment-multiple</v-icon>
+				</v-list-item-icon>
+
+				<v-list-item-content>
+					<v-list-item-title>
+						{{ Lang('myblog.side.setting_comment') }}
+					</v-list-item-title>
+				</v-list-item-content>
+			</v-list-item>
+			<!-- E:Blog Comment -->
+			<!-- S:Blog ETC -->
+			<v-list-item link @click="contentChange('BlogSetting')">
+				<v-list-item-icon>
+					<v-icon>mdi-settings</v-icon>
+				</v-list-item-icon>
+
+				<v-list-item-content>
+					<v-list-item-title>
+						{{ Lang('myblog.side.setting_etc') }}
+					</v-list-item-title>
+				</v-list-item-content>
+			</v-list-item>
+			<!-- E:Blog ETC -->
+		</v-list>
 	</v-navigation-drawer>
 </template>
 <script>
