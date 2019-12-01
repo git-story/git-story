@@ -1,3 +1,28 @@
+<!-- S:Etc Dialog -->
+<v-dialog v-model="tb.toggle.tableDialog" persistent width="80%" max-width="600px">
+	<v-card>
+		<v-card-title class="headline">{{ Lang('editor.table.create') }}</v-card-title>
+		<v-card-text>
+			<v-row>
+				<v-col md="5">
+					<v-text-field :rules="tb.table.rules" v-model="tb.table.row" label="Row"></v-text-field>
+				</v-col>
+				<v-col align-self="center" align="center" md="2">
+					X
+				</v-col>
+				<v-col md="5">
+					<v-text-field :rules="tb.table.rules" v-model="tb.table.col" label="Col"></v-text-field>
+				</v-col>
+			</v-row>
+		</v-card-text>
+		<v-card-actions>
+			<v-spacer></v-spacer>
+			<v-btn color="red darken-1" text @click="tb.toggle.tableDialog = false">{{ Lang('cancel') }}</v-btn>
+			<v-btn color="green darken-1" text @click="createTables(); tb.toggle.tableDialog = false;">{{ Lang('add') }}</v-btn>
+		</v-card-actions>
+	</v-card>
+</v-dialog>
+<!-- E:Etc Dialog -->
 <!-- S:New Editor Toolbar -->
 <div class="custom-toolbar">
 	<v-toolbar id="toolbar-1" class="custom-toolbar" dense>
@@ -78,14 +103,20 @@
 			</v-tooltip>
 		</v-btn-toggle>
 		<!-- E:Text Align -->
-		<v-tooltip bottom>
-			<template v-slot:activator="{ on }">
-				<v-btn icon tile class="d-md-none" active-class="white" v-on="on">
-					<v-icon>mdi-format-title</v-icon>
-				</v-btn>
-			</template>
-			<span>{{ Lang('editor.toolbar.text-menu') }}</span>
-		</v-tooltip>
+		<v-btn-toggle
+			class="custom pa-0"
+			dense
+			group
+			madatory>
+			<v-tooltip bottom>
+				<template v-slot:activator="{ on }">
+					<v-btn icon tile class="d-md-none" @click="textBarToggle" active-class="white" v-on="on">
+						<v-icon>mdi-format-title</v-icon>
+					</v-btn>
+				</template>
+				<span>{{ Lang('editor.toolbar.text-menu') }}</span>
+			</v-tooltip>
+		</v-btn-toggle>
 		<!-- S:Text Color -->
 		<div class="d-none d-lg-flex pa-0">
 			<v-divider vertical></v-divider>
@@ -494,7 +525,7 @@
 		</v-tooltip>
 		<!-- E:Text Format -->
 	</v-toolbar>
-	<v-toolbar id="toolbar-text" class="custom-toolbar d-md-none" v-if="tb.select === 'text'" dense>
+	<v-toolbar id="toolbar-text" class="custom-toolbar d-md-none" v-if="tb.toggle.textBar" dense>
 		<v-divider vertical></v-divider>
 		<!-- S:Text Color -->
 		<v-menu 

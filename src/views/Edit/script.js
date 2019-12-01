@@ -3,7 +3,7 @@ import { getGitData, getGitJsonData, genNowDate, findChildByTagName, routeAssign
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
-import toolbarLoad from './Edit/toolbarLoad.js';
+import { toolbarInit, textToolbarInit } from './Edit/toolbarLoad.js';
 
 const changeAlign = function() {
 	if ( this.tb.toggle.align === 3 ) {
@@ -40,6 +40,27 @@ const buildContentHTML = function(_this = this) {
 	let bodyContent = document.createElement('main');
 	bodyContent.innerHTML = contentHTML;
 	body.appendChild(bodyContent);
+
+	// comment 
+	let commentDiv = document.createElement('div');
+	commentDiv.style.marginTop = "10px";
+
+	// disqus
+	if ( cfg.comment.disqus ) {
+		commentDiv.innerHTML += cfg.comment.disqus;
+	}
+	
+	// utterances
+	if ( cfg.comment.utterances ) {
+		commentDiv.innerHTML += cfg.comment.utterances;
+	}
+
+	// facebook
+	if ( cfg.comment.facebook ) {
+		commentDiv.innerHTML += cfg.comment.facebook;
+	}
+
+	body.appendChild(commentDiv);
 
 	cfg.body.end.forEach(e => {
 		let child = createChildElement(e);
@@ -135,6 +156,23 @@ const createCategoryItems = function(posts, id="", level=0) {
 	return obj;
 };
 
+const textBarToggle = function() {
+	if ( this.tb.toggle.textBar === true ) {
+		this.tb.toggle.textBar = false;
+	} else {
+		this.tb.toggle.textBar = true;
+		// 즉시 실행하면 엘리먼트가 추가되기 전에 실행되어서 동작 안 함
+		setTimeout( textToolbarInit, 100 );
+	}
+};
+
+const createTables = function() {
+	let table = this.tb.table;
+	let editor = this.$refs.vueditor;
+
+	editor.createTable(table.row, table.col);
+};
+
 export default {
 	name: 'Edit',
 	components: {
@@ -151,7 +189,9 @@ export default {
 			this.$refs.vueditor.setContent(content);
 		},
 		Lang,
-		changeAlign
+		changeAlign,
+		textBarToggle,
+		createTables,
 	},
 	mounted: function() {
 		
@@ -195,28 +235,45 @@ export default {
 			this.config_ori = res;
 		});
 
-
 		// 커스텀 툴바를, vueditor 와 연결
-		toolbarLoad(this);
+		toolbarInit(this);
+
 	},
 	data: () => ({
 		text: "Test",
 		c_sel: {},
-		categoryItem: ['test', 'test2'],
+		categoryItem: [],
 		menu: false,
 
 		indexSHA: null, // index.html에 대한 sha
 		indexPath: "",
-		title: "",
-		
+		title: "",		
+		true_:  true,
+
 		tb: { //toolbar
-			select: 'text',
 			lang: 'bash',
 			tag: 'p',
-			font: 'arial black askdljasklfd',
+			font: 'arial black',
 			fsize: '12px',
 			align: ['left', 'center', 'right', 'justify'],
+			table: {
+				rules: [
+					(value) => {
+						if ( value === undefined ) {
+							return "please-input";
+						}
+
+						if ( value.toString().match(/[^0-9]/g) ) {
+							return Lang("editor.table.only-number");
+						}
+						return true;
+					}
+				],
+				row: 0,
+				col: 0,
+			},
 			toggle: {
+				textBar: false,
 				align:0,
 				format: [],
 				super_sub: [],
@@ -224,6 +281,7 @@ export default {
 				tColorView: [false, false, false],
 				bColor: '#000000',
 				bColorView: [false, false, false],
+				tableDialog: false
 			},
 		}
 	}),

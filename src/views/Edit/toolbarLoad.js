@@ -1,4 +1,4 @@
-// TODO: link, text color, background color, font, tag, code, size, table, image
+// TODO: link, text color, background color, font, tag, code, size, image
 
 const getButtonByIcon = (selector) => {
 	let icon = document.querySelector(selector);
@@ -28,7 +28,83 @@ const getButtonByIconAll = (selector) => {
 	return [];
 };
 
-export default (_this) => {
+export const textToolbarInit = () => {
+	//////////////////////// toolbar-text
+
+	let bold = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-bold');
+	if ( bold ) {
+		bold.addEventListener('click', () => {
+			let realBoldButton = document.querySelector('#ve-toolbar-bold');
+			if ( realBoldButton ) {
+				realBoldButton.click();
+			}
+		});
+	}
+
+	let italic = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-italic');
+	if ( italic ) {
+		italic.addEventListener('click', () => {
+			let realItalicButton = document.querySelector('#ve-toolbar-italic');
+			if ( realItalicButton ) {
+				realItalicButton.click();
+			}
+		});
+	}
+
+	let underline = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-underline');
+	if ( underline ) {
+		underline.addEventListener('click', () => {
+			let realUnderButton = document.querySelector('#ve-toolbar-underline');
+			if ( realUnderButton ) {
+				realUnderButton.click();
+			}
+		});
+	}
+
+	let strike = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-strikethrough-variant');
+	if ( strike ) {
+		strike.addEventListener('click', () => {
+			let realStrikeButton = document.querySelector('#ve-toolbar-strikethrough');
+			if ( realStrikeButton ) {
+				realStrikeButton.click();
+			}
+		});
+	}
+
+	let sub = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-subscript');
+	if ( sub ) {
+		sub.addEventListener('click', () => {
+			let realSubButton = document.querySelector('#ve-toolbar-subscript');
+			if ( realSubButton ) {
+				realSubButton.click();
+			}
+		});
+	}
+
+	let super_ = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-superscript');
+	if ( super_ ) {
+		super_.addEventListener('click', () => {
+			let realSuperButton = document.querySelector('#ve-toolbar-superscript');
+			if ( realSuperButton ) {
+				realSuperButton.click();
+			}
+		});
+	}
+
+	////////////////////////
+	
+	let unlink = getButtonByIcon('#toolbar-text i.mdi-link-variant-minus');
+	if ( unlink ) {
+		unlink.addEventListener('click', () => {
+			let realUnlinkButton = document.querySelector('#ve-toolbar-unlink');
+			if ( realUnlinkButton ) {
+				realUnlinkButton.click();
+			}
+		});
+	}
+};
+
+export const toolbarInit = (_this) => {
 	//let $colorPicker = document.querySelector('#color-picker');
 
 	let toolbar = _this.tb;
@@ -120,6 +196,18 @@ export default (_this) => {
 	}
 
 	////////////////////////
+	
+	let image = getButtonByIcon('#toolbar-1 .mdi-image-multiple');
+	if ( image ) {
+		// TODO: Image Upload
+	}
+
+	let table = getButtonByIcon('#toolbar-1 i.mdi-table-large-plus');
+	if ( table ) {
+		table.addEventListener('click', () => {
+			toolbar.toggle.tableDialog = true;
+		});
+	}
 
 	let codeView = getButtonByIcon('#toolbar-1 i.mdi-xml');
 	if ( codeView ) {
@@ -215,7 +303,7 @@ export default (_this) => {
 		});
 	}
 
-	//////////////////////// toolbar-1
+	//////////////////////// toolbar-2
 	
 	alignLeft = getButtonByIcon('#toolbar-2 div.v-btn-toggle.custom i.mdi-format-align-left');
 	if ( alignLeft ) {
@@ -322,80 +410,6 @@ export default (_this) => {
 	////////////////////////
 	
 	unlink = getButtonByIcon('#toolbar-2 i.mdi-link-variant-minus');
-	if ( unlink ) {
-		unlink.addEventListener('click', () => {
-			let realUnlinkButton = document.querySelector('#ve-toolbar-unlink');
-			if ( realUnlinkButton ) {
-				realUnlinkButton.click();
-			}
-		});
-	}
-
-	//////////////////////// toolbar-text
-
-	bold = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-bold');
-	if ( bold ) {
-		bold.addEventListener('click', () => {
-			let realBoldButton = document.querySelector('#ve-toolbar-bold');
-			if ( realBoldButton ) {
-				realBoldButton.click();
-			}
-		});
-	}
-
-	italic = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-italic');
-	if ( italic ) {
-		italic.addEventListener('click', () => {
-			let realItalicButton = document.querySelector('#ve-toolbar-italic');
-			if ( realItalicButton ) {
-				realItalicButton.click();
-			}
-		});
-	}
-
-	underline = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-underline');
-	if ( underline ) {
-		underline.addEventListener('click', () => {
-			let realUnderButton = document.querySelector('#ve-toolbar-underline');
-			if ( realUnderButton ) {
-				realUnderButton.click();
-			}
-		});
-	}
-
-	strike = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-strikethrough-variant');
-	if ( strike ) {
-		strike.addEventListener('click', () => {
-			let realStrikeButton = document.querySelector('#ve-toolbar-strikethrough');
-			if ( realStrikeButton ) {
-				realStrikeButton.click();
-			}
-		});
-	}
-
-	sub = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-subscript');
-	if ( sub ) {
-		sub.addEventListener('click', () => {
-			let realSubButton = document.querySelector('#ve-toolbar-subscript');
-			if ( realSubButton ) {
-				realSubButton.click();
-			}
-		});
-	}
-
-	super_ = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-superscript');
-	if ( super_ ) {
-		super_.addEventListener('click', () => {
-			let realSuperButton = document.querySelector('#ve-toolbar-superscript');
-			if ( realSuperButton ) {
-				realSuperButton.click();
-			}
-		});
-	}
-
-	////////////////////////
-	
-	unlink = getButtonByIcon('#toolbar-text i.mdi-link-variant-minus');
 	if ( unlink ) {
 		unlink.addEventListener('click', () => {
 			let realUnlinkButton = document.querySelector('#ve-toolbar-unlink');

@@ -1,4 +1,4 @@
-<!-- 2019-12-1 19:02:41
+<!-- 2019-12-1 19:08:34
 Edit.vue 파일은 Edit/ 폴더 안에 있는 build.js 스크립트로 만들어졌습니다.
 build.js 는 해당 폴더의 특정 파일들의 변화를 감시하여 Edit.vue 파일로 만듭니다.
 Edit.vue 파일의 모듈화보단 하나의 파일로 만드는 것이 더욱 소스관리에 용이합니다.
@@ -13,6 +13,31 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 -->
 <template>
 	<v-content>
+		<!-- S:Etc Dialog -->
+		<v-dialog v-model="tb.toggle.tableDialog" persistent width="80%" max-width="600px">
+			<v-card>
+				<v-card-title class="headline">{{ Lang('editor.table.create') }}</v-card-title>
+				<v-card-text>
+					<v-row>
+						<v-col md="5">
+							<v-text-field :rules="tb.table.rules" v-model="tb.table.row" label="Row"></v-text-field>
+						</v-col>
+						<v-col align-self="center" align="center" md="2">
+							X
+						</v-col>
+						<v-col md="5">
+							<v-text-field :rules="tb.table.rules" v-model="tb.table.col" label="Col"></v-text-field>
+						</v-col>
+					</v-row>
+				</v-card-text>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn color="red darken-1" text @click="tb.toggle.tableDialog = false">{{ Lang('cancel') }}</v-btn>
+					<v-btn color="green darken-1" text @click="createTables(); tb.toggle.tableDialog = false;">{{ Lang('add') }}</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+		<!-- E:Etc Dialog -->
 		<!-- S:New Editor Toolbar -->
 		<div class="custom-toolbar">
 			<v-toolbar id="toolbar-1" class="custom-toolbar" dense>
@@ -93,14 +118,20 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 					</v-tooltip>
 				</v-btn-toggle>
 				<!-- E:Text Align -->
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon tile class="d-md-none" active-class="white" v-on="on">
-							<v-icon>mdi-format-title</v-icon>
-						</v-btn>
-					</template>
-					<span>{{ Lang('editor.toolbar.text-menu') }}</span>
-				</v-tooltip>
+				<v-btn-toggle
+					class="custom pa-0"
+					dense
+					group
+					madatory>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon tile class="d-md-none" @click="textBarToggle" active-class="white" v-on="on">
+								<v-icon>mdi-format-title</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ Lang('editor.toolbar.text-menu') }}</span>
+					</v-tooltip>
+				</v-btn-toggle>
 				<!-- S:Text Color -->
 				<div class="d-none d-lg-flex pa-0">
 					<v-divider vertical></v-divider>
@@ -509,7 +540,7 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 				</v-tooltip>
 				<!-- E:Text Format -->
 			</v-toolbar>
-			<v-toolbar id="toolbar-text" class="custom-toolbar d-md-none" v-if="tb.select === 'text'" dense>
+			<v-toolbar id="toolbar-text" class="custom-toolbar d-md-none" v-if="tb.toggle.textBar" dense>
 				<v-divider vertical></v-divider>
 				<!-- S:Text Color -->
 				<v-menu 
@@ -788,12 +819,21 @@ div.v-application {
 
 .vueditor > .ve-toolbar {
 	width: 100%;
-	left: 0;
 	position: absolute;
-	top: 0;
-	z-index: -1;
 	box-shadow: 0px 0px 5px #cacaca;
+	left: 0;
+
+	/* service code */
+	top: 0;
 	display:none;
+	z-index: -1;
+
+	/* debug code */
+	/*
+	top: 50%;
+	display: block;
+	z-index: 30;
+	*/
 }
 
 .vueditor > .ve-design {
@@ -877,7 +917,7 @@ import { getGitData, getGitJsonData, genNowDate, findChildByTagName, routeAssign
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
-import toolbarLoad from './Edit/toolbarLoad.js';
+import { toolbarInit, textToolbarInit } from './Edit/toolbarLoad.js';
 
 const changeAlign = function() {
 	if ( this.tb.toggle.align === 3 ) {
@@ -914,6 +954,27 @@ const buildContentHTML = function(_this = this) {
 	let bodyContent = document.createElement('main');
 	bodyContent.innerHTML = contentHTML;
 	body.appendChild(bodyContent);
+
+	// comment 
+	let commentDiv = document.createElement('div');
+	commentDiv.style.marginTop = "10px";
+
+	// disqus
+	if ( cfg.comment.disqus ) {
+		commentDiv.innerHTML += cfg.comment.disqus;
+	}
+	
+	// utterances
+	if ( cfg.comment.utterances ) {
+		commentDiv.innerHTML += cfg.comment.utterances;
+	}
+
+	// facebook
+	if ( cfg.comment.facebook ) {
+		commentDiv.innerHTML += cfg.comment.facebook;
+	}
+
+	body.appendChild(commentDiv);
 
 	cfg.body.end.forEach(e => {
 		let child = createChildElement(e);
@@ -1009,6 +1070,23 @@ const createCategoryItems = function(posts, id="", level=0) {
 	return obj;
 };
 
+const textBarToggle = function() {
+	if ( this.tb.toggle.textBar === true ) {
+		this.tb.toggle.textBar = false;
+	} else {
+		this.tb.toggle.textBar = true;
+		// 즉시 실행하면 엘리먼트가 추가되기 전에 실행되어서 동작 안 함
+		setTimeout( textToolbarInit, 100 );
+	}
+};
+
+const createTables = function() {
+	let table = this.tb.table;
+	let editor = this.$refs.vueditor;
+
+	editor.createTable(table.row, table.col);
+};
+
 export default {
 	name: 'Edit',
 	components: {
@@ -1025,7 +1103,9 @@ export default {
 			this.$refs.vueditor.setContent(content);
 		},
 		Lang,
-		changeAlign
+		changeAlign,
+		textBarToggle,
+		createTables,
 	},
 	mounted: function() {
 		
@@ -1069,28 +1149,45 @@ export default {
 			this.config_ori = res;
 		});
 
-
 		// 커스텀 툴바를, vueditor 와 연결
-		toolbarLoad(this);
+		toolbarInit(this);
+
 	},
 	data: () => ({
 		text: "Test",
 		c_sel: {},
-		categoryItem: ['test', 'test2'],
+		categoryItem: [],
 		menu: false,
 
 		indexSHA: null, // index.html에 대한 sha
 		indexPath: "",
-		title: "",
-		
+		title: "",		
+		true_:  true,
+
 		tb: { //toolbar
-			select: 'text',
 			lang: 'bash',
 			tag: 'p',
-			font: 'arial black askdljasklfd',
+			font: 'arial black',
 			fsize: '12px',
 			align: ['left', 'center', 'right', 'justify'],
+			table: {
+				rules: [
+					(value) => {
+						if ( value === undefined ) {
+							return "please-input";
+						}
+
+						if ( value.toString().match(/[^0-9]/g) ) {
+							return Lang("editor.table.only-number");
+						}
+						return true;
+					}
+				],
+				row: 0,
+				col: 0,
+			},
 			toggle: {
+				textBar: false,
 				align:0,
 				format: [],
 				super_sub: [],
@@ -1098,6 +1195,7 @@ export default {
 				tColorView: [false, false, false],
 				bColor: '#000000',
 				bColorView: [false, false, false],
+				tableDialog: false
 			},
 		}
 	}),

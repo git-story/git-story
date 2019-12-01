@@ -1,5 +1,5 @@
 <template>
-	<v-app width="100vh">
+	<v-app width="100%">
 		<Header v-if="!isHome"/>
 		<HeaderHome v-if="isHome"/>
 		<HeaderElevate v-if="isHome"/>
