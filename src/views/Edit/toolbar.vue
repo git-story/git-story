@@ -125,7 +125,7 @@
 				offset-y
 				transition="slide-y-transition"
 				color="white"
-				v-model="tb.toggle.tColorView[0]"
+				v-model="tb.toggle.tColorView0"
 				fixed
 				bottom>
 				<template v-slot:activator="{ on: menu }">
@@ -145,7 +145,7 @@
 					mode="hexa"
 					show-swatches></v-color-picker>
 				<v-card tile color="white" align="right">
-					<v-btn text color="grey darken-1" @click="tb.toggle.tColorView[0]=false;" tile>{{ Lang('apply') }}</v-btn>
+					<v-btn text color="grey darken-1" @click="tb.toggle.tColorView0=false; textFrontColorChange();" tile>{{ Lang('apply') }}</v-btn>
 				</v-card>
 			</v-menu>
 			<v-menu 
@@ -153,12 +153,12 @@
 				offset-y
 				transition="slide-y-transition"
 				color="white"
-				v-model="tb.toggle.bColorView[0]"
+				v-model="tb.toggle.bColorView0"
 				fixed
 				bottom>
 				<v-color-picker 
 					:hide-mode-switch="true"
-					v-model="tb.toggle.tColor"
+					v-model="tb.toggle.bColor"
 					class="custom-picker"
 					mode="hexa"
 					show-swatches></v-color-picker>
@@ -173,7 +173,7 @@
 					</v-tooltip>
 				</template>
 				<v-card tile color="white" align="right">
-					<v-btn text color="grey darken-1" @click="tb.toggle.bColorView[0]=false;" tile>{{ Lang('apply') }}</v-btn>
+					<v-btn text color="grey darken-1" @click="tb.toggle.bColorView0=false; textBackColorChange();" tile>{{ Lang('apply') }}</v-btn>
 				</v-card>
 			</v-menu>
 		</div>
@@ -229,26 +229,38 @@
 			<v-overflow-btn
 				depressed
 				label="Tag"
-				style="max-width:100px"
+				name="tag"
+				style="max-width:120px"
 				hide-details
 				class="pa-0"
 				overflow
+				:items="tb.tag.list"
+				v-model="tb.tag.cur"
+				@change="tagChange"
 				></v-overflow-btn>
 			<v-overflow-btn
 				depressed
 				label="Font"
+				name="font"
 				style="max-width:150px"
 				hide-details
 				class="pa-0"
 				overflow
+				:items="tb.font.list"
+				v-model="tb.font.cur"
+				@change="fontChange"
 				></v-overflow-btn>
 			<v-overflow-btn
 				depressed
 				label="Size"
+				name="size"
 				style="max-width:130px"
 				hide-details
 				class="pa-0"
 				overflow
+				:items="tb.size.list"
+				v-model="tb.size.cur"
+				@change="sizeChange"
 				></v-overflow-btn>
 		</div>
 		<!-- E:Text Etc -->
@@ -388,7 +400,7 @@
 				offset-y
 				transition="slide-y-transition"
 				color="white"
-				v-model="tb.toggle.tColorView[1]"
+				v-model="tb.toggle.tColorView1"
 				fixed
 				bottom>
 				<template v-slot:activator="{ on: menu }">
@@ -403,12 +415,12 @@
 				</template>
 				<v-color-picker 
 					:hide-mode-switch="true"
-					v-model="tb.toggle.bColor"
+					v-model="tb.toggle.tColor"
 					class="custom-picker"
 					mode="hexa"
 					show-swatches></v-color-picker>
 				<v-card tile color="white" align="right">
-					<v-btn text color="grey darken-1" @click="tb.toggle.tColorView[1]=false;" tile>{{ Lang('apply') }}</v-btn>
+					<v-btn text color="grey darken-1" @click="tb.toggle.tColorView1=false; textFrontColorChange();" tile>{{ Lang('apply') }}</v-btn>
 				</v-card>
 			</v-menu>
 			<v-menu 
@@ -416,12 +428,12 @@
 				offset-y
 				transition="slide-y-transition"
 				color="white"
-				v-model="tb.toggle.bColorView[1]"
+				v-model="tb.toggle.bColorView1"
 				fixed
 				bottom>
 				<v-color-picker 
 					:hide-mode-switch="true"
-					v-model="tb.toggle.tColor"
+					v-model="tb.toggle.bColor"
 					class="custom-picker"
 					mode="hexa"
 					show-swatches></v-color-picker>
@@ -436,7 +448,7 @@
 					</v-tooltip>
 				</template>
 				<v-card tile color="white" align="right">
-					<v-btn text color="grey darken-1" @click="tb.toggle.bColorView[1]=false;" tile>{{ Lang('apply') }}</v-btn>
+					<v-btn text color="grey darken-1" @click="tb.toggle.bColorView1=false; textBackColorChange();" tile>{{ Lang('apply') }}</v-btn>
 				</v-card>
 			</v-menu>
 		<!-- E:Text Color -->
@@ -533,7 +545,7 @@
 			offset-y
 			transition="slide-y-transition"
 			color="white"
-			v-model="tb.toggle.tColorView[2]"
+			v-model="tb.toggle.tColorView2"
 			fixed
 			bottom>
 			<template v-slot:activator="{ on: menu }">
@@ -548,12 +560,12 @@
 			</template>
 			<v-color-picker 
 				:hide-mode-switch="true"
-				v-model="tb.toggle.bColor"
+				v-model="tb.toggle.tColor"
 				class="custom-picker"
 				mode="hexa"
 				show-swatches></v-color-picker>
 			<v-card tile color="white" align="right">
-				<v-btn text color="grey darken-1" @click="tb.toggle.tColorView[2]=false;" tile>{{ Lang('apply') }}</v-btn>
+				<v-btn text color="grey darken-1" @click="tb.toggle.tColorView2=false; textFrontColorChange();" tile>{{ Lang('apply') }}</v-btn>
 			</v-card>
 		</v-menu>
 		<v-menu 
@@ -561,12 +573,12 @@
 			offset-y
 			transition="slide-y-transition"
 			color="white"
-			v-model="tb.toggle.bColorView[2]"
+			v-model="tb.toggle.bColorView2"
 			fixed
 			bottom>
 			<v-color-picker 
 				:hide-mode-switch="true"
-				v-model="tb.toggle.tColor"
+				v-model="tb.toggle.bColor"
 				class="custom-picker"
 				mode="hexa"
 				show-swatches></v-color-picker>
@@ -581,7 +593,7 @@
 				</v-tooltip>
 			</template>
 			<v-card tile color="white" align="right">
-				<v-btn text color="grey darken-1" @click="tb.toggle.bColorView[2]=false;" tile>{{ Lang('apply') }}</v-btn>
+				<v-btn text color="grey darken-1" @click="tb.toggle.bColorView2=false; textBackColorChange();" tile>{{ Lang('apply') }}</v-btn>
 			</v-card>
 		</v-menu>
 		<!-- S:Text Color -->
@@ -603,6 +615,9 @@
 				hide-details
 				class="pa-0"
 				overflow
+				:items="tb.tag.list"
+				v-model="tb.tag.cur"
+				@change="tagChange"
 				></v-overflow-btn>
 			<v-overflow-btn
 				depressed
@@ -611,6 +626,9 @@
 				hide-details
 				class="pa-0"
 				overflow
+				:items="tb.font.list"
+				v-model="tb.font.cur"
+				@change="fontChange"
 				></v-overflow-btn>
 			<v-overflow-btn
 				depressed
@@ -619,6 +637,9 @@
 				hide-details
 				class="pa-0"
 				overflow
+				:items="tb.size.list"
+				v-model="tb.size.cur"
+				@change="sizeChange"
 				></v-overflow-btn>
 		</div>
 		<!-- E:Text Etc -->

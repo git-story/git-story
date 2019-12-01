@@ -1,4 +1,4 @@
-<!-- 2019-12-1 6:22:36 PM
+<!-- 2019-12-1 8:19:18 PM
 Edit.vue 파일은 Edit/ 폴더 안에 있는 build.js 스크립트로 만들어졌습니다.
 build.js 는 해당 폴더의 특정 파일들의 변화를 감시하여 Edit.vue 파일로 만듭니다.
 Edit.vue 파일의 모듈화보단 하나의 파일로 만드는 것이 더욱 소스관리에 용이합니다.
@@ -140,7 +140,7 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 						offset-y
 						transition="slide-y-transition"
 						color="white"
-						v-model="tb.toggle.tColorView[0]"
+						v-model="tb.toggle.tColorView0"
 						fixed
 						bottom>
 						<template v-slot:activator="{ on: menu }">
@@ -160,7 +160,7 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 							mode="hexa"
 							show-swatches></v-color-picker>
 						<v-card tile color="white" align="right">
-							<v-btn text color="grey darken-1" @click="tb.toggle.tColorView[0]=false;" tile>{{ Lang('apply') }}</v-btn>
+							<v-btn text color="grey darken-1" @click="tb.toggle.tColorView0=false; textFrontColorChange();" tile>{{ Lang('apply') }}</v-btn>
 						</v-card>
 					</v-menu>
 					<v-menu 
@@ -168,12 +168,12 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 						offset-y
 						transition="slide-y-transition"
 						color="white"
-						v-model="tb.toggle.bColorView[0]"
+						v-model="tb.toggle.bColorView0"
 						fixed
 						bottom>
 						<v-color-picker 
 							:hide-mode-switch="true"
-							v-model="tb.toggle.tColor"
+							v-model="tb.toggle.bColor"
 							class="custom-picker"
 							mode="hexa"
 							show-swatches></v-color-picker>
@@ -188,7 +188,7 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 							</v-tooltip>
 						</template>
 						<v-card tile color="white" align="right">
-							<v-btn text color="grey darken-1" @click="tb.toggle.bColorView[0]=false;" tile>{{ Lang('apply') }}</v-btn>
+							<v-btn text color="grey darken-1" @click="tb.toggle.bColorView0=false; textBackColorChange();" tile>{{ Lang('apply') }}</v-btn>
 						</v-card>
 					</v-menu>
 				</div>
@@ -244,26 +244,38 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 					<v-overflow-btn
 						depressed
 						label="Tag"
-						style="max-width:100px"
+						name="tag"
+						style="max-width:120px"
 						hide-details
 						class="pa-0"
 						overflow
+						:items="tb.tag.list"
+						v-model="tb.tag.cur"
+						@change="tagChange"
 						></v-overflow-btn>
 					<v-overflow-btn
 						depressed
 						label="Font"
+						name="font"
 						style="max-width:150px"
 						hide-details
 						class="pa-0"
 						overflow
+						:items="tb.font.list"
+						v-model="tb.font.cur"
+						@change="fontChange"
 						></v-overflow-btn>
 					<v-overflow-btn
 						depressed
 						label="Size"
+						name="size"
 						style="max-width:130px"
 						hide-details
 						class="pa-0"
 						overflow
+						:items="tb.size.list"
+						v-model="tb.size.cur"
+						@change="sizeChange"
 						></v-overflow-btn>
 				</div>
 				<!-- E:Text Etc -->
@@ -403,7 +415,7 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 						offset-y
 						transition="slide-y-transition"
 						color="white"
-						v-model="tb.toggle.tColorView[1]"
+						v-model="tb.toggle.tColorView1"
 						fixed
 						bottom>
 						<template v-slot:activator="{ on: menu }">
@@ -418,12 +430,12 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 						</template>
 						<v-color-picker 
 							:hide-mode-switch="true"
-							v-model="tb.toggle.bColor"
+							v-model="tb.toggle.tColor"
 							class="custom-picker"
 							mode="hexa"
 							show-swatches></v-color-picker>
 						<v-card tile color="white" align="right">
-							<v-btn text color="grey darken-1" @click="tb.toggle.tColorView[1]=false;" tile>{{ Lang('apply') }}</v-btn>
+							<v-btn text color="grey darken-1" @click="tb.toggle.tColorView1=false; textFrontColorChange();" tile>{{ Lang('apply') }}</v-btn>
 						</v-card>
 					</v-menu>
 					<v-menu 
@@ -431,12 +443,12 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 						offset-y
 						transition="slide-y-transition"
 						color="white"
-						v-model="tb.toggle.bColorView[1]"
+						v-model="tb.toggle.bColorView1"
 						fixed
 						bottom>
 						<v-color-picker 
 							:hide-mode-switch="true"
-							v-model="tb.toggle.tColor"
+							v-model="tb.toggle.bColor"
 							class="custom-picker"
 							mode="hexa"
 							show-swatches></v-color-picker>
@@ -451,7 +463,7 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 							</v-tooltip>
 						</template>
 						<v-card tile color="white" align="right">
-							<v-btn text color="grey darken-1" @click="tb.toggle.bColorView[1]=false;" tile>{{ Lang('apply') }}</v-btn>
+							<v-btn text color="grey darken-1" @click="tb.toggle.bColorView1=false; textBackColorChange();" tile>{{ Lang('apply') }}</v-btn>
 						</v-card>
 					</v-menu>
 				<!-- E:Text Color -->
@@ -548,7 +560,7 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 					offset-y
 					transition="slide-y-transition"
 					color="white"
-					v-model="tb.toggle.tColorView[2]"
+					v-model="tb.toggle.tColorView2"
 					fixed
 					bottom>
 					<template v-slot:activator="{ on: menu }">
@@ -563,12 +575,12 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 					</template>
 					<v-color-picker 
 						:hide-mode-switch="true"
-						v-model="tb.toggle.bColor"
+						v-model="tb.toggle.tColor"
 						class="custom-picker"
 						mode="hexa"
 						show-swatches></v-color-picker>
 					<v-card tile color="white" align="right">
-						<v-btn text color="grey darken-1" @click="tb.toggle.tColorView[2]=false;" tile>{{ Lang('apply') }}</v-btn>
+						<v-btn text color="grey darken-1" @click="tb.toggle.tColorView2=false; textFrontColorChange();" tile>{{ Lang('apply') }}</v-btn>
 					</v-card>
 				</v-menu>
 				<v-menu 
@@ -576,12 +588,12 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 					offset-y
 					transition="slide-y-transition"
 					color="white"
-					v-model="tb.toggle.bColorView[2]"
+					v-model="tb.toggle.bColorView2"
 					fixed
 					bottom>
 					<v-color-picker 
 						:hide-mode-switch="true"
-						v-model="tb.toggle.tColor"
+						v-model="tb.toggle.bColor"
 						class="custom-picker"
 						mode="hexa"
 						show-swatches></v-color-picker>
@@ -596,7 +608,7 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 						</v-tooltip>
 					</template>
 					<v-card tile color="white" align="right">
-						<v-btn text color="grey darken-1" @click="tb.toggle.bColorView[2]=false;" tile>{{ Lang('apply') }}</v-btn>
+						<v-btn text color="grey darken-1" @click="tb.toggle.bColorView2=false; textBackColorChange();" tile>{{ Lang('apply') }}</v-btn>
 					</v-card>
 				</v-menu>
 				<!-- S:Text Color -->
@@ -618,6 +630,9 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 						hide-details
 						class="pa-0"
 						overflow
+						:items="tb.tag.list"
+						v-model="tb.tag.cur"
+						@change="tagChange"
 						></v-overflow-btn>
 					<v-overflow-btn
 						depressed
@@ -626,6 +641,9 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 						hide-details
 						class="pa-0"
 						overflow
+						:items="tb.font.list"
+						v-model="tb.font.cur"
+						@change="fontChange"
 						></v-overflow-btn>
 					<v-overflow-btn
 						depressed
@@ -634,6 +652,9 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 						hide-details
 						class="pa-0"
 						overflow
+						:items="tb.size.list"
+						v-model="tb.size.cur"
+						@change="sizeChange"
 						></v-overflow-btn>
 				</div>
 				<!-- E:Text Etc -->
@@ -910,6 +931,11 @@ div.vueditor.custom iframe {
 	padding-top: 100px;
 }
 
+
+div.custom-toolbar div.v-input div.v-select__selections {
+	width: 100%;
+}
+
 </style>
 <script>
 import axios from 'axios';
@@ -917,7 +943,7 @@ import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObje
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
-import { toolbarInit, textToolbarInit } from './Edit/toolbarLoad.js';
+import { toolbarInit, textToolbarInit, tagChange, fontChange, sizeChange, textFrontColorChange, textBackColorChange } from './Edit/toolbarLoad.js';
 
 const changeAlign = function() {
 	if ( this.tb.toggle.align === 3 ) {
@@ -1092,6 +1118,11 @@ export default {
 		changeAlign,
 		textBarToggle,
 		createTables,
+		tagChange,
+		fontChange,
+		sizeChange,
+		textFrontColorChange,
+		textBackColorChange
 	},
 	mounted: function() {
 		let curPName = this.$router.history.current.name;
@@ -1126,9 +1157,9 @@ export default {
 		true_:  true,
 		tb: { //toolbar
 			lang: 'bash',
-			tag: 'p',
-			font: 'arial black',
-			fsize: '12px',
+			// tag: 'p',
+			// font: 'arial black',
+			// fsize: '12px',
 			align: ['left', 'center', 'right', 'justify'],
 			table: {
 				rules: [
@@ -1146,15 +1177,31 @@ export default {
 				row: 0,
 				col: 0,
 			},
+			tag: {
+				cur: '',
+				list: [],
+			},
+			font: {
+				cur: '',
+				list: [],
+			},
+			size: {
+				cur: '',
+				list: [],
+			},
 			toggle: {
 				textBar: false,
 				align:0,
 				format: [],
 				super_sub: [],
 				tColor: '#000000',
-				tColorView: [false, false, false],
+				tColorView0: false,
+				tColorView1: false,
+				tColorView2: false,
 				bColor: '#000000',
-				bColorView: [false, false, false],
+				bColorView0: false,
+				bColorView1: false,
+				bColorView2: false,
 				tableDialog: false
 			},
 		}

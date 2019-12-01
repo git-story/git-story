@@ -3,7 +3,7 @@ import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObje
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
-import { toolbarInit, textToolbarInit } from './Edit/toolbarLoad.js';
+import { toolbarInit, textToolbarInit, tagChange, fontChange, sizeChange, textFrontColorChange, textBackColorChange } from './Edit/toolbarLoad.js';
 
 const changeAlign = function() {
 	if ( this.tb.toggle.align === 3 ) {
@@ -178,6 +178,11 @@ export default {
 		changeAlign,
 		textBarToggle,
 		createTables,
+		tagChange,
+		fontChange,
+		sizeChange,
+		textFrontColorChange,
+		textBackColorChange
 	},
 	mounted: function() {
 		let curPName = this.$router.history.current.name;
@@ -212,9 +217,9 @@ export default {
 		true_:  true,
 		tb: { //toolbar
 			lang: 'bash',
-			tag: 'p',
-			font: 'arial black',
-			fsize: '12px',
+			// tag: 'p',
+			// font: 'arial black',
+			// fsize: '12px',
 			align: ['left', 'center', 'right', 'justify'],
 			table: {
 				rules: [
@@ -232,15 +237,31 @@ export default {
 				row: 0,
 				col: 0,
 			},
+			tag: {
+				cur: '',
+				list: [],
+			},
+			font: {
+				cur: '',
+				list: [],
+			},
+			size: {
+				cur: '',
+				list: [],
+			},
 			toggle: {
 				textBar: false,
 				align:0,
 				format: [],
 				super_sub: [],
 				tColor: '#000000',
-				tColorView: [false, false, false],
+				tColorView0: false,
+				tColorView1: false,
+				tColorView2: false,
 				bColor: '#000000',
-				bColorView: [false, false, false],
+				bColorView0: false,
+				bColorView1: false,
+				bColorView2: false,
 				tableDialog: false
 			},
 		}

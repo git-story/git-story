@@ -30,6 +30,9 @@ const getButtonByIconAll = (selector) => {
 
 export const textToolbarInit = () => {
 	//////////////////////// toolbar-text
+	
+
+	////////////////////////
 
 	let bold = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-bold');
 	if ( bold ) {
@@ -104,10 +107,46 @@ export const textToolbarInit = () => {
 	}
 };
 
+export const textFrontColorChange = function() {
+	let editor = this.$refs.vueditor;
+	let toolbar = this.tb;
+
+	editor.setFrontColorCode(toolbar.toggle.tColor);
+}
+
+export const textBackColorChange = function() {
+	let editor = this.$refs.vueditor;
+	let toolbar = this.tb;
+
+	editor.setBackColorCode(toolbar.toggle.bColor);
+}
+
+export const tagChange = function() {
+	let editor = this.$refs.vueditor;
+	let toolbar = this.tb;
+
+	editor.setTag(toolbar.tag.cur);
+}
+
+export const fontChange = function() {
+	let editor = this.$refs.vueditor;
+	let toolbar = this.tb;
+
+	editor.setFont(toolbar.font.cur);
+}
+
+export const sizeChange = function() {
+	let editor = this.$refs.vueditor;
+	let toolbar = this.tb;
+
+	editor.setFontSize(toolbar.size.cur);
+}
+
 export const toolbarInit = (_this) => {
 	//let $colorPicker = document.querySelector('#color-picker');
 
 	let toolbar = _this.tb;
+	let editor = _this.$refs.vueditor;
 
 	//////////////////////// toolbar-1
 
@@ -228,6 +267,13 @@ export const toolbarInit = (_this) => {
 			}
 		});
 	}
+
+	////////////////////////
+	
+	//toolbar.code.list
+	toolbar.tag.list = editor.getTagList();
+	toolbar.font.list = editor.getFontList();
+	toolbar.size.list = editor.getFontSizeList();
 
 	////////////////////////
 

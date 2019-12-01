@@ -98,3 +98,8 @@ div.vueditor.custom iframe {
 	padding-bottom: 15px;
 	padding-top: 100px;
 }
+
+
+div.custom-toolbar div.v-input div.v-select__selections {
+	width: 100%;
+}
