@@ -32,7 +32,6 @@ export const textToolbarInit = () => {
 	//////////////////////// toolbar-text
 
 	let bold = getButtonByIcon('#toolbar-text div.v-btn-toggle.custom i.mdi-format-bold');
-	console.log(bold);
 	if ( bold ) {
 		bold.addEventListener('click', () => {
 			let realBoldButton = document.querySelector('#ve-toolbar-bold');

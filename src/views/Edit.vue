@@ -1,4 +1,4 @@
-<!-- 2019-11-11 12:12:31 PM
+<!-- 2019-12-1 2:30:27 PM
 Edit.vue 파일은 Edit/ 폴더 안에 있는 build.js 스크립트로 만들어졌습니다.
 build.js 는 해당 폴더의 특정 파일들의 변화를 감시하여 Edit.vue 파일로 만듭니다.
 Edit.vue 파일의 모듈화보단 하나의 파일로 만드는 것이 더욱 소스관리에 용이합니다.
@@ -920,6 +920,27 @@ const buildContentHTML = function(_this = this) {
 	let bodyContent = document.createElement('main');
 	bodyContent.innerHTML = contentHTML;
 	body.appendChild(bodyContent);
+
+	// comment 
+	let commentDiv = document.createElement('div');
+	commentDiv.style.marginTop = "10px";
+
+	// disqus
+	if ( cfg.comment.disqus ) {
+		commentDiv.innerHTML += cfg.comment.disqus;
+	}
+	
+	// utterances
+	if ( cfg.comment.utterances ) {
+		commentDiv.innerHTML += cfg.comment.utterances;
+	}
+
+	// facebook
+	if ( cfg.comment.facebook ) {
+		commentDiv.innerHTML += cfg.comment.facebook;
+	}
+
+	body.appendChild(commentDiv);
 
 	cfg.body.end.forEach(e => {
 		let child = createChildElement(e);

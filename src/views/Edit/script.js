@@ -41,6 +41,27 @@ const buildContentHTML = function(_this = this) {
 	bodyContent.innerHTML = contentHTML;
 	body.appendChild(bodyContent);
 
+	// comment 
+	let commentDiv = document.createElement('div');
+	commentDiv.style.marginTop = "10px";
+
+	// disqus
+	if ( cfg.comment.disqus ) {
+		commentDiv.innerHTML += cfg.comment.disqus;
+	}
+	
+	// utterances
+	if ( cfg.comment.utterances ) {
+		commentDiv.innerHTML += cfg.comment.utterances;
+	}
+
+	// facebook
+	if ( cfg.comment.facebook ) {
+		commentDiv.innerHTML += cfg.comment.facebook;
+	}
+
+	body.appendChild(commentDiv);
+
 	cfg.body.end.forEach(e => {
 		let child = createChildElement(e);
 		body.appendChild(child);
