@@ -14,7 +14,7 @@
     "js-beautify": "^1.10.2",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
-    "vueditor_custom": "^0.4.0-test.13",
+    "vueditor_custom": "^0.4.0-test.14",
     "vuetify": "^2.0.0",
     "vuex": "^3.1.1"
   },
