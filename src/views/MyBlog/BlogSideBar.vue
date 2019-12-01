@@ -86,6 +86,7 @@
 			</v-list-item>
 			<!-- E:Blog Comment -->
 			<!-- S:Blog ETC -->
+			<!--
 			<v-list-item link @click="contentChange('BlogSetting')">
 				<v-list-item-icon>
 					<v-icon>mdi-settings</v-icon>
@@ -97,6 +98,7 @@
 					</v-list-item-title>
 				</v-list-item-content>
 			</v-list-item>
+			-->
 			<!-- E:Blog ETC -->
 		</v-list>
 	</v-navigation-drawer>
