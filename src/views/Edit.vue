@@ -1,4 +1,4 @@
-<!-- 2019-11-11 9:55:56 AM
+<!-- 2019-12-1 19:02:41
 Edit.vue 파일은 Edit/ 폴더 안에 있는 build.js 스크립트로 만들어졌습니다.
 build.js 는 해당 폴더의 특정 파일들의 변화를 감시하여 Edit.vue 파일로 만듭니다.
 Edit.vue 파일의 모듈화보단 하나의 파일로 만드는 것이 더욱 소스관리에 용이합니다.
@@ -700,7 +700,7 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 				<v-row style="height:80px;">
 					<v-col sm="1" md="3"></v-col>
 					<v-col>
-						<v-text-field ref="input-title" color="secondery" class="custom-title" :label="Lang('editor.input-title')"></v-text-field>
+						<v-text-field ref="input-title" color="secondery" class="custom-title" :label="Lang('editor.input-title')" v-model="title"></v-text-field>
 						<Vueditor id="editorcontiner" ref="vueditor" class="custom" v-model="text"></Vueditor>
 					</v-col>
 					<v-col sm="1" md="3"></v-col>
@@ -873,7 +873,7 @@ div.vueditor.custom iframe {
 </style>
 <script>
 import axios from 'axios';
-import { getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObject, commitGitData } from '../modules/common.js';
+import { getGitData, getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObject, commitGitData, removePost } from '../modules/common.js';
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
@@ -901,7 +901,7 @@ const buildContentHTML = function(_this = this) {
 	let head = document.createElement('head');
 	cfg.head.forEach(e => {
 		let child = createChildElement(e);
-		head.appendChild(child);
+			head.appendChild(child);
 	});
 	html.appendChild(head);
 
@@ -932,14 +932,19 @@ const doPostingContent = function() {
 		let posts_sha = this.posts_ori.sha;
 
 		let selectedCategory = this.c_sel.value;
-		let category = getObject(posts, selectedCategory);
 
-		let path = category.href;
+		// 실제 파일은 카테고리와 무관하게
+		// 디렉토리를 더 나누지 않고 /posts 아래 바로 위치하도록 수정
+		// let path = category.href;
+		let path = "/posts/";
 		let nowDate = genNowDate();
-
-		let title = this.$refs['input-title'].internalValue;
-
-
+		
+		let requsetBase = `${path}${nowDate}/`
+		
+		if (this.indexPath.length > 0) { // 편집하는 경우 기존 경로로
+			requsetBase = this.indexPath;
+		}
+		
 		let coverImg = null;
 		if ( coverImg ) {
 			// TODO: 글에서 대표 커버 찾아내는 알고리즘 추가
@@ -949,15 +954,19 @@ const doPostingContent = function() {
 			let pickNum = Math.floor(Math.random() * coverImgs.length);
 			coverImg = coverImgs[pickNum];
 		}
-
+		
+		if (this.indexPath.length > 0) {
+			// 기존 정보 post.json에서 제거
+			removePost({"title": this.title, "href": requsetBase}, axios, this, false);
+		}
+		let category = getObject(posts, selectedCategory);
 		category.posts.push({
 			cover: coverImg,
-			href: `${path}${nowDate}/`,
-			title: title,
+			href: requsetBase,
+			title: this.title,
 		});
 
-
-		let commitMsg = `📚 [GITSTORY] 📝 POSTING : [${title.toUpperCase()}]`;
+		let commitMsg = `📚 [GITSTORY] 📝 POSTING : [${this.title.toUpperCase()}]`;
 		let ploading = findChildByTagName(this, "PLoading");
 		ploading.show();
 
@@ -965,8 +974,8 @@ const doPostingContent = function() {
 		commitGitData(this, axios, '/posts.json', posts, posts_sha, commitMsg)
 			.then(() => {
 				let contentHTML = buildContentHTML(this);
-				let reqUrl = `${path}${nowDate}/index.html`;
-				commitGitData(this, axios, reqUrl, contentHTML, null, commitMsg)
+				let reqUrl = requsetBase + 'index.html';
+				commitGitData(this, axios, reqUrl, contentHTML, this.indexSHA, commitMsg)
 					.then(() => {
 						ploading.hide();
 						routeAssignUrl('/my-blog', this);
@@ -1005,20 +1014,47 @@ export default {
 	components: {
 		PLoading
 	},
+
+	props: ['editinfo'],
 	methods: {
 		doPosting: doPostingContent,
 		getContent : function() {
-			this.text = this.$refs.vueditor.getContent()
+			this.text = this.$refs.vueditor.getContent();
+		},
+		setContent : function(content) 	{
+			this.$refs.vueditor.setContent(content);
 		},
 		Lang,
 		changeAlign
 	},
 	mounted: function() {
-		let curPName = this.$router.history.current.name;
+		
+		if (this.editinfo !== undefined)
+		{
+			this.editMode = true;
+			
+			//editInfo 에 title 과 href정보가 있다.
+			let decodeObject = Buffer.from(this.editinfo, 'base64').toString('utf8');
+			let editInfo = JSON.parse(decodeObject);
+			let decodeURI = editInfo.href;
+			let decodeTitle = editInfo.title;
+
+			getGitData(this, axios, `${decodeURI}index.html`).then(res => {
+				
+				//파일을 업데이트 하기위한 sha와 경로를 받아오고 editor에 내용을 채워준다.
+				this.indexSHA = res.sha;
+				this.indexPath = decodeURI;
+				this.title = decodeTitle;
+				this.setContent(res.decodeData);
+
+			});
+		}
+
+		let curPName = this.$router.history.current.name;	
 		if ( curPName === "Edit" ) {
 			let vContent = document.querySelector('#router-view');
 			vContent.style.background = "white";
-
+			
 			getGitJsonData(this, axios, "posts.json").then(res => {
 				this.posts = res.json;
 				this.posts_ori = res;
@@ -1026,23 +1062,27 @@ export default {
 				this.categoryItem = createCategoryItems(this.posts);
 				this.c_sel = this.categoryItem[0];
 			});
-
-
-			getGitJsonData(this, axios, "config.json").then(res => {
-				this.config = res.json;
-				this.config_ori = res;
-			});
-
-
-			// 커스텀 툴바를, vueditor 와 연결
-			toolbarLoad(this);
 		}
+		
+		getGitJsonData(this, axios, "config.json").then(res => {
+			this.config = res.json;
+			this.config_ori = res;
+		});
+
+
+		// 커스텀 툴바를, vueditor 와 연결
+		toolbarLoad(this);
 	},
 	data: () => ({
 		text: "Test",
 		c_sel: {},
 		categoryItem: ['test', 'test2'],
 		menu: false,
+
+		indexSHA: null, // index.html에 대한 sha
+		indexPath: "",
+		title: "",
+		
 		tb: { //toolbar
 			select: 'text',
 			lang: 'bash',

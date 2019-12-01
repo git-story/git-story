@@ -4,7 +4,7 @@
 		<v-row style="height:80px;">
 			<v-col sm="1" md="3"></v-col>
 			<v-col>
-				<v-text-field ref="input-title" color="secondery" class="custom-title" :label="Lang('editor.input-title')"></v-text-field>
+				<v-text-field ref="input-title" color="secondery" class="custom-title" :label="Lang('editor.input-title')" v-model="title"></v-text-field>
 				<Vueditor id="editorcontiner" ref="vueditor" class="custom" v-model="text"></Vueditor>
 			</v-col>
 			<v-col sm="1" md="3"></v-col>

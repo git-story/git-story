@@ -25,6 +25,12 @@ export default new Router({
 			component: MyBlog,
 		},
 		{
+			path: '/edit/:editinfo',
+			name: 'Edit',
+			component: Edit,
+			props: true
+		},
+		{
 			path: '/edit',
 			name: 'Edit',
 			component: Edit
