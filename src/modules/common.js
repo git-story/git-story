@@ -218,7 +218,7 @@ const searchObject = (obj, key, value, p = false) => {
     }
 };
 
-export const removePost = function(post, axios, _this = this) {
+export const removePost = function(post, axios, _this = this, commit = true) {
 	return new Promise((resolve, reject) => {
 		let commitMsg = `📚 [GITSTORY]: ⛔ REMOVE POSTING : [${post.title}]`;
 
@@ -230,22 +230,24 @@ export const removePost = function(post, axios, _this = this) {
 		if ( pidx === -1 ) {
 			reject(new Error('can not find post'));	
 		}
-		posts.splice(pidx, 1);
 
+		posts.splice(pidx, 1);
 		let sha = null;
-		if ( _this.posts.sha ) {
-			sha = _this.posts.sha;
-			delete _this.posts.sha
+		if ( _this.posts_ori.sha ) {
+			sha = _this.posts_ori.sha;
 		} else {
 			reject(new Error('not have content sha'));
 		}
+		
+		if (commit) {
+			commitGitData(_this, axios, '/posts.json', _this.posts, sha, commitMsg)
+				.then((res) => {
+					resolve(res);
+				}).catch((err) => {
+					reject(err);
+				});
+		}
 
-		commitGitData(_this, axios, '/posts.json', _this.posts, sha, commitMsg)
-			.then((res) => {
-				resolve(res);
-			}).catch((err) => {
-				reject(err);
-			});
 	});
 }
 

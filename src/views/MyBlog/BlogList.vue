@@ -18,7 +18,7 @@
 									<v-list-item-action>
 										<v-tooltip top>
 											<template v-slot:activator="{ on }">
-												<v-btn icon v-on="on">
+												<v-btn icon v-on="on" @click="modifyPost(post)">
 													<v-icon>mdi-pencil</v-icon> 
 												</v-btn>
 											</template>
@@ -59,15 +59,25 @@ import Lang from '../../languages/Lang.js';
 const loadPost = function(_this = this) {
 	getGitJsonData(_this, axios, "posts.json").then(data => {
 		let posts = data.json;
-		posts.sha = data.sha;
 		let postList = getSubposts(posts);
 		// TODO: postList 시간 최신순 정렬
 
 		_this.postList = postList;
 		_this.posts = posts;
+		_this.posts_ori = data;
 		_this.$forceUpdate();
 	}).catch(() => {
 	});
+}
+
+const modifyPost = function(post) {
+
+	let editInfoObj = {"title": post.title, "href": post.href}
+	let editInfoJsonString = JSON.stringify(editInfoObj)
+
+	let editInfoJsonStringb64 = Buffer.from(editInfoJsonString, 'utf8').toString('base64');
+	this.$router.push("/edit/" + editInfoJsonStringb64) 
+
 }
 
 const deletePost = function(post) {
@@ -121,7 +131,8 @@ export default {
 	},
 	methods: {
 		Lang,
-		deletePost
+		deletePost,
+		modifyPost
 	},
 	mounted: function() {
 	},
