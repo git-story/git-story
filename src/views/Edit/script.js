@@ -157,6 +157,13 @@ const textBarToggle = function() {
 	}
 };
 
+const createTables = function() {
+	let table = this.tb.table;
+	let editor = this.$refs.vueditor;
+
+	editor.createTable(table.row, table.col);
+};
+
 export default {
 	name: 'Edit',
 	components: {
@@ -169,7 +176,8 @@ export default {
 		},
 		Lang,
 		changeAlign,
-		textBarToggle
+		textBarToggle,
+		createTables,
 	},
 	mounted: function() {
 		let curPName = this.$router.history.current.name;
@@ -201,12 +209,29 @@ export default {
 		c_sel: {},
 		categoryItem: [],
 		menu: false,
+		true_:  true,
 		tb: { //toolbar
 			lang: 'bash',
 			tag: 'p',
 			font: 'arial black',
 			fsize: '12px',
 			align: ['left', 'center', 'right', 'justify'],
+			table: {
+				rules: [
+					(value) => {
+						if ( value === undefined ) {
+							return "please-input";
+						}
+
+						if ( value.toString().match(/[^0-9]/g) ) {
+							return Lang("editor.table.only-number");
+						}
+						return true;
+					}
+				],
+				row: 0,
+				col: 0,
+			},
 			toggle: {
 				textBar: false,
 				align:0,
@@ -216,6 +241,7 @@ export default {
 				tColorView: [false, false, false],
 				bColor: '#000000',
 				bColorView: [false, false, false],
+				tableDialog: false
 			},
 		}
 	}),

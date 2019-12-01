@@ -16,6 +16,7 @@
 	"cancel": "취소",
 	"comment": "댓글",
 	"add": "추가",
+	"please-input": "값을 입력해 주세요.",
 
 
 
@@ -57,6 +58,9 @@
 	"editor.toolbar.super": "위 첨자",
 	"editor.toolbar.link": "링크 추가",
 	"editor.toolbar.unlink": "링크 제거",
+
+	"editor.table.create": "표 만들기",
+	"editor.table.only-number": "입력은 숫자만 할 수 있습니다.",
 
 
 	"myblog.newpost": "새 글 작성",

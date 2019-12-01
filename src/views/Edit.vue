@@ -1,4 +1,4 @@
-<!-- 2019-12-1 2:30:27 PM
+<!-- 2019-12-1 6:22:36 PM
 Edit.vue 파일은 Edit/ 폴더 안에 있는 build.js 스크립트로 만들어졌습니다.
 build.js 는 해당 폴더의 특정 파일들의 변화를 감시하여 Edit.vue 파일로 만듭니다.
 Edit.vue 파일의 모듈화보단 하나의 파일로 만드는 것이 더욱 소스관리에 용이합니다.
@@ -13,6 +13,31 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 -->
 <template>
 	<v-content>
+		<!-- S:Etc Dialog -->
+		<v-dialog v-model="tb.toggle.tableDialog" persistent width="80%" max-width="600px">
+			<v-card>
+				<v-card-title class="headline">{{ Lang('editor.table.create') }}</v-card-title>
+				<v-card-text>
+					<v-row>
+						<v-col md="5">
+							<v-text-field :rules="tb.table.rules" v-model="tb.table.row" label="Row"></v-text-field>
+						</v-col>
+						<v-col align-self="center" align="center" md="2">
+							X
+						</v-col>
+						<v-col md="5">
+							<v-text-field :rules="tb.table.rules" v-model="tb.table.col" label="Col"></v-text-field>
+						</v-col>
+					</v-row>
+				</v-card-text>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn color="red darken-1" text @click="tb.toggle.tableDialog = false">{{ Lang('cancel') }}</v-btn>
+					<v-btn color="green darken-1" text @click="createTables(); tb.toggle.tableDialog = false;">{{ Lang('add') }}</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+		<!-- E:Etc Dialog -->
 		<!-- S:New Editor Toolbar -->
 		<div class="custom-toolbar">
 			<v-toolbar id="toolbar-1" class="custom-toolbar" dense>
@@ -794,12 +819,21 @@ div.v-application {
 
 .vueditor > .ve-toolbar {
 	width: 100%;
-	left: 0;
 	position: absolute;
-	top: 0;
-	z-index: -1;
 	box-shadow: 0px 0px 5px #cacaca;
+	left: 0;
+
+	/* service code */
+	top: 0;
 	display:none;
+	z-index: -1;
+
+	/* debug code */
+	/*
+	top: 50%;
+	display: block;
+	z-index: 30;
+	*/
 }
 
 .vueditor > .ve-design {
@@ -1037,6 +1071,13 @@ const textBarToggle = function() {
 	}
 };
 
+const createTables = function() {
+	let table = this.tb.table;
+	let editor = this.$refs.vueditor;
+
+	editor.createTable(table.row, table.col);
+};
+
 export default {
 	name: 'Edit',
 	components: {
@@ -1049,7 +1090,8 @@ export default {
 		},
 		Lang,
 		changeAlign,
-		textBarToggle
+		textBarToggle,
+		createTables,
 	},
 	mounted: function() {
 		let curPName = this.$router.history.current.name;
@@ -1081,12 +1123,29 @@ export default {
 		c_sel: {},
 		categoryItem: [],
 		menu: false,
+		true_:  true,
 		tb: { //toolbar
 			lang: 'bash',
 			tag: 'p',
 			font: 'arial black',
 			fsize: '12px',
 			align: ['left', 'center', 'right', 'justify'],
+			table: {
+				rules: [
+					(value) => {
+						if ( value === undefined ) {
+							return "please-input";
+						}
+
+						if ( value.toString().match(/[^0-9]/g) ) {
+							return Lang("editor.table.only-number");
+						}
+						return true;
+					}
+				],
+				row: 0,
+				col: 0,
+			},
 			toggle: {
 				textBar: false,
 				align:0,
@@ -1096,6 +1155,7 @@ export default {
 				tColorView: [false, false, false],
 				bColor: '#000000',
 				bColorView: [false, false, false],
+				tableDialog: false
 			},
 		}
 	}),

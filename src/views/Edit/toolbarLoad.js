@@ -1,4 +1,4 @@
-// TODO: link, text color, background color, font, tag, code, size, table, image
+// TODO: link, text color, background color, font, tag, code, size, image
 
 const getButtonByIcon = (selector) => {
 	let icon = document.querySelector(selector);
@@ -196,6 +196,18 @@ export const toolbarInit = (_this) => {
 	}
 
 	////////////////////////
+	
+	let image = getButtonByIcon('#toolbar-1 .mdi-image-multiple');
+	if ( image ) {
+		// TODO: Image Upload
+	}
+
+	let table = getButtonByIcon('#toolbar-1 i.mdi-table-large-plus');
+	if ( table ) {
+		table.addEventListener('click', () => {
+			toolbar.toggle.tableDialog = true;
+		});
+	}
 
 	let codeView = getButtonByIcon('#toolbar-1 i.mdi-xml');
 	if ( codeView ) {
@@ -291,7 +303,7 @@ export const toolbarInit = (_this) => {
 		});
 	}
 
-	//////////////////////// toolbar-1
+	//////////////////////// toolbar-2
 	
 	alignLeft = getButtonByIcon('#toolbar-2 div.v-btn-toggle.custom i.mdi-format-align-left');
 	if ( alignLeft ) {
