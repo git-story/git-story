@@ -197,7 +197,7 @@ const searchObject = (obj, key, value, p = false) => {
     if ( !value ) return obj;
 
     for ( let i=0;i<len;i++ ) {
-        let k = keys[i];                                                                                                                                                                    
+        let k = keys[i];
         if ( k === key ) {
             if ( obj[k] == value ) {
 				if ( p === true ) {
