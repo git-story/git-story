@@ -49,15 +49,15 @@
 	</v-container>
 </template>
 <script>
-import axios from 'axios';
-import { getGitJsonData, getSubposts, routeAssignUrl, findChildByTagName, removePost } from '../../modules/common.js';
+import { getSubposts, routeAssignUrl, findChildByTagName, removePost } from '../../modules/common.js';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
 import Lang from '../../languages/Lang.js';
 
 const loadPost = function(_this = this) {
-	getGitJsonData(_this, axios, "posts.json").then(data => {
+	let gitApi = _this.$store.getters.api;
+	gitApi.repo.getJsonData("posts.json").then(data => {
 		let posts = data.json;
 		let postList = getSubposts(posts);
 		// TODO: postList 시간 최신순 정렬
@@ -93,7 +93,7 @@ const deletePost = function(post) {
 		confirm.hide();
 		ploading.content = Lang('myblog.list.progress_delete');
 		ploading.show();
-		removePost(post, axios, this).then(() => {
+		removePost(post, this).then(() => {
 			ploading.hide();
 			modal.title = Lang('notification');
 			modal.content = Lang('myblog.list.success_del_post');

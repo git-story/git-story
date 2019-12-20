@@ -90,8 +90,7 @@ header.tool-custom {
 }
 </style>
 <script>
-import axios from 'axios';
-import { getGitJsonData, findChildByTagName, commitGitData  } from '../../modules/common.js';
+import { findChildByTagName  } from '../../modules/common.js';
 import Lang from '../../languages/Lang.js';
 import Confirm from '../Util/Confirm';
 import IModal from '../Util/IModal';
@@ -175,20 +174,23 @@ const deleteTag = function(tag, id, idx) {
 
 const applyIncludeTags = function() {
 	let config = this.config;
-	let sha = this.config_ori.sha;
 
 	let ploading = findChildByTagName(this, "PLoading");
 	ploading.show();
-	commitGitData(this, axios, '/config.json', config, sha)
-		.then(() => {
-			let modal = findChildByTagName(this, "Modal");
-			modal.title = Lang('notification');
-			modal.content = Lang('myblog.include.success_apply');
-			modal.ok = Lang('ok');
-			modal.show();
-		}).finally(() => {
-			ploading.hide();
-		});
+
+	let gitApi = this.$store.getters.api;
+	gitApi.repo.commitFiles("Include Tag Apply", [{
+		"path": "config.json",
+		"content": config
+	}]).then(() => {
+		let modal = findChildByTagName(this, "Modal");
+		modal.title = Lang('notification');
+		modal.content = Lang('myblog.include.success_apply');
+		modal.ok = Lang('ok');
+		modal.show();
+	}).finally(() => {
+		ploading.hide();
+	});
 };
 
 export default {
@@ -200,7 +202,8 @@ export default {
 		PLoading
 	},
 	created: function() {
-		getGitJsonData(this, axios, 'config.json').then(res => {
+		let gitApi = this.$store.getters.api;
+		gitApi.repo.getJsonData("config.json").then(res => {
 			let config = res.json
 
 			this.config = config;

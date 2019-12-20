@@ -108,8 +108,7 @@
 	</v-container>
 </template>
 <script>
-import axios from 'axios';
-import { getGitJsonData, findChildByTagName, getObject, commitGitData } from '../../modules/common.js';
+import { findChildByTagName, getObject } from '../../modules/common.js';
 import Prompt from '../Util/Prompt';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
@@ -305,15 +304,18 @@ const deleteCategory = function() {
 const applyCategory = function() {
 	let posts = this.posts;
 	let commitMsg = `📚 [GITSTORY] 📜 CATEGORY UPDATE : [posts.json]`;
+	let gitApi = this.$store.getters.api;
 
 	let ploading = findChildByTagName(this, "PLoading");
 	ploading.show();
-	commitGitData(this, axios, '/posts.json', posts, this.posts_ori.sha, commitMsg)
-		.then(() => {
-			ploading.hide();
-		}).catch(() => {
-			ploading.hide();
-		});
+	gitApi.repo.commitFiles(commitMsg, [{
+		"path": "posts.json",
+		"content": posts
+	}]).then(() => {
+		ploading.hide();
+	}).catch(() => {
+		ploading.hide();
+	});
 };
 
 export default {
@@ -325,11 +327,13 @@ export default {
 		Modal
 	},
 	created: function() {
-		getGitJsonData(this, axios, "posts.json").then(res => {
-			let posts = res.json;
-			this.posts_ori = res;
-			updateCategory(this, posts);
-		});
+		let gitApi = this.$store.getters.api;
+		gitApi.repo.getJsonData("posts.json").
+			then(res => {
+				let posts = res.json;
+				this.posts_ori = res;
+				updateCategory(this, posts);
+			});
 	},
 	methods: {
 		Lang,

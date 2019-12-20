@@ -4,6 +4,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import config from '../config'
+import GitHubAPI from './github-api.js'
 
 Vue.use(Vuex);
 
@@ -23,6 +24,7 @@ export default new Vuex.Store({
 		github: null,
 		config: config,
 		vMobile: false, // mobile view flag
+		api: null
 	},
 	getters: {
 		token: state => {
@@ -39,6 +41,9 @@ export default new Vuex.Store({
 		},
 		vMobile: state => {
 			return state.vMobile;
+		},
+		api: state => {
+			return state.api;
 		}
 	},
 	mutations: {
@@ -66,6 +71,15 @@ export default new Vuex.Store({
 		},
 		vMobile: (state, mode) => {
 			state.vMobile = mode;
+		},
+		api: (state) => {
+			let GitHub = new GitHubAPI({token: state.userToken});
+			let name = state.user.name;
+
+			state.api = new Object();
+			state.api.git = GitHub;
+			state.api.repo = GitHub.getRepository(`${name}/${name}.github.io`);
+			state.api.user = GitHub.getUser(name);
 		}
 	}
 });

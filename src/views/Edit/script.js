@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getGitData, getGitJsonData, genNowDate, findChildByTagName, routeAssignUrl, getObject, commitGitData, removePost } from '../modules/common.js';
+import { genNowDate, findChildByTagName, routeAssignUrl, getObject, removePost } from '../modules/common.js';
 import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
@@ -76,7 +76,6 @@ const doPostingContent = function() {
 	// get posts.json
 	if ( this.posts ) {
 		let posts = this.posts;
-		let posts_sha = this.posts_ori.sha;
 
 		let selectedCategory = this.c_sel.value;
 
@@ -118,16 +117,22 @@ const doPostingContent = function() {
 		ploading.show();
 
 		// posting
-		commitGitData(this, axios, '/posts.json', posts, posts_sha, commitMsg)
-			.then(() => {
-				let contentHTML = buildContentHTML(this);
-				let reqUrl = requsetBase + 'index.html';
-				commitGitData(this, axios, reqUrl, contentHTML, this.indexSHA, commitMsg)
-					.then(() => {
-						ploading.hide();
-						routeAssignUrl('/my-blog', this);
-					});
-			});
+		let gitApi = this.$store.getters.api;
+		let contentHTML = buildContentHTML(this);
+		let reqUrl = requsetBase + 'index.html';
+		gitApi.repo.commitFiles(commitMsg, [
+			{
+				"path": "posts.json",
+				"content": posts
+			}, 
+			{
+				"path": reqUrl,
+				"content": contentHTML
+			}
+		]).then(() => {
+			ploading.hide();
+			routeAssignUrl('/my-blog', this);
+		});
 	}
 };
 
@@ -199,6 +204,7 @@ export default {
 		textBackColorChange
 	},
 	mounted: function() {
+		let gitApi = this.$store.getters.api;
 		
 		if (this.editinfo !== undefined)
 		{
@@ -210,7 +216,7 @@ export default {
 			let decodeURI = editInfo.href;
 			let decodeTitle = editInfo.title;
 
-			getGitData(this, axios, `${decodeURI}index.html`).then(res => {
+			gitApi.repo.getContents(`${decodeURI}index.html`).then(res => {
 				
 				//파일을 업데이트 하기위한 sha와 경로를 받아오고 editor에 내용을 채워준다.
 				this.indexSHA = res.sha;
@@ -226,7 +232,7 @@ export default {
 			let vContent = document.querySelector('#router-view');
 			vContent.style.background = "white";
 			
-			getGitJsonData(this, axios, "posts.json").then(res => {
+			gitApi.repo.getJsonData("posts.json").then(res => {
 				this.posts = res.json;
 				this.posts_ori = res;
 
@@ -235,7 +241,7 @@ export default {
 			});
 		}
 		
-		getGitJsonData(this, axios, "config.json").then(res => {
+		gitApi.repo.getJsonData("config.json").then(res => {
 			this.config = res.json;
 			this.config_ori = res;
 		});

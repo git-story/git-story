@@ -88,21 +88,9 @@ div.v-card.custom-img div div.v-image__image--cover:hover {
 }
 </style>
 <script>
-import axios from 'axios';
 import Confirm from '../Util/Confirm';
-import { findChildByTagName, getGitData, getGitJsonData, commitGitData, commitGitDataQueue, getAllGSThemes, deleteGitFileQueue  } from '../../modules/common.js';
+import { findChildByTagName } from '../../modules/common.js';
 import Lang from '../../languages/Lang.js';
-
-const removeTheme = function(_this = this, list = [], callback) {
-	list.forEach((l) => {
-		// file
-		getGitData(_this, axios, l).then(res => {
-			deleteGitFileQueue(_this, axios, res.path, res.sha, callback);
-		}).catch(() => {
-			deleteGitFileQueue(_this, axios, 'null', 'null', callback);
-		});
-	});
-}
 
 const changeTheme = function() {
 	let sTheme = this.sTheme;
@@ -113,44 +101,75 @@ const changeTheme = function() {
 	confirm.ok = Lang('ok');
 	confirm.cancel = Lang('cancel');
 	confirm.okClick = () => {
-		getGitJsonData(this, axios, '/config.json').then(rconfig => {
-			let vueConfig = this.$store.getters.config;
+		confirm.hide();
+
+		let gitApi = this.$store.getters.api;
+		gitApi.repo.getJsonData("config.json").then(rconfig => {
 			let config = rconfig.json;
 
-			let apiUrl = vueConfig.api;
-			let reqUrl = `${apiUrl}/repos/${sTheme.full_name}/contents`;
-			const GET_OTHER_URL = true;
-
+			let reqFiles = [];
 			// remove now theme dependency files
-			removeTheme(this, config.theme.files, () => {
-				// get target config json 
-				getGitJsonData(this, axios, reqUrl+'/config.json', GET_OTHER_URL).then(res => {
+			// add commit request list
+			config.theme.files.forEach((l) => {
+				reqFiles.push({
+					path: l,
+					content: null
+				});
+			});
+
+			gitApi.repo.getJsonData("config.json", sTheme.full_name).
+				then(async (res) => {
 					let targetConfig = res.json;
 					let theme = targetConfig.theme;
+
 					// theme config update
 					config.theme = targetConfig.theme;
 
 					// config json commit
-					commitGitData(this, axios, '/config.json', config, rconfig.sha).then(() => {
-						theme.files.forEach(tf => {
-							let slash = "/";
-							if ( tf[0] === "/" ) {
-								slash = "";
-							}
-							// get target file
-							getGitData(this, axios, reqUrl + slash + tf, GET_OTHER_URL).then((targetFile) => {
-								// get my blog file
-								getGitData(this, axios, tf).then(oriFile => {
-									// if have file in my blog then update
-									commitGitDataQueue(this, axios, targetFile.encoding, targetFile.path, targetFile.content, oriFile.sha);
-								}).catch(() => {
-									commitGitDataQueue(this, axios, targetFile.encoding, targetFile.path, targetFile.content);
-								});
-							});
-						})
+					reqFiles.push({
+						path: "config.json",
+						content: config
 					});
+
+					let getThemeReq = [];
+					theme.files.forEach(tf => {
+						let file = tf;
+						if ( file[0] === "/" ) {
+							file = file.substr(1);
+						}
+						getThemeReq.push(gitApi.repo.getData(file, sTheme.full_name));
+					});
+
+					let _res = await Promise.all(getThemeReq);
+					_res.forEach(r => {
+						let data = r.data;
+						let file = data.path;
+						let content = Buffer.from(data.content, "base64").toString("utf8");
+						if ( file[0] === "/" ) {
+							file = file.substr(1);
+						}
+						reqFiles.push({
+							"path": file,
+							"content": content
+						});
+					});
+
+					return gitApi.repo.commitFiles("theme change", reqFiles);
+				}).
+				// eslint-disable-next-line
+				then((res) => {
+					// eslint-disable-next-line
+					console.log("commit done.");
+				}).
+				catch((err) => {
+					if ( err.data ) {
+						// eslint-disable-next-line
+						console.error(err.data);
+					} else {
+						// eslint-disable-next-line
+						console.error(err);
+					}
 				});
-			});
 		});
 	};
 	confirm.show();
@@ -182,25 +201,35 @@ export default {
 		Confirm
 	},
 	created: function() {
-		getGitJsonData(this, axios, 'config.json').then(res => {
+		let gitApi = this.$store.getters.api;
+
+		gitApi.repo.getJsonData("config.json").then(res => {
 			let config = res.json;
 			this.config = config;
 			this.config_ori = res;
 		});
 
-		getAllGSThemes(this, axios).then(themes => {
+		let Search = gitApi.git.search({ q: 'git-story-template-' });
+		Search.forRepositories({ sort: 'updated' }).then(res => {
+			let repos = res.data;
+			let themes = [];
+			repos.forEach((r) => {
+				if ( r.name.match(/^git-story-template-/) ) {
+					themes.push(r);
+				}
+			});
+
 			this.themes = themes;
 			themes.forEach((t) => {
-				let apiUrl = this.$store.getters.config.api;
-				let reqUrl = `${apiUrl}/repos/${t.full_name}/contents/photos/`;
-				getGitData(this, axios, reqUrl, true).then(res => {
-					if ( res.length <= 0 ) {
+				gitApi.repo.getData("photos", t.full_name).then(res => {
+					let data = res.data;
+					if ( data.length <= 0 ) {
 						let avatar = t.owner.avatar_url;
 						t.imgs = [ avatar ];
 						t.cover = avatar;
 					} else {
-						t.imgs = res;
-						t.cover = res[0].html_url + "?raw=true";
+						t.imgs = data;
+						t.cover = data[0].html_url + "?raw=true";
 					}
 				}).catch(() => {
 					let avatar = t.owner.avatar_url;

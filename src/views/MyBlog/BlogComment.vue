@@ -341,8 +341,7 @@
 	</v-container>
 </template>
 <script>
-import axios from 'axios';
-import { getGitJsonData, findChildByTagName, commitGitData } from '../../modules/common.js';
+import { findChildByTagName } from '../../modules/common.js';
 import Lang from '../../languages/Lang.js';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
@@ -355,14 +354,18 @@ const commentApply = function() {
 	
 	let comment = this.comment;
 	let config = this.config;
-
 	config.comment = comment;
-	commitGitData(this, axios, '/config.json', config, this.config_ori.sha, commitMsg)
-		.then(() => {
-			ploading.hide();
-		}).catch(() => {
-			ploading.hide();
-		});
+
+	let gitApi = this.$store.getters.api;
+
+	gitApi.repo.commitFiles(commitMsg, [{
+		"path": "config.json",
+		"content": config
+	}]).then(() => {
+		ploading.hide();
+	}).catch(() => {
+		ploading.hide();
+	});
 }
 
 const clickFacebook = function() {
@@ -468,7 +471,8 @@ export default {
 		PLoading
 	},
 	created: function() {
-		getGitJsonData(this, axios, '/config.json').then(res => {
+		let gitApi = this.$store.getters.api;
+		gitApi.repo.getJsonData("config.json").then(res => {
 			this.config = res.json;
 			this.config_ori = res;
 

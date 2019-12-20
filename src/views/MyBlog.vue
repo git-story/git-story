@@ -139,11 +139,10 @@
 	</v-content>
 </template>
 <script>
-import axios from 'axios';
 import Confirm from './Util/Confirm';
 import Modal from './Util/Modal';
 import PLoading from './Util/PLoading';
-import { randomNumber, findChildByTagName, routeAssignUrl, removeRepository, getGitJsonData, mobileCheck, commitGitData  } from '../modules/common.js';
+import { randomNumber, findChildByTagName, routeAssignUrl, mobileCheck  } from '../modules/common.js';
 import Lang from '../languages/Lang.js';
 import BlogSideBar from './MyBlog/BlogSideBar';
 import EventBus from '../modules/event-bus.js';
@@ -173,7 +172,8 @@ const contentChangeComponent = function(target, _this) {
 
 const authorUpdate = (_this = this) => {
 	return new Promise((resolve, reject) => {
-		getGitJsonData(_this, axios, "config.json").then((res) => {
+		let gitApi = _this.$store.getters.api;
+		gitApi.repo.getJsonData("config.json").then((res) => {
 			let config = res.json;
 			let user = _this.$store.getters.user;
 			if ( config['author'] === "" ) {
@@ -181,47 +181,32 @@ const authorUpdate = (_this = this) => {
 
 				let commitMsg = "📚 [GITSTORY] 👤 AUTHOR UPDATE : [config.json]";
 
-				commitGitData(_this, axios, '/config.json', config, res.sha, commitMsg)
-					.then((res) => {
-						resolve(res);
-					}).catch((err) => {
-						reject(err);
-					});
+				gitApi.repo.commitFiles(commitMsg, [{
+					"path": "config.json",
+					"content": config 
+				}]).then(resolve).catch(reject);
 			}
 		}).catch(() => {
 		});
 	});
 };
 
-// 레포지토리 생성
-// TODO: git page Enable ( https://developer.github.com/v3/repos/pages/#enable-a-pages-site )
-// Delete _config.yml file in template 
-const createRepository = function(_this = this) {
-	if ( !_this ) return;
+const createRepository = (_this = this) => {
+	let gitApi = _this.$store.getters.api;
+	let user = _this.$store.getters.user;
+	let templates = _this.$store.getters.config.templates;
+	let template = templates[randomNumber(templates.length)];
 
-	let store = _this.$store;
-	let user = store.getters.user;
 	let modal = findChildByTagName(_this, "Modal");
 	let ploading = findChildByTagName(_this, "PLoading");
-	let apiUrl = store.getters.config.api;
-	//let userName = store.getters.user.name;
 
-	let templates = store.getters.config.templates;
-	let template = templates[randomNumber(templates.length)];
-	axios({
-		url: `${apiUrl}/repos/mobbing/${template}/generate`,
-		method: 'post',
-		headers: {
-			'Authorization': `Token ${store.getters.token}`,
-			'Accept': 'application/vnd.github.baptiste-preview+json'
-		},
-		data: {
-			'owner':  user.name,
-			'name': `${user.name}.github.io`,
-			'description': '📚 [GITSTORY] 🚥 Writing post easier and faster',
-			'private': false
-		}
+	gitApi.repo.createTemplateRepo(template, {
+		"owner": user.name,
+		"name" : `${user.name}.github.io`,
+		"description": '📚 [GITSTORY] 🚥 Writing post easier and faster',
+		"private": false
 	}).then(() => {
+		// 레포지토리 생성 성공
 		ploading.hide();
 		modal.title = Lang('notification');
 		modal.content = Lang('success_create_blog');
@@ -232,9 +217,8 @@ const createRepository = function(_this = this) {
 		};
 		modal.show();
 	}).catch(() => {
-		ploading.hide();
 		modal.title = Lang('error');
-		modal.content = Lang('can_not_create_blog');
+		modal.content = Lang('can_not_del_repo');
 		modal.ok = Lang('confirm');
 		modal.okClick = () => {
 			modal.hide();
@@ -267,6 +251,9 @@ export default {
 	mounted: function() {
 		let curPName = this.$router.history.current.name;
 		if ( curPName === "MyBlog" ) {
+			this.$store.commit("api");
+			let gitApi = this.$store.getters.api;
+
 			let wallpapers = this.$store.getters.config.wallpapers;
 			let wnum = randomNumber(wallpapers.length);
 
@@ -283,83 +270,57 @@ export default {
 			vContent.style.backgroundPosition = "center center";
 			vContent.style.backgroundSize = "cover";
 
+			gitApi.user.listRepos().
+				then((res) => {
+					let confirm = findChildByTagName(this, "Confirm");
+					let ploading = findChildByTagName(this, "PLoading");
 
-			axios({
-				url: `${this.$store.getters.config.api}/users/${this.$store.getters.user.name}/repos`,
-				method: 'get',
-				headers: {
-					'Accept': 'application/vnd.github.baptiste-preview+json',
-					'Authorization': `Token ${this.$store.getters.token}`
-				}
-			}).then(res => {
-				let confirm = findChildByTagName(this, "Confirm");
-				let modal = findChildByTagName(this, "Modal");
-				let ploading = findChildByTagName(this, "PLoading");
-
-				let repos = res.data;
-				let ridx = repos.findIndex(r => r.name === `${this.$store.getters.user.name}.github.io`);
-				if ( ridx >= 0 ) {
-					// 블로그 레포지토리가 있을 때
-					// Git Page 가 있는지 확인한다.
-					let repo = repos[ridx];
-					if ( repo.has_pages ) {
-						// Git Page 있음
-						//let url = `https://${this.$store.getters.user.name}.github.io`;
-						//iframe.src = url;
-						getGitJsonData(this, axios, "posts.json").then(() => {
-							// 모두 정상적으로 있음.
-							authorUpdate(this);	
-						}).catch(() => {
-							// posts.json 이 없을 때 
-							confirm.title = Lang('notification');
-							confirm.content = Lang('have_repo_but');
-							confirm.ok = Lang('ok');
-							confirm.cancel = Lang('no');
-							confirm.okClick = () => {
-								// 레포지토리 삭제 후 생성
-								ploading.show();
-								removeRepository(repo.full_name, this.$store, axios).then(() => {
-									createRepository(this);
-								}).catch(() => {
-									modal.title = Lang('error');
-									modal.content = Lang('can_not_del_repo');
-									modal.ok = Lang('confirm');
-									modal.okClick = () => {
-										modal.hide();
-										routeAssignUrl('/');
-									};
-									modal.show();
-								});
-								confirm.hide();
-							}
-							confirm.cancelClick = () => {
-								routeAssignUrl('/', this);
-								confirm.hide();
-							}
-							confirm.show();
-						});
-					} else {
-						// Git page 없음
-						confirm.title = Lang('notification');
-						confirm.content = Lang('have_repo_but');
-						confirm.ok = Lang('ok');
-						confirm.cancel = Lang('no');
-						confirm.okClick = () => {
-							// 레포지토리 삭제 후 생성
-							ploading.show();
-							removeRepository(repo.full_name, this.$store, axios).then(() => {
-								createRepository(this);
+					let repos = res.data;
+					let ridx = repos.findIndex(r => r.name === `${this.$store.getters.user.name}.github.io`);
+					if ( ridx >= 0 ) {
+						// 블로그 레포지토리가 있을 때
+						// Git Page 가 있는지 확인한다.
+						let repo = repos[ridx];
+						if ( repo.has_pages ) {
+							// Git Page 있음
+							gitApi.repo.getJsonData("posts.json").then(() => {
+								// 모두 정상적으로 있음.
+								authorUpdate(this);	
 							}).catch(() => {
-								modal.title = Lang('error');
-								modal.content = Lang('can_not_del_repo');
-								modal.ok = Lang('confirm');
-								modal.okClick = () => {
-									modal.hide();
-									routeAssignUrl('/');
-								};
-								modal.show();
+								// posts.json 이 없을 때 
+								confirm.title = Lang('notification');
+								confirm.content = Lang('have_repo_but');
+								confirm.ok = Lang('ok');
+								confirm.cancel = Lang('no');
+								confirm.okClick = () => {
+									// 레포지토리 삭제 후 생성
+									ploading.show();
+									gitApi.repo.deleteRepo().
+										then(() => {
+											return createRepository(this);
+										});
+
+									confirm.hide();
+								}
+								confirm.cancelClick = () => {
+									routeAssignUrl('/', this);
+									confirm.hide();
+								}
+								confirm.show();
 							});
+							// don't have posts.json 
+						} // repo has pages
+					} else {
+						// 블로그 레포지토리가 없을 때
+						confirm.title = Lang('notification');
+						confirm.content = Lang('not_have_repo');
+						confirm.ok = Lang('ok');
+						confirm.cancel = Lang('no'); 
+						confirm.okClick = () => {
+							// 레포지토리 생성
+							ploading.show();
 							confirm.hide();
+							createRepository(this);
 						}
 						confirm.cancelClick = () => {
 							routeAssignUrl('/', this);
@@ -367,26 +328,8 @@ export default {
 						}
 						confirm.show();
 					}
-				} else {
-					// 블로그 레포지토리가 없을 때
-					confirm.title = Lang('notification');
-					confirm.content = Lang('not_have_repo');
-					confirm.ok = Lang('ok');
-					confirm.cancel = Lang('no'); 
-					confirm.okClick = () => {
-						// 레포지토리 생성
-						ploading.show();
-						confirm.hide();
-						createRepository(this);
-					}
-					confirm.cancelClick = () => {
-						routeAssignUrl('/', this);
-						confirm.hide();
-					}
-					confirm.show();
-				}
-			});
-		}
+				}); // git api listRepos
+		} // if cur page MyBlog
 	},
 	data: function() {
 		return {
