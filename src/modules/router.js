@@ -3,10 +3,10 @@
 
 import Vue from 'vue'
 import Router from 'vue-router'
-
-import Home from '../views/Home'
-import Edit from '../views/Edit'
-import MyBlog from '../views/MyBlog'
+//
+// import Home from '../views/Home'
+// import Edit from '../views/Edit'
+// import MyBlog from '../views/MyBlog'
 
 Vue.use(Router)
 
@@ -17,23 +17,23 @@ export default new Router({
 		{
 			path: '/',
 			name: 'Home',
-			component: Home
+			component: () => import('../views/Home.vue')
 		},
 		{
 			path: '/my-blog',
 			name: 'MyBlog',
-			component: MyBlog,
+			component: () => import('../views/MyBlog.vue')
 		},
 		{
 			path: '/edit/:editinfo',
 			name: 'Edit',
-			component: Edit,
+			component: () => import('../views/Edit.vue'),
 			props: true
 		},
 		{
 			path: '/edit',
 			name: 'Edit',
-			component: Edit
+			component: () => import('../views/Edit.vue')
 		}
 	]
 })

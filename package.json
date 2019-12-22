@@ -17,13 +17,15 @@
     "vue-router": "^3.0.3",
     "vueditor_custom": "^0.4.0-test.14",
     "vuetify": "^2.0.0",
-    "vuex": "^3.1.1"
+    "vuex": "^3.1.1",
+    "webpack-bundle-analyzer": "^3.6.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.10.0",
     "@vue/cli-plugin-eslint": "^3.10.0",
     "@vue/cli-service": "^3.10.0",
     "babel-eslint": "^10.0.1",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "sass": "^1.17.4",

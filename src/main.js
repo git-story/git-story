@@ -30,7 +30,8 @@ let config = {
 };
 
 // firebase 초기화
-import firebase from 'firebase'
+// firebase 모듈 전체를 임포트 하는 것 보다 사용할 함수만 로드하는 게 더 빠르다.
+import { initializeApp } from 'firebase'
 const firebaseConfig = {
 	apiKey: "AIzaSyBIVdGNPNlxKstifz7VwaFwqP8taC5C1Ks",
 	authDomain: "git-page-story.firebaseapp.com",
@@ -40,7 +41,7 @@ const firebaseConfig = {
 	messagingSenderId: "324500603189",
 	appId: "1:324500603189:web:b1eca3949685442e"
 };
-firebase.initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
 
 Vue.use(Vueditor, config);
 

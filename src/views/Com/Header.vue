@@ -14,7 +14,6 @@
 		<v-spacer></v-spacer>
 
 		<div v-if="isLogin(true)">
-			<span class="body-1" style="text-transform: none;">{{ user().displayName }}</span>
 			<v-btn v-if="isBlog" color="grey darken-3" dark hover tile class="mr-2 d-md-none" @click.stop="routeAssign('/edit')">{{ Lang('myblog.newpost') }}</v-btn>
 			<v-menu
 				v-model="menu"
@@ -80,7 +79,7 @@
 <!-- E: Header bar -->
 
 <script>
-import firebase from 'firebase';
+import { auth } from 'firebase';
 import { openNewTabUrl, routeAssignUrl } from '../../modules/common.js'
 import Lang from '../../languages/Lang.js'
 import EventBus from '../../modules/event-bus.js'
@@ -88,14 +87,14 @@ import EventBus from '../../modules/event-bus.js'
 // Github 계정으로 로그인
 const signInGithub = function() {
 	// github auth provider
-	const provider = new firebase.auth.GithubAuthProvider();
+	const provider = new auth.GithubAuthProvider();
 	provider.addScope('user');
 	provider.addScope('repo');
 	provider.addScope('admin:org_hook');
 	provider.addScope('delete_repo');
 
 	// 실제 github 로그인 팝업창을 띄움
-	firebase.auth().signInWithPopup(provider)
+	auth().signInWithPopup(provider)
 		.then((result) => {
 			// 로그인 성공시
 			// eslint-disable-next-line
