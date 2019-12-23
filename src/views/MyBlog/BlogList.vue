@@ -117,7 +117,6 @@ const deletePost = function(post) {
 	let ploading = findChildByTagName(this, "PLoading");
 	let modal = findChildByTagName(this, "Modal");
 	let confirm = findChildByTagName(this, "Confirm");
-	console.log(post);
 
 	confirm.title = Lang('notification');
 	confirm.content = Lang('myblog.list.delete_post');
