@@ -40,7 +40,7 @@
 				<v-list class="text-start">
 					<v-list-item @click="openNewTab(github())">
 						<v-list-item-content>
-							<v-list-item-title>{{ user().displayName }}</v-list-item-title>
+							<v-list-item-title>{{ user().displayName || user().name }}</v-list-item-title>
 							<v-list-item-subtitle>{{ user().email }}</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
@@ -109,8 +109,10 @@ const signInGithub = function() {
 
 // 로그인 관련 Vuex 초기화. 홈으로 라우팅
 const logoutGithub = function() {
-	this.$store.commit('logout');
-	routeAssignUrl('/', this);
+	auth().signOut().then(() => {
+		this.$store.commit('logout');
+		routeAssignUrl('/', this);
+	});
 };
 
 // 현재 로그인이 된 상태인지 확인
