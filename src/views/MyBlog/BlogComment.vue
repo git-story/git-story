@@ -254,6 +254,8 @@
 					<template v-slot:extension>
 						<v-tabs
 							v-model="tab"
+							background-color="transparent"
+							color="white"
 							class="elevation-2 mt-5"
 							centerd
 							grow>
@@ -264,14 +266,14 @@
 						</v-tabs>
 					</template>
 				</v-toolbar>
-				<v-tabs-items v-model="tab" class="mt-12">
-					<v-tab-item value="other-api">
-						<v-card flat tile>
+				<v-tabs-items v-model="tab" class="mt-12" style="background-color:transparent">
+					<v-tab-item value="other-api" color="transparent">
+						<v-card flat tile color="transparent" dark>
 							<v-card-text>
 								<!-- S:Disqus List Item -->
 								<v-row align="center" class="ma-0">
 									<v-col>
-										<v-list-item @click="clickDisqus">
+										<v-list-item @click="clickDisqus" color="transparent">
 											<v-list-item-icon>
 												<v-icon>mdi-disqus</v-icon>
 											</v-list-item-icon>

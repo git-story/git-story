@@ -159,8 +159,8 @@ export const removePost = function(post, _this = this, commit = true) {
 			gitApi.repo.commitFiles(commitMsg, [{
 				"path": "posts.json",
 				"content": _this.posts
-			}]).then((res) => {
-				resolve(res);
+			}]).then(() => {
+				resolve(_this.posts);
 			}).catch((err) => {
 				reject(err);
 			});

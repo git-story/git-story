@@ -2,52 +2,71 @@
 	<v-container class="px-0">
 		<v-row align="center" class="ma-0">
 			<v-col class="pa-0">
-				<v-card style="width:100%" flat>
-					<v-list>
-						<template v-for="(post) in postList">
-							<v-list-item-group :key="post.href">
-								<v-list-item :key="post.href">
-									<v-list-item-avatar width="3rem" height="3rem">
-										<v-img :src="post.cover" ></v-img>
-									</v-list-item-avatar>
-									<v-list-item-content>
-										<v-list-item-title>
-											<p class="headline">{{ post.title }}</p>
-										</v-list-item-title>
-									</v-list-item-content>
-									<v-list-item-action>
-										<v-tooltip top>
-											<template v-slot:activator="{ on }">
-												<v-btn icon v-on="on" @click="modifyPost(post)">
-													<v-icon>mdi-pencil</v-icon> 
-												</v-btn>
-											</template>
-											<span>{{ Lang('modify') }}</span>
-										</v-tooltip>
-									</v-list-item-action>
-									<v-list-item-action>
-										<v-tooltip top>
-											<template v-slot:activator="{ on }">
-												<v-btn icon v-on="on" @click="deletePost(post)">
-													<v-icon>mdi-trash-can</v-icon> 
-												</v-btn>
-											</template>
-											<span>{{ Lang('delete') }}</span>
-										</v-tooltip>
-									</v-list-item-action>
-								</v-list-item>
-							</v-list-item-group>
-						</template>
-					</v-list>
-				</v-card>
+				<v-row>
+					<v-col class="">
+						<h3 class="display-1 white--text">
+							{{ Lang('myblog.table.content-list') }}
+						</h3>
+					</v-col>
+					<v-col>
+						<v-text-field
+							dark
+							v-model="dt.search"
+							append-icon="mdi-magnify"
+							:label="Lang('myblog.table.search')"
+							single-line
+							hide-details
+							></v-text-field>
+					</v-col>
+				</v-row>
+				<v-data-table
+					:headers="dt.headers"
+					:items="dt.desserts"
+					:search="dt.search"
+					class="elevation-0 mt-5 custom"
+					sort-desc
+					sort-by="date"
+					style="background: transparent"
+					dark
+					>
+					<template v-slot:item.action="{ item }">
+						<v-tooltip left>
+							<template v-slot:activator="{ on }">
+								<v-btn class="" text icon v-on="on" @click="modifyPost(item)">
+									<v-icon dark>mdi-pencil</v-icon>
+								</v-btn>
+							</template>
+							<span>{{ Lang('modify') }}</span>
+						</v-tooltip>
+						<v-tooltip right>
+							<template v-slot:activator="{ on }">
+								<v-btn class="" text icon v-on="on" @click="deletePost(item)">
+									<v-icon dark>mdi-trash-can</v-icon>
+								</v-btn>
+							</template>
+							<span>{{ Lang('delete') }}</span>
+						</v-tooltip>
+					</template>
+				</v-data-table>
 			</v-col>
-			<v-col cols="4" class="d-none d-md-flex"></v-col>
+			<v-col cols="2" class="d-none d-md-flex"></v-col>
 		</v-row>
 		<Confirm/>
 		<PLoading/>
 		<Modal/>
 	</v-container>
 </template>
+<style>
+div.custom.v-data-table table thead tr th {
+	font-size: 12pt !important;
+}
+div.custom.v-data-table table tbody tr td {
+	font-size: 11pt !important;
+}
+div.custom.v-data-table table tbody tr:hover {
+	background: rgba(100, 100, 100, 0.3) !important;
+}
+</style>
 <script>
 import { getSubposts, routeAssignUrl, findChildByTagName, removePost } from '../../modules/common.js';
 import Confirm from '../Util/Confirm';
@@ -55,20 +74,34 @@ import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
 import Lang from '../../languages/Lang.js';
 
-const loadPost = function(_this = this) {
-	let gitApi = _this.$store.getters.api;
-	gitApi.repo.getJsonData("posts.json").then(data => {
-		let posts = data.json;
-		let postList = getSubposts(posts);
-		// TODO: postList 시간 최신순 정렬
+const createTableItems = function(posts) {
+	let keys = Object.keys(posts);
+	let obj = [];
 
-		_this.postList = postList;
-		_this.posts = posts;
-		_this.posts_ori = data;
-		_this.$forceUpdate();
-	}).catch(() => {
+	keys.forEach((category) => {
+		let cat = posts[category];
+		let postList = cat.posts;
+
+
+		postList.forEach((p) => {
+			let postDate = p.href.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}/g).join('');
+			let po  = { // push object target
+				"title": p.title,
+				"category": category,
+				"date": postDate,
+				"href": p.href
+			};
+			obj.push(po);
+		});
+
+		let subs = cat.sub;
+		let childs = createTableItems(subs);
+
+		obj = obj.concat(childs);
 	});
-}
+
+	return obj;
+};
 
 const modifyPost = function(post) {
 
@@ -84,6 +117,7 @@ const deletePost = function(post) {
 	let ploading = findChildByTagName(this, "PLoading");
 	let modal = findChildByTagName(this, "Modal");
 	let confirm = findChildByTagName(this, "Confirm");
+	console.log(post);
 
 	confirm.title = Lang('notification');
 	confirm.content = Lang('myblog.list.delete_post');
@@ -93,14 +127,16 @@ const deletePost = function(post) {
 		confirm.hide();
 		ploading.content = Lang('myblog.list.progress_delete');
 		ploading.show();
-		removePost(post, this).then(() => {
+		removePost(post, this).then((removed) => {
 			ploading.hide();
 			modal.title = Lang('notification');
 			modal.content = Lang('myblog.list.success_del_post');
 			modal.ok = Lang('confirm');
 			modal.okClick = () => {
+				let desserts = createTableItems(removed);
+				this.dt.desserts = desserts;
+				this.$forceUpdate();
 				modal.hide();
-				loadPost(this);
 			};
 			modal.show();
 		}).catch(() => {
@@ -127,7 +163,20 @@ export default {
 	},
 	created: function() {
 		// get posts.json
-		loadPost(this);
+		let gitApi = this.$store.getters.api;
+		gitApi.repo.getJsonData("posts.json").then(data => {
+			let posts = data.json;
+			let postList = getSubposts(posts);
+			// TODO: postList 시간 최신순 정렬
+
+			let rtn = createTableItems(posts);
+			this.dt.desserts = rtn;
+
+			this.postList = postList;
+			this.posts = posts;
+			this.posts_ori = data;
+		}).catch(() => {
+		});
 	},
 	methods: {
 		Lang,
@@ -138,7 +187,18 @@ export default {
 	},
 	data: function() {
 		return {
-			postList: []
+			postList: [],
+			dt: {
+				search: '',
+				headers: [
+					{ text: Lang('myblog.table.title'), value: 'title', align: 'left' },
+					{ text: Lang('myblog.table.date'), value: 'date', align: 'center' },
+					{ text: Lang('myblog.table.category'), value: 'category', align: 'center' },
+					{ text: Lang('action'), value: 'action', sortable: false, align: 'center' }
+				],
+				desserts: [
+				]
+			}
 		}
 	},
 };

@@ -219,6 +219,10 @@ GitHubAPI.prototype.getRepository = function(src = "") {
 			// only one write file
 			// always write file on master branche
 			let f = files[0];
+			if ( typeof f.content === "object" ) {
+				f.content = JSON.stringify(f.content, null, "\t");
+			}
+
 			return this.writeFile("master", f.path, f.content, commitMsg, { encode: true });
 		}
 

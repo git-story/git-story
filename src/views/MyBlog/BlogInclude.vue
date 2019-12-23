@@ -2,14 +2,14 @@
 	<v-container>
 		<v-row align="center">
 			<v-col class="pa-0">
-				<v-card style="background-color:transparent" tile width="100%">
-					<v-toolbar class="tool-custom" flat color="white">
-						<v-toolbar-title>{{ Lang('myblog.side.setting_include') }}</v-toolbar-title>
-						<v-spacer></v-spacer>
+				<v-card width="100%" color="transparent" tile flat>
+					<v-toolbar class="tool-custom" flat color="transparent" dark>
 						<v-btn color="blue-grey darken-1" @click="createTag" dark class="mr-3" tile>{{ Lang('myblog.include.new_tag') }}</v-btn>
 						<v-btn color="success" @click="applyIncludeTags" dark tile>{{ Lang('apply') }}</v-btn>
 					</v-toolbar>
 					<v-tabs
+						dark
+						background-color="transparent"
 						class="tool-custom"
 						v-model="currentTab"
 						vertical>
@@ -28,19 +28,19 @@
 						</v-tab>
 						<!-- E:!Tab Icon -->
 
-						<v-tabs-items v-model="currentTab">
+						<v-tabs-items v-model="currentTab" style="background-color:transparent">
 							<!-- S: Tab Item -->
 							<v-tab-item :key="item.id" v-for="(item) in tabItems" :value="item.id">
-								<v-card flat>
+								<v-card flat color="transparent">
 									<v-card-text>
-										<v-list flat>
+										<v-list flat color="transparent">
 											<!-- S: Tag Items -->
 											<template v-for="(tag, idx) in item.list">
 												<v-list-item-group :key="idx" v-model="selectTag">
-													<v-list-item>
+													<v-list-item dark color="white">
 														<v-list-item-content>
 															<v-list-item-title>
-																<code>{{ tag }}</code>
+																<span class="font-weight-light">{{ tag }}</span>
 															</v-list-item-title>
 														</v-list-item-content>
 														<v-list-item-action>

@@ -14,8 +14,8 @@
 						<v-btn tile @click="routeAssignUrl('/edit')" block color="grey darken-3" dark hover large>{{ Lang('myblog.newpost') }}</v-btn>
 						<!-- E:New Posting -->
 						<!-- S:Blog Contentes -->
-						<v-card tile class="mx-auto mt-3">
-							<v-navigation-drawer permanent style="width:100%">
+						<v-card tile class="mx-auto mt-3" style="background: rgba(80, 80, 80, 0.3)">
+							<v-navigation-drawer permanent dark style="width:100%" color="transparent">
 								<v-list-item>
 									<v-list-item-content>
 										<v-list-item-title class="title">
@@ -54,8 +54,8 @@
 						</v-card>
 						<!-- E:Blog Contentes -->
 						<!-- S:Blog Setting -->
-						<v-card tile class="mx-auto mt-3">
-							<v-navigation-drawer permanent style="width:100%">
+						<v-card tile class="mx-auto mt-3" style="background: rgba(80, 80, 80, 0.3)">
+							<v-navigation-drawer permanent style="width:100%" color="transparent" dark>
 								<v-list-item>
 									<v-list-item-content>
 										<v-list-item-title class="title">

@@ -17,6 +17,7 @@
 	"comment": "댓글",
 	"add": "추가",
 	"please-input": "값을 입력해 주세요.",
+	"action": "동작",
 
 
 
@@ -74,6 +75,11 @@
 	"myblog.side.setting_etc": "기타 설정",
 
 
+	"myblog.table.title": "글 제목",
+	"myblog.table.date": "글 작성일",
+	"myblog.table.content-list": "작성한 글 목록",
+	"myblog.table.category": "카테고리",
+	"myblog.table.search": "글 검색",
 
 	"myblog.list.delete_post": "정말 포스팅을 삭제하시겠습니까?",
 	"myblog.list.progress_delete": "포스팅을 삭제중입니다.",

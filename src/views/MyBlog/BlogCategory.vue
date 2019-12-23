@@ -46,26 +46,31 @@
 		</v-dialog>
 		<v-row>
 			<v-col>
-				<v-card class="pa-2 d-none d-md-flex">
+				<v-card class="pa-2 d-none d-md-flex" color="transparent" tile flat>
 					<v-row>
 						<v-col cols="auto" class="mr-auto">
 							<v-btn 
 								text 
-								color="info"
+								tile
+								color="light-blue lighten-1"
 								class="mr-3"
 								@click="createCategory">{{ Lang('myblog.category.add_category') }}</v-btn>
 							<v-btn
 								text
-								color="secondary"
+								tile
+								color="grey lighten-5"
 								class="mr-3"
 								@click="renameCategory">{{ Lang('myblog.category.modify_category') }}</v-btn>
 							<v-btn
 								text
-								color="error"
+								tile
+								color="red lighten-1"
 								@click="deleteCategory">{{ Lang('myblog.category.delete_category') }}</v-btn>
 						</v-col>
 						<v-col cols="auto">
 							<v-btn
+								tile
+								depressed
 								color="success"
 								@click="applyCategory">{{ Lang('apply') }}</v-btn>
 						</v-col>
@@ -89,19 +94,20 @@
 		</v-row>
 		<v-row>
 			<v-col>
-				<v-card class="pa-5">
+				<v-card class="pa-5" color="transparent" tile flat>
 					<v-treeview
+						dark
 						:items="items"
 						:active.sync="active"
 						activatable	
-						color="secondary"
+						color="grey lighten-2"
 						open-all
 						transition >
 					</v-treeview>
 				</v-card>
 			</v-col>
 		</v-row>
-		<Prompt/>
+		<IModal/>
 		<Confirm/>
 		<PLoading/>
 		<Modal/>
@@ -109,7 +115,7 @@
 </template>
 <script>
 import { findChildByTagName, getObject } from '../../modules/common.js';
-import Prompt from '../Util/Prompt';
+import IModal from '../Util/IModal';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
@@ -149,25 +155,26 @@ const updateCategory = function(_this = this, posts = {}) {
 const createCategory = function() {
 	let active = this.active;
 
-	let vMobile = this.$store.getters.vMobile;
+	let vMobile = this.vMobile;
 	if ( vMobile === true ) {
 		this.dialog = false;
 		this.active = [];
 	}
 
-	let prompt = findChildByTagName(this, "Prompt");
-	if ( prompt ) {
-		prompt.input = "";
-		prompt.okClick = () => {
+	let imodal = findChildByTagName(this, "IModal");
+	if ( imodal ) {
+		imodal.title = Lang('myblog.category.add_category');
+		imodal.inputText = "";
+		imodal.okClick = () => {
 			let posts = this.posts;
 			let parent = posts;
-			let category = prompt.input;
+			let category = imodal.inputText;
 
 			if ( active.length > 0 ) {
 				let search = active[0];
 				parent = getObject(posts, search);
 				if ( !parent ) {
-					prompt.hide();
+					imodal.hide();
 					return;
 				}
 
@@ -186,9 +193,9 @@ const createCategory = function() {
 
 			updateCategory(this, posts);
 
-			prompt.hide();
+			imodal.hide();
 		};
-		prompt.show();
+		imodal.show();
 	}
 };
 
@@ -217,7 +224,7 @@ const allChangeHref = (obj, ori, dst) => {
 const renameCategory = function() {
 	let active = this.active;
 
-	let vMobile = this.$store.getters.vMobile;
+	let vMobile = this.vMobile;
 	if ( vMobile === true ) {
 		this.dialog = false;
 		this.active = [];
@@ -236,13 +243,14 @@ const renameCategory = function() {
 	let search = active[0];
 	let { k, d } = getObject(posts, search, 1);
 
-	let prompt = findChildByTagName(this, "Prompt");
-	if ( prompt ) {
-		prompt.input = k;
-		prompt.okClick = () => {
-			let rename = prompt.input;
+	let imodal = findChildByTagName(this, "IModal");
+	if ( imodal ) {
+		imodal.title = Lang('myblog.category.modify_category');
+		imodal.inputText = k;
+		imodal.okClick = () => {
+			let rename = imodal.inputText;
 			if ( rename === k ) {
-				prompt.hide();
+				imodal.hide();
 				return;
 			}
 
@@ -257,16 +265,16 @@ const renameCategory = function() {
 
 			updateCategory(this, posts);
 
-			prompt.hide();
+			imodal.hide();
 		}
-		prompt.show();
+		imodal.show();
 	}
 };
 
 const deleteCategory = function() {
 	let active = this.active;
 
-	let vMobile = this.$store.getters.vMobile;
+	let vMobile = this.vMobile;
 	if ( vMobile === true ) {
 		this.dialog = false;
 		this.active = [];
@@ -321,12 +329,14 @@ const applyCategory = function() {
 export default {
 	name: 'BlogCategory',
 	components: {
-		Prompt,
+		IModal,
 		Confirm,
 		PLoading,
 		Modal
 	},
 	created: function() {
+		this.vMobile = this.$store.getters.vMobile;
+		this.vMobile = true;
 		let gitApi = this.$store.getters.api;
 		gitApi.repo.getJsonData("posts.json").
 			then(res => {
@@ -342,7 +352,7 @@ export default {
 		deleteCategory,
 		applyCategory,
 		outClick: function() {
-			let vMobile = this.$store.getters.vMobile;
+			let vMobile = this.vMobile;
 			if ( vMobile === true ) {
 				this.active = [];
 			}
@@ -354,15 +364,15 @@ export default {
 		return { 
 			active:[],
 			items:[],
-			dialog: false
+			dialog: false,
+			vMobile: false
 		};
 	},
 	computed: {
 		selected () {
 			let active = this.active;
 			if ( active.length > 0 ) {
-				let vMobile = this.$store.getters.vMobile;
-				if ( vMobile === true ) {
+				if ( this.vMobile === true ) {
 					// eslint-disable-next-line
 					this.dialog = true;
 				}
