@@ -176,6 +176,18 @@ const deleteTag = function(tag, id, idx) {
 const applyIncludeTags = function() {
 	let config = this.config;
 
+	let task = this.$store.getters.task;
+	if ( task === true ) {
+		let modal = findChildByTagName(this, "Modal");
+		modal.title = Lang('notification');
+		modal.content = Lang('inprogress');
+		modal.ok = Lang('confirm');
+		modal.show();
+		return;
+	}
+
+	this.$store.commit('task', true);
+
 	let ploading = findChildByTagName(this, "PLoading");
 	ploading.content = Lang('applying');
 	ploading.show();
@@ -191,6 +203,7 @@ const applyIncludeTags = function() {
 		modal.ok = Lang('ok');
 		modal.show();
 	}).finally(() => {
+		this.$store.commit('task', false);
 		ploading.hide();
 	});
 };

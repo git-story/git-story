@@ -15,7 +15,7 @@
 
 		<!-- S:right menu -->
 		<div v-if="isLogin(true)">
-			<v-btn v-if="isBlog" color="grey darken-3" dark hover tile class="mr-2 d-md-none" @click.stop="routeAssign('/edit')">{{ Lang('myblog.newpost') }}</v-btn>
+			<v-btn v-if="isBlog" color="blue-grey darken-3" dark hover tile class="mr-2 d-md-none" @click.stop="routeAssign('/edit')">{{ Lang('myblog.newpost') }}</v-btn>
 			<v-menu
 				v-model="menu"
 				transition="slide-y-transition"
@@ -189,6 +189,7 @@ export default {
 		isBlog: false,
 		menu: false,
 		loading: true,
+		task: false,
 	}),
 };
 </script>

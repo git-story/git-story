@@ -315,6 +315,18 @@ const applyCategory = function() {
 	let commitMsg = `📚 [GITSTORY] 📜 CATEGORY UPDATE : [posts.json]`;
 	let gitApi = this.$store.getters.api;
 
+	let task = this.$store.getters.task;
+	if ( task === true ) {
+		let modal = findChildByTagName(this, "Modal");
+		modal.title = Lang("notification");
+		modal.content = Lang("inprogress");
+		modal.ok = Lang("confirm");
+		modal.show();
+		return;
+	}
+
+	this.$store.commit('task', true);
+
 	let ploading = findChildByTagName(this, "PLoading");
 	ploading.content = Lang('applying');
 	ploading.show();
@@ -325,6 +337,8 @@ const applyCategory = function() {
 		ploading.hide();
 	}).catch(() => {
 		ploading.hide();
+	}).finally(() => {
+		this.$store.commit('task', false);
 	});
 };
 

@@ -340,6 +340,7 @@
 		</v-row>
 		<Confirm/>
 		<PLoading/>
+		<Modal/>
 	</v-container>
 </template>
 <script>
@@ -348,8 +349,21 @@ import Lang from '../../languages/Lang.js';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import EventBus from '../../modules/event-bus.js';
+import Modal from '../Util/Modal';
 
 const commentApply = function() {
+	let task = this.$store.getters.task;
+	if ( task === true ) {
+		let modal = findChildByTagName(this, "Modal");
+		modal.title = Lang('notification');
+		modal.content = Lang('inprogress');
+		modal.ok = Lang('confirm');
+		modal.show();
+		return;
+	}
+
+	this.$store.commit('task', true);
+
 	let commitMsg = `📚 [GITSTORY] 📜 Comment UPDATE : [config.json]`;
 
 	let ploading = findChildByTagName(this, "PLoading");
@@ -369,6 +383,8 @@ const commentApply = function() {
 		ploading.hide();
 	}).catch(() => {
 		ploading.hide();
+	}).finally(() => {
+		this.$store.commit('task', false);
 	});
 }
 
@@ -472,7 +488,8 @@ export default {
 	name: 'BlogComment',
 	components: {
 		Confirm,
-		PLoading
+		PLoading,
+		Modal,
 	},
 	created: function() {
 		let gitApi = this.$store.getters.api;

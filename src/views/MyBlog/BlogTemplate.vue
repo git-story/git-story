@@ -73,6 +73,7 @@
 		</v-row>
 		<Confirm/>
 		<PLoading/>
+		<Modal/>
 	</v-container>
 </template>
 <style>
@@ -115,12 +116,23 @@ div.v-card.custom-img div div.v-image__image--cover:hover {
 <script>
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
+import Modal from '../Util/Modal';
 import { findChildByTagName } from '../../modules/common.js';
 import Lang from '../../languages/Lang.js';
 import EventBus from '../../modules/event-bus.js';
 
 const changeTheme = function() {
 	let sTheme = this.sTheme;
+
+	let task = this.$store.getters.task;
+	if ( task === true ) {
+		let modal = findChildByTagName(this, 'Modal');
+		modal.title = Lang('notification');
+		modal.content = Lang('inprogress');
+		modal.ok = Lang('confirm');
+		modal.show();
+		return;
+	}
 
 	let confirm = findChildByTagName(this, 'Confirm');
 	confirm.title = Lang('warning');
@@ -133,6 +145,8 @@ const changeTheme = function() {
 		let ploading = findChildByTagName(this, "PLoading");
 		ploading.content = Lang('myblog.template.changing_theme');
 		ploading.show();
+
+		this.$store.commit('task', true);
 
 		let gitApi = this.$store.getters.api;
 		gitApi.repo.getJsonData("config.json").then(rconfig => {
@@ -191,6 +205,7 @@ const changeTheme = function() {
 				then((res) => {
 					// eslint-disable-next-line
 					console.log("commit done.");
+					this.$store.commit('task', false);
 					ploading.hide();
 				}).
 				catch((err) => {
@@ -232,6 +247,7 @@ export default {
 	components: {
 		Confirm,
 		PLoading,
+		Modal,
 	},
 	created: function() {
 		let gitApi = this.$store.getters.api;

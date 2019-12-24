@@ -20,7 +20,7 @@
 	"please-input": "값을 입력해 주세요.",
 	"action": "동작",
 	"applying": "값을 적용합니다.",
-
+	"inprogress": "이미 다른 동작을 하고 있습니다.\r\n잠시 후 다시 실행해 주세요.",
 	"ploading.bg": "다른 작업 하기",
 
 

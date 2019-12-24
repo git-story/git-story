@@ -58,4 +58,5 @@
 
 <!-- S:Util Component -->
 <PLoading/>
+<Modal/>
 <!-- E:Util Component -->

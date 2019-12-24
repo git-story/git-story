@@ -6,7 +6,7 @@
 		width="70%">
 		<v-card>
 			<v-card-title class="headline">{{ title }}</v-card-title>
-			<v-card-text><pre>{{ content }}</pre></v-card-text>
+			<v-card-text><span v-html="content"></span></v-card-text>
 			<v-card-actions>
 				<div class="flex-grow-1"></div>
 

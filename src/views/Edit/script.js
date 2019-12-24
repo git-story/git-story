@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { genNowDate, findChildByTagName, routeAssignUrl, getObject, removePost } from '../modules/common.js';
 import PLoading from './Util/PLoading';
+import Modal from './Util/Modal';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
 import { toolbarInit, textToolbarInit, tagChange, fontChange, sizeChange, textFrontColorChange, textBackColorChange } from './Edit/toolbarLoad.js';
@@ -74,8 +75,20 @@ const buildContentHTML = function(_this = this) {
 };
 
 const doPostingContent = function() {
+	let task = this.$store.getters.task;
+	if ( task === true ) {
+		let modal = findChildByTagName(this, "Modal");
+		modal.title = Lang('notification');
+		modal.content = Lang('inprogress');
+		modal.ok = Lang('confirm');
+		modal.show();
+		return;
+	};
+	
+
 	// get posts.json
 	if ( this.posts ) {
+		this.$store.commit('task', true);
 		let posts = this.posts;
 
 		let selectedCategory = this.c_sel.value;
@@ -134,6 +147,8 @@ const doPostingContent = function() {
 		]).then(() => {
 			ploading.hide();
 			routeAssignUrl('/my-blog', this);
+		}).finally(() => {
+			this.$store.commit('task', false);
 		});
 	}
 };
@@ -183,7 +198,8 @@ const createTables = function() {
 export default {
 	name: 'Edit',
 	components: {
-		PLoading
+		PLoading,
+		Modal,
 	},
 
 	props: ['editinfo'],

@@ -119,6 +119,17 @@ const deletePost = function(post) {
 	let modal = findChildByTagName(this, "Modal");
 	let confirm = findChildByTagName(this, "Confirm");
 
+	let task = this.$store.getters.task;
+	if ( task === true ) {
+		modal.title = Lang('notification');
+		modal.content = Lang('inprogress');
+		modal.ok = Lang('confirm');
+		modal.show();
+		return;
+	}
+
+	this.$store.commit('task', true);
+
 	confirm.title = Lang('notification');
 	confirm.content = Lang('myblog.list.delete_post');
 	confirm.ok = Lang('ok');
@@ -149,6 +160,8 @@ const deletePost = function(post) {
 				routeAssignUrl('/');
 			};
 			modal.show();
+		}).finally(() => {
+			this.$store.commit('task', false);
 		});
 	};
 	confirm.show();

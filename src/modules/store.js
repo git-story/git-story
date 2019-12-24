@@ -24,27 +24,17 @@ export default new Vuex.Store({
 		github: null,
 		config: config,
 		vMobile: false, // mobile view flag
-		api: null
+		api: null,
+		tasking: false,
 	},
 	getters: {
-		token: state => {
-			return state.userToken;
-		},
-		user: state => {
-			return state.user;
-		},
-		github: state => {
-			return state.github;
-		},
-		config: state => {
-			return state.config;
-		},
-		vMobile: state => {
-			return state.vMobile;
-		},
-		api: state => {
-			return state.api;
-		}
+		token: state => state.userToken,
+		user: state => state.user,
+		github: state => state.github,
+		config: state => state.config,
+		vMobile: state => state.vMobile,
+		api: state => state.api,
+		task: state => state.tasking,
 	},
 	mutations: {
 		login: (state, info) => {
@@ -80,6 +70,9 @@ export default new Vuex.Store({
 			state.api.git = GitHub;
 			state.api.repo = GitHub.getRepository(`${name}/${name}.github.io`);
 			state.api.user = GitHub.getUser(name);
+		},
+		task: (state, set) => {
+			state.tasking = set;
 		}
 	}
 });
