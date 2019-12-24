@@ -99,6 +99,7 @@
 	"myblog.template.blog_header": "블로그 스킨",
 	"myblog.template.blog_content": "본인의 이야기를 아름답게 꾸며보세요.",
 	"myblog.template.change_theme": "블로그 테마를 변경하시겠습니까?",
+	"myblog.template.changing_theme": "테마를 변경중입니다. 잠시만 기다려 주세요.",
 
 
 	"myblog.include.modify_tag": "태그 수정",

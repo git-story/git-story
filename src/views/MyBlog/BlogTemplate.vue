@@ -59,20 +59,20 @@
 			<v-col
 				v-for="(theme, idx) in themes"
 				:key="idx"
-				class="pa-12"
-				sm="12" md="6">
-				<v-card class="custom-img" tile hover @click="showTheme(idx)">
+				class="px-2 py-12"
+				sm="12" md="6" lg="4">
+				<v-card class="custom-img" style="width:100%;" tile hover @click="showTheme(idx)">
 					<v-img
 						:src="theme.cover"
-						class="white--text align-end"
-						gradient="to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5)"
-						height="25rem">
+						class="white--text align-end custom-img-height"
+						gradient="to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5)">
 						<v-card-title v-text="theme.name.replace('git-story-template-', '')" class="text-uppercase"></v-card-title>
 					</v-img>
 				</v-card>
 			</v-col>
 		</v-row>
 		<Confirm/>
+		<PLoading/>
 	</v-container>
 </template>
 <style>
@@ -86,9 +86,35 @@ div.v-card.custom-img div div.v-image__image--cover {
 div.v-card.custom-img div div.v-image__image--cover:hover {
 	transform: scale(1.2);
 }
+@media screen and (max-width: 600px) { 
+	.custom-img-height {
+		height: 15rem;
+	}
+}
+@media screen and (min-width: 600px) and (max-width: 960px) { 
+	.custom-img-height {
+		height: 25rem;
+	}
+}
+@media screen and (min-width: 960px) and (max-width: 1264px) { 
+	.custom-img-height {
+		height: 17rem;
+	}
+}
+@media screen and (min-width: 1264px) and (max-width: 1904px) { 
+	.custom-img-height {
+		height: 20rem;
+	}
+}
+@media screen and (min-width: 1904px) { 
+	.custom-img-height {
+		height: 23rem;
+	}
+}
 </style>
 <script>
 import Confirm from '../Util/Confirm';
+import PLoading from '../Util/PLoading';
 import { findChildByTagName } from '../../modules/common.js';
 import Lang from '../../languages/Lang.js';
 import EventBus from '../../modules/event-bus.js';
@@ -103,6 +129,10 @@ const changeTheme = function() {
 	confirm.cancel = Lang('cancel');
 	confirm.okClick = () => {
 		confirm.hide();
+
+		let ploading = findChildByTagName(this, "PLoading");
+		ploading.content = Lang('myblog.template.changing_theme');
+		ploading.show();
 
 		let gitApi = this.$store.getters.api;
 		gitApi.repo.getJsonData("config.json").then(rconfig => {
@@ -161,6 +191,7 @@ const changeTheme = function() {
 				then((res) => {
 					// eslint-disable-next-line
 					console.log("commit done.");
+					ploading.hide();
 				}).
 				catch((err) => {
 					if ( err.data ) {
@@ -199,7 +230,8 @@ const showTheme = function(idx) {
 export default {
 	name: 'BlogTemplate',
 	components: {
-		Confirm
+		Confirm,
+		PLoading,
 	},
 	created: function() {
 		let gitApi = this.$store.getters.api;
