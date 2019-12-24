@@ -73,6 +73,7 @@ import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
 import Lang from '../../languages/Lang.js';
+import EventBus from '../../modules/event-bus.js';
 
 const createTableItems = function(posts) {
 	let keys = Object.keys(posts);
@@ -153,6 +154,37 @@ const deletePost = function(post) {
 	confirm.show();
 };
 
+const loadPosting = async function(_this = this) {
+	let gitApi = _this.$store.getters.api;
+
+	let retryCnt = -1;
+	const MAX_RETRY_CNT = 5;
+	let data;
+	do {
+		try {
+			data = await gitApi.repo.getJsonData("posts.json");
+		} catch (err) {
+			retryCnt++;
+		}
+	} while ( !data && retryCnt < MAX_RETRY_CNT );
+
+	if ( retryCnt >= MAX_RETRY_CNT ) {
+		// 최대 재시도 횟수 초과시
+		EventBus.$emit('myblog.call-mounted');
+	} else {
+		let posts = data.json;
+		let postList = getSubposts(posts);
+		// TODO: postList 시간 최신순 정렬
+
+		let rtn = createTableItems(posts);
+		_this.dt.desserts = rtn;
+
+		_this.postList = postList;
+		_this.posts = posts;
+		_this.posts_ori = data;
+	}
+};
+
 export default {
 	name: 'BlogList',
 	components: {
@@ -162,19 +194,10 @@ export default {
 	},
 	created: function() {
 		// get posts.json
-		let gitApi = this.$store.getters.api;
-		gitApi.repo.getJsonData("posts.json").then(data => {
-			let posts = data.json;
-			let postList = getSubposts(posts);
-			// TODO: postList 시간 최신순 정렬
+		loadPosting(this);
 
-			let rtn = createTableItems(posts);
-			this.dt.desserts = rtn;
-
-			this.postList = postList;
-			this.posts = posts;
-			this.posts_ori = data;
-		}).catch(() => {
+		EventBus.$on('myblog.list.reload', () => {
+			loadPosting(this);
 		});
 	},
 	methods: {

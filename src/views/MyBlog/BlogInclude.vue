@@ -176,6 +176,7 @@ const applyIncludeTags = function() {
 	let config = this.config;
 
 	let ploading = findChildByTagName(this, "PLoading");
+	ploading.content = Lang('applying');
 	ploading.show();
 
 	let gitApi = this.$store.getters.api;

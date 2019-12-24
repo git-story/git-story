@@ -2,7 +2,6 @@
 	<v-dialog
 		v-model="isShow"
 		persistent
-		hide-overlay
 		max-width="500px"
 		width="70%">
 		<v-card>
@@ -10,10 +9,15 @@
 			<v-card-text><pre>{{ content }}</pre></v-card-text>
 			<v-card-text>
 				<v-progress-linear
+					:color="color"
 					indeterminate
 					stream>
 				</v-progress-linear>
 			</v-card-text>
+			<v-card-actions>
+				<v-spacer></v-spacer>
+				<v-btn color="secondary" text @click="isShow = false">{{ Lang('ploading.bg') }}</v-btn>
+			</v-card-actions>
 		</v-card>
 	</v-dialog>
 </template>
@@ -25,10 +29,12 @@
  * 추가된 PLoading 컴포넌트를 찾아 title, content, 등을 수정하고
  * Ploading.show 함수로 화면을 띄운다.
  */
+import Lang from '../../languages/Lang.js';
 
 export default {
 	name: 'Modal',
 	methods: {
+		Lang
 	},
 	data: function () {
 		return {
@@ -36,6 +42,7 @@ export default {
 			el: null,
 			title: '',
 			content: '',
+			color: 'cyan',
 			show: () => {
 				this.isShow = true;
 			},

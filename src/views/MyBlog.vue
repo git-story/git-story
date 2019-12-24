@@ -11,7 +11,7 @@
 				<v-row>
 					<v-col class="pa-0 d-none d-lg-flex"></v-col>
 					<v-col sm="12" md="12" lg="8" xl="6" class="pa-0">
-						<v-btn tile @click="routeAssignUrl('/edit')" block color="grey darken-3" dark hover large>{{ Lang('myblog.newpost') }}</v-btn>
+						<v-btn tile @click="routeAssignUrl('/edit')" block color="blue-grey darken-3" dark hover large>{{ Lang('myblog.newpost') }}</v-btn>
 						<!-- E:New Posting -->
 						<!-- S:Blog Contentes -->
 						<v-card tile class="mx-auto mt-3" style="background: rgba(80, 80, 80, 0.3)">
@@ -213,7 +213,7 @@ const createRepository = (_this = this) => {
 		modal.ok = Lang('confirm');
 		modal.okClick = () => {
 			modal.hide();
-			location.reload();
+			EventBus.$emit('myblog.list.reload');
 		};
 		modal.show();
 	}).catch(() => {
@@ -227,6 +227,70 @@ const createRepository = (_this = this) => {
 		modal.show();
 	});
 };
+
+const loadBlog = function(_this = this ) {
+	let gitApi = _this.$store.getters.api;
+	gitApi.user.listRepos().
+		then((res) => {
+			let confirm = findChildByTagName(_this, "Confirm");
+			let ploading = findChildByTagName(_this, "PLoading");
+			ploading.content = Lang('creating_blog');
+
+			let repos = res.data;
+			let ridx = repos.findIndex(r => r.name === `${_this.$store.getters.user.name}.github.io`);
+			if ( ridx >= 0 ) {
+				// 블로그 레포지토리가 있을 때
+				// Git Page 가 있는지 확인한다.
+				let repo = repos[ridx];
+				if ( repo.has_pages ) {
+					// Git Page 있음
+					gitApi.repo.getJsonData("posts.json").then(() => {
+						// 모두 정상적으로 있음.
+						authorUpdate(_this);	
+					}).catch(() => {
+						// posts.json 이 없을 때 
+						confirm.title = Lang('notification');
+						confirm.content = Lang('have_repo_but');
+						confirm.ok = Lang('ok');
+						confirm.cancel = Lang('no');
+						confirm.okClick = () => {
+							// 레포지토리 삭제 후 생성
+							ploading.show();
+							gitApi.repo.deleteRepo().
+								then(() => {
+									return createRepository(_this);
+								});
+
+							confirm.hide();
+						}
+						confirm.cancelClick = () => {
+							routeAssignUrl('/', _this);
+							confirm.hide();
+						}
+						confirm.show();
+					});
+					// don't have posts.json 
+				} // repo has pages
+			} else {
+				// 블로그 레포지토리가 없을 때
+				confirm.title = Lang('notification');
+				confirm.content = Lang('not_have_repo');
+				confirm.ok = Lang('ok');
+				confirm.cancel = Lang('no'); 
+				confirm.okClick = () => {
+					// 레포지토리 생성
+					ploading.show();
+					confirm.hide();
+					createRepository(_this);
+				}
+				confirm.cancelClick = () => {
+					routeAssignUrl('/', _this);
+					confirm.hide();
+				}
+				confirm.show();
+			}
+		}); // git api listRepos
+}
 
 export default {
 	name: 'MyBlog',
@@ -242,6 +306,9 @@ export default {
 		EventBus.$on('content-change', (content) => {
 			contentChangeComponent(content, this);
 		});
+		EventBus.$on('myblog.call-mounted', () => {
+			loadBlog(this);
+		});
 	},
 	methods: {
 		contentChange: contentChangeComponent,
@@ -252,7 +319,6 @@ export default {
 		let curPName = this.$router.history.current.name;
 		if ( curPName === "MyBlog" ) {
 			this.$store.commit("api");
-			let gitApi = this.$store.getters.api;
 
 			let wallpapers = this.$store.getters.config.wallpapers;
 			let wnum = randomNumber(wallpapers.length);
@@ -270,65 +336,7 @@ export default {
 			vContent.style.backgroundPosition = "center center";
 			vContent.style.backgroundSize = "cover";
 
-			gitApi.user.listRepos().
-				then((res) => {
-					let confirm = findChildByTagName(this, "Confirm");
-					let ploading = findChildByTagName(this, "PLoading");
-
-					let repos = res.data;
-					let ridx = repos.findIndex(r => r.name === `${this.$store.getters.user.name}.github.io`);
-					if ( ridx >= 0 ) {
-						// 블로그 레포지토리가 있을 때
-						// Git Page 가 있는지 확인한다.
-						let repo = repos[ridx];
-						if ( repo.has_pages ) {
-							// Git Page 있음
-							gitApi.repo.getJsonData("posts.json").then(() => {
-								// 모두 정상적으로 있음.
-								authorUpdate(this);	
-							}).catch(() => {
-								// posts.json 이 없을 때 
-								confirm.title = Lang('notification');
-								confirm.content = Lang('have_repo_but');
-								confirm.ok = Lang('ok');
-								confirm.cancel = Lang('no');
-								confirm.okClick = () => {
-									// 레포지토리 삭제 후 생성
-									ploading.show();
-									gitApi.repo.deleteRepo().
-										then(() => {
-											return createRepository(this);
-										});
-
-									confirm.hide();
-								}
-								confirm.cancelClick = () => {
-									routeAssignUrl('/', this);
-									confirm.hide();
-								}
-								confirm.show();
-							});
-							// don't have posts.json 
-						} // repo has pages
-					} else {
-						// 블로그 레포지토리가 없을 때
-						confirm.title = Lang('notification');
-						confirm.content = Lang('not_have_repo');
-						confirm.ok = Lang('ok');
-						confirm.cancel = Lang('no'); 
-						confirm.okClick = () => {
-							// 레포지토리 생성
-							ploading.show();
-							confirm.hide();
-							createRepository(this);
-						}
-						confirm.cancelClick = () => {
-							routeAssignUrl('/', this);
-							confirm.hide();
-						}
-						confirm.show();
-					}
-				}); // git api listRepos
+			loadBlog(this);
 		} // if cur page MyBlog
 	},
 	data: function() {

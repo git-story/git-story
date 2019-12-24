@@ -315,6 +315,7 @@ const applyCategory = function() {
 	let gitApi = this.$store.getters.api;
 
 	let ploading = findChildByTagName(this, "PLoading");
+	ploading.content = Lang('applying');
 	ploading.show();
 	gitApi.repo.commitFiles(commitMsg, [{
 		"path": "posts.json",

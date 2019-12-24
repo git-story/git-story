@@ -352,6 +352,7 @@ const commentApply = function() {
 	let commitMsg = `📚 [GITSTORY] 📜 Comment UPDATE : [config.json]`;
 
 	let ploading = findChildByTagName(this, "PLoading");
+	ploading.content = Lang('applying');
 	ploading.show();
 	
 	let comment = this.comment;
