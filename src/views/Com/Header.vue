@@ -13,6 +13,7 @@
 		</v-toolbar-title>
 		<v-spacer></v-spacer>
 
+		<!-- S:right menu -->
 		<div v-if="isLogin(true)">
 			<v-btn v-if="isBlog" color="grey darken-3" dark hover tile class="mr-2 d-md-none" @click.stop="routeAssign('/edit')">{{ Lang('myblog.newpost') }}</v-btn>
 			<v-menu
@@ -67,6 +68,7 @@
 				<!-- E:Avatar Menu List -->
 			</v-menu>
 		</div>
+		<!-- S:right menu -->
 		<v-btn
 			text
 			@click="signIn"
@@ -74,6 +76,13 @@
 			>
 			<span class="mr-2">Sign in as github</span>
 		</v-btn>
+		<v-progress-linear
+			:active="loading"
+			:indeterminate="loading"
+			absolute
+			bottom
+			color="cyan"
+			></v-progress-linear>
 	</v-app-bar>
 </template>
 <!-- E: Header bar -->
@@ -163,6 +172,13 @@ export default {
 		} else {
 			this.$store.commit('vMobile', false);
 		}
+
+		EventBus.$on('page-loading-start', () => {
+			this.loading = true;
+		});
+		EventBus.$on('page-loading-end', () => {
+			this.loading = false;
+		});
 	},
 	watch: {
 		'$route': 'isBlogCheck'
@@ -171,7 +187,8 @@ export default {
 		user: function() { return this.$store.getters.user },
 		github: function() { return this.$store.getters.github },
 		isBlog: false,
-		menu: false
+		menu: false,
+		loading: true,
 	}),
 };
 </script>

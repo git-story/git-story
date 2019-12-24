@@ -120,6 +120,7 @@ import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
 import Lang from '../../languages/Lang.js';
+import EventBus from '../../modules/event-bus.js';
 
 const createCategoryItems = function(posts, id="") {
 	let keys = Object.keys(posts);
@@ -344,6 +345,8 @@ export default {
 				let posts = res.json;
 				this.posts_ori = res;
 				updateCategory(this, posts);
+
+				EventBus.$emit('page-loading-end');
 			});
 	},
 	methods: {

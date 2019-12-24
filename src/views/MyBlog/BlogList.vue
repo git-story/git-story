@@ -182,6 +182,7 @@ const loadPosting = async function(_this = this) {
 		_this.postList = postList;
 		_this.posts = posts;
 		_this.posts_ori = data;
+		EventBus.$emit('page-loading-end');
 	}
 };
 

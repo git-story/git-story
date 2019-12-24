@@ -4,6 +4,7 @@ import PLoading from './Util/PLoading';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
 import { toolbarInit, textToolbarInit, tagChange, fontChange, sizeChange, textFrontColorChange, textBackColorChange } from './Edit/toolbarLoad.js';
+import EventBus from '../modules/event-bus.js';
 
 const changeAlign = function() {
 	if ( this.tb.toggle.align === 3 ) {
@@ -114,6 +115,7 @@ const doPostingContent = function() {
 
 		let commitMsg = `📚 [GITSTORY] 📝 POSTING : [${this.title.toUpperCase()}]`;
 		let ploading = findChildByTagName(this, "PLoading");
+		ploading.content = Lang('editor.uploading');
 		ploading.show();
 
 		// posting
@@ -228,26 +230,33 @@ export default {
 		}
 
 		let curPName = this.$router.history.current.name;	
+		let proms = [];
+		let p;
 		if ( curPName === "Edit" ) {
 			let vContent = document.querySelector('#router-view');
 			vContent.style.background = "white";
 			
-			gitApi.repo.getJsonData("posts.json").then(res => {
+			p = gitApi.repo.getJsonData("posts.json").then(res => {
 				this.posts = res.json;
 				this.posts_ori = res;
 
 				this.categoryItem = createCategoryItems(this.posts);
 				this.c_sel = this.categoryItem[0];
 			});
+			proms.push(p);
 		}
 		
-		gitApi.repo.getJsonData("config.json").then(res => {
+		p = gitApi.repo.getJsonData("config.json").then(res => {
 			this.config = res.json;
 			this.config_ori = res;
 		});
+		proms.push(p);
 
 		// 커스텀 툴바를, vueditor 와 연결
 		toolbarInit(this);
+		Promise.all(proms).then(() => {
+			EventBus.$emit('page-loading-end');
+		});
 
 	},
 	data: () => ({

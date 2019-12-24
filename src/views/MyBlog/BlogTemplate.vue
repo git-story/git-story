@@ -91,6 +91,7 @@ div.v-card.custom-img div div.v-image__image--cover:hover {
 import Confirm from '../Util/Confirm';
 import { findChildByTagName } from '../../modules/common.js';
 import Lang from '../../languages/Lang.js';
+import EventBus from '../../modules/event-bus.js';
 
 const changeTheme = function() {
 	let sTheme = this.sTheme;
@@ -213,6 +214,7 @@ export default {
 		Search.forRepositories({ sort: 'updated' }).then(res => {
 			let repos = res.data;
 			let themes = [];
+			let proms = [];
 			repos.forEach((r) => {
 				if ( r.name.match(/^git-story-template-/) ) {
 					themes.push(r);
@@ -221,7 +223,7 @@ export default {
 
 			this.themes = themes;
 			themes.forEach((t) => {
-				gitApi.repo.getData("photos", t.full_name).then(res => {
+				let p = gitApi.repo.getData("photos", t.full_name).then(res => {
 					let data = res.data;
 					if ( data.length <= 0 ) {
 						let avatar = t.owner.avatar_url;
@@ -238,6 +240,12 @@ export default {
 				}).finally(() => {
 					this.$forceUpdate();
 				});
+
+				proms.push(p);
+			});
+
+			Promise.all(proms).then(() => {
+				EventBus.$emit('page-loading-end');
 			});
 		});
 	},

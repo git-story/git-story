@@ -347,6 +347,7 @@ import { findChildByTagName } from '../../modules/common.js';
 import Lang from '../../languages/Lang.js';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
+import EventBus from '../../modules/event-bus.js';
 
 const commentApply = function() {
 	let commitMsg = `📚 [GITSTORY] 📜 Comment UPDATE : [config.json]`;
@@ -495,6 +496,7 @@ export default {
 					this.facebook.has = true;
 				}
 			}
+			EventBus.$emit('page-loading-end');
 		});
 	},
 	methods: {

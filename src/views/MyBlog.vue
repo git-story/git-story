@@ -129,7 +129,7 @@
 			<!-- E:Side menus -->
 			<v-col class="pr-12 pl-12 pt-0" md="9">
 				<!-- <component :is="this.$store.getters.blogContent"></component> -->
-				<component :is="this.currentComponent"></component>
+				<component :is="this.currentComponent.t"></component>
 			</v-col>
 		</v-row>
 
@@ -162,8 +162,11 @@ const contentChangeComponent = function(target, _this) {
 	if ( typeof target === "string" ) {
 		let t = categoryList[target];
 		if ( t ) {
-			if ( typeof _this.currentComponent !== "undefined" ) {
-				_this.currentComponent = t;
+			if ( _this.currentComponent ) {
+				if ( _this.currentComponent.target !== target ) {
+					EventBus.$emit('page-loading-start');
+					_this.currentComponent = { target, t };
+				}
 			}
 		}
 	}
@@ -342,7 +345,7 @@ export default {
 	data: function() {
 		return {
 			isDialogShow: false,
-			currentComponent: null,
+			currentComponent: { target: '', t: null },
 			vMobile: false
 		}
 	},

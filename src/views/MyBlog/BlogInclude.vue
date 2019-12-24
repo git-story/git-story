@@ -96,6 +96,7 @@ import Confirm from '../Util/Confirm';
 import IModal from '../Util/IModal';
 import Modal from '../Util/Modal';
 import PLoading from '../Util/PLoading';
+import EventBus from '../../modules/event-bus.js';
 
 const updateIncludeItems = function(_this = this) {
 	let config = _this.config;
@@ -211,6 +212,8 @@ export default {
 			this.config_ori = res;
 
 			updateIncludeItems(this);
+
+			EventBus.$emit('page-loading-end');
 		});
 	},
 	methods: {
