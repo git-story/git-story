@@ -1,3 +1,5 @@
+import EventBus from './event-bus.js';
+
 // 태그 이름으로 하위 컴포넌트에서 가장 먼저 찾은 것을 반환.
 export const findChildByTagName = (target, tagName, result) => {
 	if ( result ) {
@@ -38,6 +40,7 @@ export const routeAssignUrl = function(url, _this) {
 	let router = (this && this.$router) || (_this && _this.$router);
 	if ( typeof url === "string" && router ) {
 		if ( router.history.current.path !== url ) {
+			EventBus.$emit('page-loading-start');
 			router.push({ path: url });
 			
 			let root = findRootComponent(this);

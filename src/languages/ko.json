@@ -39,6 +39,7 @@
 	"editor.post": "작성",
 	"editor.category": "카테고리",
 	"editor.select": "선택해 주세요.",
+	"editor.uploading": "글을 업로드 하는 중입니다.",
 
 	"editor.toolbar.erase": "형식 지우기",
 	"editor.toolbar.undo": "실행 취소",
