@@ -338,9 +338,9 @@
 				</v-tabs-items>
 			</v-col>
 		</v-row>
-		<Confirm/>
-		<PLoading/>
-		<Modal/>
+		<Confirm ref="Confirm"/>
+		<PLoading ref="PLoading"/>
+		<Modal ref="Modal"/>
 	</v-container>
 </template>
 <script>

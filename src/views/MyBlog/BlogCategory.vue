@@ -107,10 +107,10 @@
 				</v-card>
 			</v-col>
 		</v-row>
-		<IModal/>
-		<Confirm/>
-		<PLoading/>
-		<Modal/>
+		<IModal ref="IModal"/>
+		<Confirm ref="Confirm"/>
+		<PLoading ref="PLoading"/>
+		<Modal ref="Modal"/>
 	</v-container>
 </template>
 <script>

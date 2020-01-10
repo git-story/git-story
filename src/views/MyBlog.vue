@@ -133,9 +133,9 @@
 			</v-col>
 		</v-row>
 
-		<Confirm/>
-		<Modal/>
-		<PLoading/>
+		<Confirm ref="Confirm"/>
+		<Modal ref="Modal"/>
+		<PLoading ref="PLoading"/>
 	</v-content>
 </template>
 <script>

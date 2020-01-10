@@ -57,6 +57,6 @@
 <!-- E:Footer -->
 
 <!-- S:Util Component -->
-<PLoading/>
-<Modal/>
+<PLoading ref="PLoading"/>
+<Modal ref="Modal"/>
 <!-- E:Util Component -->

@@ -1,4 +1,4 @@
-<!-- 2020-1-10 3:43:46 PM
+<!-- 2020-1-10 5:08:37 PM
 Edit.vue 파일은 Edit/ 폴더 안에 있는 build.js 스크립트로 만들어졌습니다.
 build.js 는 해당 폴더의 특정 파일들의 변화를 감시하여 Edit.vue 파일로 만듭니다.
 Edit.vue 파일의 모듈화보단 하나의 파일로 만드는 것이 더욱 소스관리에 용이합니다.
@@ -824,8 +824,8 @@ mounted 이벤트가 들어올 때 커스텀 툴바의 이벤트를 연결해주
 		<!-- E:Footer -->
 		
 		<!-- S:Util Component -->
-		<PLoading/>
-		<Modal/>
+		<PLoading ref="PLoading"/>
+		<Modal ref="Modal"/>
 		<!-- E:Util Component -->
 		
 	</v-content>

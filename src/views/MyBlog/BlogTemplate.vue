@@ -71,9 +71,9 @@
 				</v-card>
 			</v-col>
 		</v-row>
-		<Confirm/>
-		<PLoading/>
-		<Modal/>
+		<Confirm ref="Confirm"/>
+		<PLoading ref="PLoading"/>
+		<Modal ref="Modal"/>
 	</v-container>
 </template>
 <style>

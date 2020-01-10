@@ -78,10 +78,10 @@
 			</v-col>
 			<v-col cols="4" class="d-none d-lg-flex"></v-col>
 		</v-row>
-		<Confirm/>
-		<IModal/>
-		<Modal/>
-		<PLoading/>
+		<Confirm ref="Confirm"/>
+		<IModal ref="IModal"/>
+		<Modal ref="Modal"/>
+		<PLoading ref="PLoading"/>
 	</v-container>
 </template>
 <style>

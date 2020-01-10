@@ -51,9 +51,9 @@
 			</v-col>
 			<v-col cols="2" class="d-none d-md-flex"></v-col>
 		</v-row>
-		<Confirm/>
-		<PLoading/>
-		<Modal/>
+		<Confirm ref="Confirm"/>
+		<PLoading ref="PLoading"/>
+		<Modal ref="Modal"/>
 	</v-container>
 </template>
 <style>

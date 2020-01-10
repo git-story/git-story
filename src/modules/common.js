@@ -1,7 +1,9 @@
 import EventBus from './event-bus.js';
 
+
 // 태그 이름으로 하위 컴포넌트에서 가장 먼저 찾은 것을 반환.
-export const findChildByTagName = (target, tagName, result) => {
+const searchChildByTagName = (target, tagName, result) => {
+
 	if ( result ) {
 		return result;
 	}
@@ -13,13 +15,23 @@ export const findChildByTagName = (target, tagName, result) => {
 					result = c;
 					return true;
 				} else {
-					result = findChildByTagName(c, tagName);
+					result = searchChildByTagName(c, tagName);
 				}
 			});
 		}
 	}
 	return result;
-}
+};
+
+// refs 에 등록된 컴포넌트를 찾고, 못 찾으면 탐색
+export const findChildByTagName = (target, name) => {
+	let dom = target.$refs[name];
+	if ( dom ) {
+		return dom;
+	}
+
+	return searchChildByTagName(target, name);
+};
 
 const findRootComponent = (com) => {
 	if ( com ) {
