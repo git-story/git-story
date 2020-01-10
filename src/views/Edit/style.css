@@ -87,6 +87,7 @@ div.vueditor.custom {
 	background-color: transparent;
 	border: 0;
 	width:100%;
+	height: 500px; /* 임시 사이즈 설정 */
 }
 div.vueditor.custom iframe {
 	width:100%;

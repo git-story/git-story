@@ -1,4 +1,4 @@
-<!-- 2019-12-24 5:27:13 PM
+<!-- 2020-1-10 3:43:46 PM
 Edit.vue 파일은 Edit/ 폴더 안에 있는 build.js 스크립트로 만들어졌습니다.
 build.js 는 해당 폴더의 특정 파일들의 변화를 감시하여 Edit.vue 파일로 만듭니다.
 Edit.vue 파일의 모듈화보단 하나의 파일로 만드는 것이 더욱 소스관리에 용이합니다.
@@ -920,6 +920,7 @@ div.vueditor.custom {
 	background-color: transparent;
 	border: 0;
 	width:100%;
+	height: 500px; /* 임시 사이즈 설정 */
 }
 div.vueditor.custom iframe {
 	width:100%;
@@ -1024,7 +1025,7 @@ const doPostingContent = function() {
 		modal.ok = Lang('confirm');
 		modal.show();
 		return;
-	};
+	}
 	
 
 	// get posts.json

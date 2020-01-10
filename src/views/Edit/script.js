@@ -83,7 +83,7 @@ const doPostingContent = function() {
 		modal.ok = Lang('confirm');
 		modal.show();
 		return;
-	};
+	}
 	
 
 	// get posts.json
