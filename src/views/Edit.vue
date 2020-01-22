@@ -1,4 +1,4 @@
-<!-- 2020-1-10 5:08:37 PM
+<!-- 2020-1-22 9:27:39 PM
 Edit.vue 파일은 Edit/ 폴더 안에 있는 build.js 스크립트로 만들어졌습니다.
 build.js 는 해당 폴더의 특정 파일들의 변화를 감시하여 Edit.vue 파일로 만듭니다.
 Edit.vue 파일의 모듈화보단 하나의 파일로 만드는 것이 더욱 소스관리에 용이합니다.
@@ -1034,14 +1034,19 @@ const doPostingContent = function() {
 		let posts = this.posts;
 
 		let selectedCategory = this.c_sel.value;
+		let category = getObject(posts, selectedCategory);
 
 		// 실제 파일은 카테고리와 무관하게
 		// 디렉토리를 더 나누지 않고 /posts 아래 바로 위치하도록 수정
-		// let path = category.href;
-		let path = "/posts/";
+		// 2020-01-22
+		// 변수 path 는 href 로 바꿈.
+		// path 는 실제 카테고리의 경로를 가지고 있음.
+		
+		let path = category.href;
+		let href = "/posts/";
 		let nowDate = genNowDate();
 		
-		let requsetBase = `${path}${nowDate}/`
+		let requsetBase = `${href}${nowDate}/`
 		
 		if (this.indexPath.length > 0) { // 편집하는 경우 기존 경로로
 			requsetBase = this.indexPath;
@@ -1061,11 +1066,11 @@ const doPostingContent = function() {
 			// 기존 정보 post.json에서 제거
 			removePost({"title": this.title, "href": requsetBase}, axios, this, false);
 		}
-		let category = getObject(posts, selectedCategory);
 		category.posts.push({
 			cover: coverImg,
 			href: requsetBase,
 			title: this.title,
+			path: path,
 		});
 
 		let commitMsg = `📚 [GITSTORY] 📝 POSTING : [${this.title.toUpperCase()}]`;

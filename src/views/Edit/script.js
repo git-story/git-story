@@ -92,14 +92,19 @@ const doPostingContent = function() {
 		let posts = this.posts;
 
 		let selectedCategory = this.c_sel.value;
+		let category = getObject(posts, selectedCategory);
 
 		// 실제 파일은 카테고리와 무관하게
 		// 디렉토리를 더 나누지 않고 /posts 아래 바로 위치하도록 수정
-		// let path = category.href;
-		let path = "/posts/";
+		// 2020-01-22
+		// 변수 path 는 href 로 바꿈.
+		// path 는 실제 카테고리의 경로를 가지고 있음.
+		
+		let path = category.href;
+		let href = "/posts/";
 		let nowDate = genNowDate();
 		
-		let requsetBase = `${path}${nowDate}/`
+		let requsetBase = `${href}${nowDate}/`
 		
 		if (this.indexPath.length > 0) { // 편집하는 경우 기존 경로로
 			requsetBase = this.indexPath;
@@ -119,11 +124,11 @@ const doPostingContent = function() {
 			// 기존 정보 post.json에서 제거
 			removePost({"title": this.title, "href": requsetBase}, axios, this, false);
 		}
-		let category = getObject(posts, selectedCategory);
 		category.posts.push({
 			cover: coverImg,
 			href: requsetBase,
 			title: this.title,
+			path: path,
 		});
 
 		let commitMsg = `📚 [GITSTORY] 📝 POSTING : [${this.title.toUpperCase()}]`;
