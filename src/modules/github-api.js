@@ -238,11 +238,15 @@ GitHubAPI.prototype.getRepository = function(src = "") {
 					maxDeps = fDeps;
 				}
 
-				if ( typeof f.content === "object" ) {
-					f.content = JSON.stringify(f.content, null, "\t");
-				}
+				if ( f.encoding === "base64" ) {
+					// do noting
+				} else {
+					if ( typeof f.content === "object" ) {
+						f.content = JSON.stringify(f.content, null, "\t");
+					}
 
-				f.content = Buffer.from(f.content, 'utf8');
+					f.content = Buffer.from(f.content, 'utf8');
+				}
 			});
 
 			this.getTreeByRef('heads/master', maxDeps).then((res) => {

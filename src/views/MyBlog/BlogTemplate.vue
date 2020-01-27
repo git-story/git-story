@@ -156,8 +156,9 @@ const changeTheme = function() {
 			// remove now theme dependency files
 			// add commit request list
 			config.theme.files.forEach((l) => {
+				let file = l.dist || l.src;
 				reqFiles.push({
-					path: l,
+					path: file,
 					content: null
 				});
 			});
@@ -177,25 +178,29 @@ const changeTheme = function() {
 					});
 
 					let getThemeReq = [];
+					let dist = {};
 					theme.files.forEach(tf => {
-						let file = tf;
+						let file = tf.src;
 						if ( file[0] === "/" ) {
 							file = file.substr(1);
 						}
+
+						dist[file] = tf.dist || file;
+
 						getThemeReq.push(gitApi.repo.getData(file, sTheme.full_name));
 					});
 
 					let _res = await Promise.all(getThemeReq);
 					_res.forEach(r => {
 						let data = r.data;
-						let file = data.path;
-						let content = Buffer.from(data.content, "base64").toString("utf8");
+						let file = dist[data.path];
 						if ( file[0] === "/" ) {
 							file = file.substr(1);
 						}
 						reqFiles.push({
 							"path": file,
-							"content": content
+							"content": Buffer.from(data.content, 'base64'),
+							"encoding": "base64",
 						});
 					});
 
