@@ -240,7 +240,7 @@ const loadBlog = function(_this = this ) {
 			ploading.content = Lang('creating_blog');
 
 			let repos = res.data;
-			let ridx = repos.findIndex(r => r.name === `${_this.$store.getters.user.name}.github.io`);
+			let ridx = repos.findIndex(r => r.name === `${_this.$store.getters.user.name}.github.io`.toLowerCase());
 			if ( ridx >= 0 ) {
 				// 블로그 레포지토리가 있을 때
 				// Git Page 가 있는지 확인한다.
