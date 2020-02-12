@@ -8,7 +8,8 @@
 					<v-col>
 						<v-text-field tabindex="1" ref="input-title" color="secondery" class="custom-title" :label="Lang('editor.input-title')" v-model="title"></v-text-field>
 						<!-- <Vueditor id="editorcontiner" ref="vueditor" class="custom" v-model="text"></Vueditor> -->
-						<Editor ref="tuieditor" tabindex="2" mode="wysiwyg" height="100%" v-model="text"></Editor>
+						<!-- <Editor id="tuiEditor" ref="tuieditor" :options="tuiOptions" tabindex="2" mode="wysiwyg" height="100%" v-model="text"></Editor> -->
+						<TuiEditor ref="tui-editor" />
 					</v-col>
 					<v-col sm="1" md="3"></v-col>
 				</v-row>
@@ -89,13 +90,12 @@ import Modal from './Util/Modal';
 import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
 import EventBus from '../modules/event-bus.js';
-import { Editor } from '@toast-ui/vue-editor';
+import TuiEditor from './TuiEditor';
 
-const buildContentHTML = function(_this = this) {
-	let contentHTML = _this.getContent();
+const buildContentHTML = function(_this = this, _html) {
+	let contentHTML = _html || _this.getContent();
 
-
-	contentHTML = contentHTML.replace(/\<code.*?\>/g, '<div style="background: grey">').replace(/\<\/code?\>/g, '</div>');
+	//contentHTML = contentHTML.match(/\<code.*?\>/g, '<div style="background: grey">').replace(/\<\/code?\>/g, '</div>');
 	let html = document.createElement('html');
 	let cfg = _this.config;
 
@@ -127,18 +127,23 @@ const buildContentHTML = function(_this = this) {
 	commentDiv.style.marginTop = "10px";
 
 	// disqus
-	if ( cfg.comment.disqus ) {
-		commentDiv.innerHTML += cfg.comment.disqus;
-	}
-	
-	// utterances
-	if ( cfg.comment.utterances ) {
-		commentDiv.innerHTML += cfg.comment.utterances;
-	}
+	if ( cfg.comment ) {
+		if ( cfg.comment.disqus ) {
+			commentDiv.innerHTML += cfg.comment.disqus;
+		}
 
-	// facebook
-	if ( cfg.comment.facebook ) {
-		commentDiv.innerHTML += cfg.comment.facebook;
+		// utterances
+		// 2020. 02. 11
+		// utterances 는 스크립트 형태가 아니라 객체로 저장함.
+		// 나중에 테마 제작자가 파싱해서 추가해야 함.
+		// if ( cfg.comment.utterances ) {
+			// commentDiv.innerHTML += cfg.comment.utterances;
+		// }
+
+		// facebook
+		if ( cfg.comment.facebook ) {
+			commentDiv.innerHTML += cfg.comment.facebook;
+		}
 	}
 
 	body.appendChild(commentDiv);
@@ -183,10 +188,10 @@ const doPostingContent = function() {
 		let href = "/posts/";
 		let nowDate = genNowDate();
 		
-		let requsetBase = `${href}${nowDate}/`
+		let requestBase = `${href}${nowDate}/`
 		
 		if (this.indexPath.length > 0) { // 편집하는 경우 기존 경로로
-			requsetBase = this.indexPath;
+			requestBase = this.indexPath;
 		}
 		
 		let coverImg = null;
@@ -201,11 +206,11 @@ const doPostingContent = function() {
 		
 		if (this.indexPath.length > 0) {
 			// 기존 정보 post.json에서 제거
-			removePost({"title": this.title, "href": requsetBase}, axios, this, false);
+			removePost({"title": this.title, "href": requestBase}, axios, this, false);
 		}
 		category.posts.push({
 			cover: coverImg,
-			href: requsetBase,
+			href: requestBase,
 			title: this.title,
 			path: path,
 		});
@@ -217,17 +222,24 @@ const doPostingContent = function() {
 
 		// posting
 		let gitApi = this.$store.getters.api;
-		let contentHTML = buildContentHTML(this);
-		let reqUrl = requsetBase + 'index.html';
+		let val = this.$refs['tui-editor'].getValues();
+
+		let contentHTML = buildContentHTML(this, val.html);
+		let reqHtmlUrl = requestBase + 'index.html';
+		let reqMdUrl = requestBase + 'index.md';
 		gitApi.repo.commitFiles(commitMsg, [
 			{
 				"path": "posts.json",
 				"content": posts
 			}, 
 			{
-				"path": reqUrl,
-				"content": contentHTML
-			}
+				"path": reqHtmlUrl,
+				"content": contentHTML,
+			},
+			{
+				"path": reqMdUrl,
+				"content": val.md,
+			},
 		]).then(() => {
 			ploading.hide();
 			routeAssignUrl('/my-blog', this);
@@ -267,9 +279,9 @@ export default {
 	components: {
 		PLoading,
 		Modal,
-		Editor,
+		TuiEditor,
+		// Editor,
 	},
-
 	props: ['editinfo'],
 	methods: {
 		doPosting: doPostingContent,
@@ -332,7 +344,6 @@ export default {
 		});
 		proms.push(p);
 
-		// 커스텀 툴바를, vueditor 와 연결
 		Promise.all(proms).then(() => {
 			EventBus.$emit('page-loading-end');
 		});
@@ -343,10 +354,12 @@ export default {
 		c_sel: {},
 		categoryItem: [],
 		menu: false,
+		mdText: '',
+		htmlText: '',
 
 		indexSHA: null, // index.html에 대한 sha
 		indexPath: "",
-		title: "",		
+		title: "",
 	}),
 };
 

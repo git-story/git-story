@@ -420,6 +420,9 @@ const clickFacebook = function() {
 	}
 }
 
+// TODO: 2020. 02. 11
+// utternaces 는 스크립트 태그 형태가 아니라 객체를 사용해야 함.
+// tree-some.gitgub.io 참고
 const clickUtterances = function() {
 	let utterances = this.utterances;
 	utterances.step = 1;

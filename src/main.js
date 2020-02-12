@@ -10,7 +10,10 @@ import store from './modules/store.js'
 import 'tui-editor/dist/tui-editor.css';
 import 'tui-editor/dist/tui-editor-contents.css';
 import 'codemirror/lib/codemirror.css';
+import 'highlight.js/styles/github-gist.css'; // code block highlight
 
+import HighlightJS from 'highlight.js'
+window.hljs = HighlightJS;
 
 // firebase 초기화
 // firebase 모듈 전체를 임포트 하는 것 보다 사용할 함수만 로드하는 게 더 빠르다.
