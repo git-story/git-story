@@ -10,7 +10,7 @@
 						<h1 class="font-weight-black" style="color:#880E4F; font-size:6vw;">GIT STORY</h1>
 					</v-row>
 					<v-row>
-						<h2 class="display-1 font-weight-medium" style="color:#C51162; font-size:4vw !important;">{{ Lang('home.banner') }}</h2>
+						<h2 class="display-1 font-weight-medium" style="color:#C51162; font-size:4vw !important;">{{ $t('home.banner') }}</h2>
 					</v-row>
 				</v-col>
 			</v-row>
@@ -26,10 +26,10 @@
 			</v-col>
 			<v-col align="start" style="padding-left:10%; padding-right:10%">
 				<v-row>
-					<h1 class="display-1 font-weight-bold"> {{ Lang('home.des1.title') }} </h1>
+					<h1 class="display-1 font-weight-bold"> {{ $t('home.des1.title') }} </h1>
 				</v-row>
 				<v-row style="margin-top:2rem;">
-					<h2 class="title"> {{ Lang('home.des1.content') }} </h2>
+					<h2 class="title"> {{ $t('home.des1.content') }} </h2>
 				</v-row>
 			</v-col>
 		</v-row>
@@ -40,7 +40,6 @@
 
 <script>
 import FooterComponent from './Com/Footer';
-import Lang from '../languages/Lang.js';
 import EventBus from '../modules/event-bus.js';
 
 export default {
@@ -49,7 +48,6 @@ export default {
 		Footer: FooterComponent
 	},
 	methods: {
-		Lang
 	},
 	mounted: function() {
 		let curPName = this.$router.history.current.name;

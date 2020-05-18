@@ -50,8 +50,8 @@
 		<!-- E:Theme Show Dialog -->
 		<v-row dense>
 			<v-col md="6">
-				<h3 class="display-1 white--text">{{ Lang('myblog.template.blog_header') }}</h3>
-				<h5 class="subtitle-1 white--text">{{ Lang('myblog.template.blog_content') }}</h5>
+				<h3 class="display-1 white--text">{{ $t('myblog.template.blog_header') }}</h3>
+				<h5 class="subtitle-1 white--text">{{ $t('myblog.template.blog_content') }}</h5>
 			</v-col>
 			<v-col md="6"></v-col>
 		</v-row>
@@ -118,7 +118,6 @@ import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
 import { findChildByTagName } from '../../modules/common.js';
-import Lang from '../../languages/Lang.js';
 import EventBus from '../../modules/event-bus.js';
 
 const changeTheme = function() {
@@ -127,23 +126,23 @@ const changeTheme = function() {
 	let task = this.$store.getters.task;
 	if ( task === true ) {
 		let modal = findChildByTagName(this, 'Modal');
-		modal.title = Lang('notification');
-		modal.content = Lang('inprogress');
-		modal.ok = Lang('confirm');
+		modal.title = this.$t('notification');
+		modal.content = this.$t('inprogress');
+		modal.ok = this.$t('confirm');
 		modal.show();
 		return;
 	}
 
 	let confirm = findChildByTagName(this, 'Confirm');
-	confirm.title = Lang('warning');
-	confirm.content = Lang('myblog.template.change_theme');
-	confirm.ok = Lang('ok');
-	confirm.cancel = Lang('cancel');
+	confirm.title = this.$t('warning');
+	confirm.content = this.$t('myblog.template.change_theme');
+	confirm.ok = this.$t('ok');
+	confirm.cancel = this.$t('cancel');
 	confirm.okClick = () => {
 		confirm.hide();
 
 		let ploading = findChildByTagName(this, "PLoading");
-		ploading.content = Lang('myblog.template.changing_theme');
+		ploading.content = this.$t('myblog.template.changing_theme');
 		ploading.show();
 
 		this.$store.commit('task', true);
@@ -303,7 +302,6 @@ export default {
 		});
 	},
 	methods: {
-		Lang,
 		showTheme,
 		changeTheme
 	},

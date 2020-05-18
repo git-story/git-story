@@ -15,7 +15,7 @@
 
 		<!-- S:right menu -->
 		<div v-if="isLogin(true)">
-			<v-btn v-if="isBlog" color="blue-grey darken-3" dark hover tile class="mr-2 d-md-none" @click.stop="routeAssign('/edit')">{{ Lang('myblog.newpost') }}</v-btn>
+			<v-btn v-if="isBlog" color="blue-grey darken-3" dark hover tile class="mr-2 d-md-none" @click.stop="routeAssign('/edit')">{{ $t('myblog.newpost') }}</v-btn>
 			<v-menu
 				v-model="menu"
 				transition="slide-y-transition"
@@ -48,7 +48,7 @@
 					<v-divider></v-divider>
 					<v-list-item @click="routeAssign('/my-blog')" style="height:60px;">
 						<v-list-item-content>
-							<v-list-item-title>{{ Lang('header.myblog') }}</v-list-item-title>
+							<v-list-item-title>{{ $t('header.myblog') }}</v-list-item-title>
 						</v-list-item-content>
 						<v-list-item-action>
 							<v-btn v-if="isBlog" @click.stop="routeAssign('/edit'); menu = false;" icon>
@@ -60,7 +60,7 @@
 					<v-list-item>
 						<v-list-item-content>
 							<v-list-item-subtitle class="text-right">
-								<v-btn text @click="logout">{{ Lang('header.logout') }}</v-btn>
+								<v-btn text @click="logout">{{ $t('header.logout') }}</v-btn>
 							</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
@@ -90,7 +90,6 @@
 <script>
 import { auth } from 'firebase';
 import { openNewTabUrl, routeAssignUrl } from '../../modules/common.js'
-import Lang from '../../languages/Lang.js'
 import EventBus from '../../modules/event-bus.js'
 
 // Github 계정으로 로그인
@@ -158,7 +157,6 @@ export default {
 		openNewTab: openNewTabUrl,
 		routeAssign: routeAssignUrl,
 		logout: logoutGithub,
-		Lang,
 		sideBarToggle
 	},
 	created: function() {

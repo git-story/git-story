@@ -7,14 +7,14 @@
 			max-width="700px"
 			width="90%">
 			<v-card>
-				<v-card-title class="headline">{{ 'Disqus ' + Lang('comment') + ' ' + Lang('add') }}</v-card-title>
+				<v-card-title class="headline">{{ 'Disqus ' + $t('comment') + ' ' + $t('add') }}</v-card-title>
 				<v-stepper v-model="disqus.step">
 					<v-stepper-header>
-						<v-stepper-step :complete="disqus.step > 1" step="1">{{ Lang('myblog.comment.get-disqus') }}</v-stepper-step>
+						<v-stepper-step :complete="disqus.step > 1" step="1">{{ $t('myblog.comment.get-disqus') }}</v-stepper-step>
 
 						<v-divider></v-divider>
 
-						<v-stepper-step step="2">{{ Lang('myblog.comment.code-disqus') }}</v-stepper-step>
+						<v-stepper-step step="2">{{ $t('myblog.comment.code-disqus') }}</v-stepper-step>
 					</v-stepper-header>
 
 					<v-stepper-items>
@@ -56,7 +56,7 @@
 										height="150px"
 										v-model="disqus.code"
 										value=""
-										:hint="Lang('myblog.comment.paste-code')">
+										:hint="$t('myblog.comment.paste-code')">
 									</v-textarea>
 								</v-card-text>
 							</v-card>
@@ -88,14 +88,14 @@
 			max-width="700px"
 			width="90%">
 			<v-card>
-				<v-card-title class="headline">{{ 'Utterances ' + Lang('comment') + ' ' + Lang('add') }}</v-card-title>
+				<v-card-title class="headline">{{ 'Utterances ' + $t('comment') + ' ' + $t('add') }}</v-card-title>
 				<v-stepper v-model="utterances.step">
 					<v-stepper-header>
-						<v-stepper-step :complete="utterances.step > 1" step="1">{{ Lang('myblog.comment.get-utterances') }}</v-stepper-step>
+						<v-stepper-step :complete="utterances.step > 1" step="1">{{ $t('myblog.comment.get-utterances') }}</v-stepper-step>
 
 						<v-divider></v-divider>
 
-						<v-stepper-step step="2">{{ Lang('myblog.comment.code-utterances') }}</v-stepper-step>
+						<v-stepper-step step="2">{{ $t('myblog.comment.code-utterances') }}</v-stepper-step>
 					</v-stepper-header>
 
 					<v-stepper-items>
@@ -137,7 +137,7 @@
 										height="150px"
 										v-model="utterances.code"
 										value=""
-										:hint="Lang('myblog.comment.paste-code')">
+										:hint="$t('myblog.comment.paste-code')">
 									</v-textarea>
 								</v-card-text>
 							</v-card>
@@ -170,14 +170,14 @@
 			max-width="700px"
 			width="90%">
 			<v-card>
-				<v-card-title class="headline">{{ 'Facebook ' + Lang('comment') + ' ' + Lang('add') }}</v-card-title>
+				<v-card-title class="headline">{{ 'Facebook ' + $t('comment') + ' ' + $t('add') }}</v-card-title>
 				<v-stepper v-model="facebook.step">
 					<v-stepper-header>
-						<v-stepper-step :complete="facebook.step > 1" step="1">{{ Lang('myblog.comment.get-facebook') }}</v-stepper-step>
+						<v-stepper-step :complete="facebook.step > 1" step="1">{{ $t('myblog.comment.get-facebook') }}</v-stepper-step>
 
 						<v-divider></v-divider>
 
-						<v-stepper-step step="2">{{ Lang('myblog.comment.code-facebook') }}</v-stepper-step>
+						<v-stepper-step step="2">{{ $t('myblog.comment.code-facebook') }}</v-stepper-step>
 					</v-stepper-header>
 
 					<v-stepper-items>
@@ -219,7 +219,7 @@
 										height="150px"
 										v-model="facebook.code"
 										value=""
-										:hint="Lang('myblog.comment.paste-code')">
+										:hint="$t('myblog.comment.paste-code')">
 									</v-textarea>
 								</v-card-text>
 							</v-card>
@@ -250,7 +250,7 @@
 				<v-toolbar color="transparent white--text" flat>
 					<v-toolbar-title>Comment Setting</v-toolbar-title>
 					<v-spacer></v-spacer>
-					<v-btn color="success" tile @click="commentApply">{{ Lang('apply') }}</v-btn>
+					<v-btn color="success" tile @click="commentApply">{{ $t('apply') }}</v-btn>
 					<template v-slot:extension>
 						<v-tabs
 							v-model="tab"
@@ -260,7 +260,7 @@
 							centerd
 							grow>
 							<v-tabs-slider></v-tabs-slider>
-							<v-tab href="#other-api"> {{ Lang('myblog.comment.other-api') }} </v-tab>
+							<v-tab href="#other-api"> {{ $t('myblog.comment.other-api') }} </v-tab>
 
 
 						</v-tabs>
@@ -345,7 +345,6 @@
 </template>
 <script>
 import { findChildByTagName } from '../../modules/common.js';
-import Lang from '../../languages/Lang.js';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import EventBus from '../../modules/event-bus.js';
@@ -355,9 +354,9 @@ const commentApply = function() {
 	let task = this.$store.getters.task;
 	if ( task === true ) {
 		let modal = findChildByTagName(this, "Modal");
-		modal.title = Lang('notification');
-		modal.content = Lang('inprogress');
-		modal.ok = Lang('confirm');
+		modal.title = this.$t('notification');
+		modal.content = this.$t('inprogress');
+		modal.ok = this.$t('confirm');
 		modal.show();
 		return;
 	}
@@ -367,7 +366,7 @@ const commentApply = function() {
 	let commitMsg = `📚 [GITSTORY] 📜 Comment UPDATE : [config.json]`;
 
 	let ploading = findChildByTagName(this, "PLoading");
-	ploading.content = Lang('applying');
+	ploading.content = this.$t('applying');
 	ploading.show();
 	
 	let comment = this.comment;
@@ -401,10 +400,10 @@ const clickFacebook = function() {
 	} else {
 		if ( facebook.has === true ) {
 			let confirm = findChildByTagName(this, 'Confirm');
-			confirm.title = Lang('warning');
-			confirm.content = Lang('myblog.comment.confirm-delete');
-			confirm.ok = Lang('ok');
-			confirm.cancel = Lang('cancel');
+			confirm.title = this.$t('warning');
+			confirm.content = this.$t('myblog.comment.confirm-delete');
+			confirm.ok = this.$t('ok');
+			confirm.cancel = this.$t('cancel');
 			confirm.okClick = () => {
 				if ( this.comment.facebook ) {
 					delete this.comment.facebook;
@@ -436,10 +435,10 @@ const clickUtterances = function() {
 	} else {
 		if ( utterances.has === true ) {
 			let confirm = findChildByTagName(this, 'Confirm');
-			confirm.title = Lang('warning');
-			confirm.content = Lang('myblog.comment.confirm-delete');
-			confirm.ok = Lang('ok');
-			confirm.cancel = Lang('cancel');
+			confirm.title = this.$t('warning');
+			confirm.content = this.$t('myblog.comment.confirm-delete');
+			confirm.ok = this.$t('ok');
+			confirm.cancel = this.$t('cancel');
 			confirm.okClick = () => {
 				if ( this.comment.utterances ) {
 					delete this.comment.utterances;
@@ -468,10 +467,10 @@ const clickDisqus = function() {
 	} else {
 		if ( disqus.has === true ) {
 			let confirm = findChildByTagName(this, 'Confirm');
-			confirm.title = Lang('warning');
-			confirm.content = Lang('myblog.comment.confirm-delete');
-			confirm.ok = Lang('ok');
-			confirm.cancel = Lang('cancel');
+			confirm.title = this.$t('warning');
+			confirm.content = this.$t('myblog.comment.confirm-delete');
+			confirm.ok = this.$t('ok');
+			confirm.cancel = this.$t('cancel');
 			confirm.okClick = () => {
 				if ( this.comment.disqus ) {
 					delete this.comment.disqus;
@@ -520,7 +519,6 @@ export default {
 		});
 	},
 	methods: {
-		Lang,
 		clickDisqus,
 		clickUtterances,
 		clickFacebook,

@@ -11,6 +11,7 @@ import 'tui-editor/dist/tui-editor.css';
 import 'tui-editor/dist/tui-editor-contents.css';
 import 'codemirror/lib/codemirror.css';
 import 'highlight.js/styles/github-gist.css'; // code block highlight
+import '@/plugins/mixin';
 
 import HighlightJS from 'highlight.js'
 window.hljs = HighlightJS;

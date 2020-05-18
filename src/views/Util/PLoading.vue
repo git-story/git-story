@@ -16,7 +16,7 @@
 			</v-card-text>
 			<v-card-actions>
 				<v-spacer></v-spacer>
-				<v-btn color="secondary" text @click="isShow = false">{{ Lang('ploading.bg') }}</v-btn>
+				<v-btn color="secondary" text @click="isShow = false">{{ $t('ploading.bg') }}</v-btn>
 			</v-card-actions>
 		</v-card>
 	</v-dialog>
@@ -29,12 +29,10 @@
  * 추가된 PLoading 컴포넌트를 찾아 title, content, 등을 수정하고
  * Ploading.show 함수로 화면을 띄운다.
  */
-import Lang from '../../languages/Lang.js';
 
 export default {
 	name: 'Modal',
 	methods: {
-		Lang
 	},
 	data: function () {
 		return {

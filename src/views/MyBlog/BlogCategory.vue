@@ -15,7 +15,7 @@
 
 						<v-list-item-content>
 							<v-list-item-title>
-								{{ Lang('myblog.category.add_category') }}
+								{{ $t('myblog.category.add_category') }}
 							</v-list-item-title>
 						</v-list-item-content>
 					</v-list-item>
@@ -26,7 +26,7 @@
 
 						<v-list-item-content>
 							<v-list-item-title>
-								{{ Lang('myblog.category.modify_category') }}
+								{{ $t('myblog.category.modify_category') }}
 							</v-list-item-title>
 						</v-list-item-content>
 					</v-list-item>
@@ -37,7 +37,7 @@
 
 						<v-list-item-content>
 							<v-list-item-title>
-								{{ Lang('myblog.category.delete_category') }}
+								{{ $t('myblog.category.delete_category') }}
 							</v-list-item-title>
 						</v-list-item-content>
 					</v-list-item>
@@ -54,25 +54,25 @@
 								tile
 								color="light-blue lighten-1"
 								class="mr-3"
-								@click="createCategory">{{ Lang('myblog.category.add_category') }}</v-btn>
+								@click="createCategory">{{ $t('myblog.category.add_category') }}</v-btn>
 							<v-btn
 								text
 								tile
 								color="grey lighten-5"
 								class="mr-3"
-								@click="renameCategory">{{ Lang('myblog.category.modify_category') }}</v-btn>
+								@click="renameCategory">{{ $t('myblog.category.modify_category') }}</v-btn>
 							<v-btn
 								text
 								tile
 								color="red lighten-1"
-								@click="deleteCategory">{{ Lang('myblog.category.delete_category') }}</v-btn>
+								@click="deleteCategory">{{ $t('myblog.category.delete_category') }}</v-btn>
 						</v-col>
 						<v-col cols="auto">
 							<v-btn
 								tile
 								depressed
 								color="success"
-								@click="applyCategory">{{ Lang('apply') }}</v-btn>
+								@click="applyCategory">{{ $t('apply') }}</v-btn>
 						</v-col>
 					</v-row>
 				</v-card>
@@ -80,13 +80,13 @@
 					<v-row class="pa-0 ma-0" align="center">
 						<v-col class="pa-0 ma-0" style="color: white">
 							<v-icon color="white">mdi-book-minus-multiple</v-icon>&nbsp;
-							{{ Lang('myblog.side.manage_category') }}
+							{{ $t('myblog.side.manage_category') }}
 						</v-col>
 						<v-col class="pa-0 ma-0" align="right">
 							<v-btn
 								color="success"
 								tile
-								@click="applyCategory">{{ Lang('apply') }}</v-btn>
+								@click="applyCategory">{{ $t('apply') }}</v-btn>
 						</v-col>
 					</v-row>
 				</v-container>
@@ -119,7 +119,6 @@ import IModal from '../Util/IModal';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
-import Lang from '../../languages/Lang.js';
 import EventBus from '../../modules/event-bus.js';
 
 const createCategoryItems = function(posts, id="") {
@@ -164,7 +163,7 @@ const createCategory = function() {
 
 	let imodal = findChildByTagName(this, "IModal");
 	if ( imodal ) {
-		imodal.title = Lang('myblog.category.add_category');
+		imodal.title = this.$t('myblog.category.add_category');
 		imodal.inputText = "";
 		imodal.okClick = () => {
 			let posts = this.posts;
@@ -233,9 +232,9 @@ const renameCategory = function() {
 
 	if ( active.length <= 0 ) {
 		let modal = findChildByTagName(this, "Modal");
-		modal.title = Lang("notification");
-		modal.content = Lang("myblog.category.not_selected");
-		modal.ok = Lang("confirm");
+		modal.title = this.$t("notification");
+		modal.content = this.$t("myblog.category.not_selected");
+		modal.ok = this.$t("confirm");
 		modal.show();
 		return;
 	}
@@ -246,7 +245,7 @@ const renameCategory = function() {
 
 	let imodal = findChildByTagName(this, "IModal");
 	if ( imodal ) {
-		imodal.title = Lang('myblog.category.modify_category');
+		imodal.title = this.$t('myblog.category.modify_category');
 		imodal.inputText = k;
 		imodal.okClick = () => {
 			let rename = imodal.inputText;
@@ -283,9 +282,9 @@ const deleteCategory = function() {
 
 	if ( active.length <= 0 ) {
 		let modal = findChildByTagName(this, "Modal");
-		modal.title = Lang("notification");
-		modal.content = Lang("myblog.category.not_selected");
-		modal.ok = Lang("confirm");
+		modal.title = this.$t("notification");
+		modal.content = this.$t("myblog.category.not_selected");
+		modal.ok = this.$t("confirm");
 		modal.show();
 		return;
 	}
@@ -297,10 +296,10 @@ const deleteCategory = function() {
 	let confirm = findChildByTagName(this, "Confirm");
 
 	if ( confirm ) {
-		confirm.title = Lang('warning');
-		confirm.content = `[${k}] ` + Lang('myblog.category.delete_check');
-		confirm.ok = Lang('ok');
-		confirm.cancel = Lang('no');
+		confirm.title = this.$t('warning');
+		confirm.content = `[${k}] ` + this.$t('myblog.category.delete_check');
+		confirm.ok = this.$t('ok');
+		confirm.cancel = this.$t('no');
 		confirm.okClick = () => {
 			delete d[k];
 			updateCategory(this, posts);
@@ -318,9 +317,9 @@ const applyCategory = function() {
 	let task = this.$store.getters.task;
 	if ( task === true ) {
 		let modal = findChildByTagName(this, "Modal");
-		modal.title = Lang("notification");
-		modal.content = Lang("inprogress");
-		modal.ok = Lang("confirm");
+		modal.title = this.$t("notification");
+		modal.content = this.$t("inprogress");
+		modal.ok = this.$t("confirm");
 		modal.show();
 		return;
 	}
@@ -328,7 +327,7 @@ const applyCategory = function() {
 	this.$store.commit('task', true);
 
 	let ploading = findChildByTagName(this, "PLoading");
-	ploading.content = Lang('applying');
+	ploading.content = this.$t('applying');
 	ploading.show();
 	gitApi.repo.commitFiles(commitMsg, [{
 		"path": "posts.json",
@@ -364,7 +363,6 @@ export default {
 			});
 	},
 	methods: {
-		Lang,
 		createCategory,
 		renameCategory,
 		deleteCategory,

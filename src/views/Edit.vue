@@ -6,7 +6,7 @@
 				<v-row style="height:calc( 100% - 80px ); margin-bottom: 120px">
 					<v-col sm="1" md="3"></v-col>
 					<v-col>
-						<v-text-field tabindex="1" ref="input-title" color="secondery" class="custom-title" :label="Lang('editor.input-title')" v-model="title"></v-text-field>
+						<v-text-field tabindex="1" ref="input-title" color="secondery" class="custom-title" :label="$t('editor.input-title')" v-model="title"></v-text-field>
 						<!-- <Vueditor id="editorcontiner" ref="vueditor" class="custom" v-model="text"></Vueditor> -->
 						<!-- <Editor id="tuiEditor" ref="tuieditor" :options="tuiOptions" tabindex="2" mode="wysiwyg" height="100%" v-model="text"></Editor> -->
 						<TuiEditor ref="tui-editor" />
@@ -34,7 +34,7 @@
 						:offset-y="true">
 						<template v-slot:activator="{ on }">
 							<v-btn v-on="on" elevation="5" tile large color="grey darken-3" style="color:white;">
-								{{ Lang('editor.post') }}
+								{{ $t('editor.post') }}
 							</v-btn>
 						</template>
 		
@@ -44,7 +44,7 @@
 								<v-container>
 									<v-row align="center">
 										<v-col cols="4">
-											<v-subheader>{{ Lang('editor.category') }}</v-subheader>
+											<v-subheader>{{ $t('editor.category') }}</v-subheader>
 										</v-col>
 										<v-col>
 											<v-select
@@ -52,7 +52,7 @@
 												:items="categoryItem"
 												item-text="name"
 												item-value="value"
-												:label="Lang('editor.select')"
+												:label="$t('editor.select')"
 												return-object
 												single-line></v-select>
 										</v-col>
@@ -63,8 +63,8 @@
 							<v-card-actions>
 								<v-spacer></v-spacer>
 		
-								<v-btn text @click="menu = false">{{ Lang('cancel') }}</v-btn>
-								<v-btn color="success" text @click="menu = false; doPosting()">{{ Lang('ok') }}</v-btn>
+								<v-btn text @click="menu = false">{{ $t('cancel') }}</v-btn>
+								<v-btn color="success" text @click="menu = false; doPosting()">{{ $t('ok') }}</v-btn>
 							</v-card-actions>
 						</v-card>
 						<!-- E:Posting Menu -->
@@ -87,7 +87,6 @@ import axios from 'axios';
 import { genNowDate, findChildByTagName, routeAssignUrl, getObject, removePost } from '../modules/common.js';
 import PLoading from './Util/PLoading';
 import Modal from './Util/Modal';
-import Lang from '../languages/Lang.js';
 import beautify from 'js-beautify'
 import EventBus from '../modules/event-bus.js';
 import TuiEditor from './TuiEditor';
@@ -162,9 +161,9 @@ const doPostingContent = function() {
 	let task = this.$store.getters.task;
 	if ( task === true ) {
 		let modal = findChildByTagName(this, "Modal");
-		modal.title = Lang('notification');
-		modal.content = Lang('inprogress');
-		modal.ok = Lang('confirm');
+		modal.title = this.$t('notification');
+		modal.content = this.$t('inprogress');
+		modal.ok = this.$t('confirm');
 		modal.show();
 		return;
 	}
@@ -217,7 +216,7 @@ const doPostingContent = function() {
 
 		let commitMsg = `📚 [GITSTORY] 📝 POSTING : [${this.title.toUpperCase()}]`;
 		let ploading = findChildByTagName(this, "PLoading");
-		ploading.content = Lang('editor.uploading');
+		ploading.content = this.$t('editor.uploading');
 		ploading.show();
 
 		// posting
@@ -291,7 +290,6 @@ export default {
 		setContent : function(content) 	{
 			this.text = content;
 		},
-		Lang,
 	},
 	mounted: function() {
 		let gitApi = this.$store.getters.api;

@@ -6,7 +6,7 @@
 		temporary>
 		<v-list-item>
 			<v-list-item-content>
-				<v-list-item-title class="headline">{{ Lang('myblog.side.content') }}</v-list-item-title>
+				<v-list-item-title class="headline">{{ $t('myblog.side.content') }}</v-list-item-title>
 			</v-list-item-content>
 		</v-list-item>
 
@@ -18,7 +18,7 @@
 
 				<v-list-item-content>
 					<v-list-item-title class="body-1">
-						{{ Lang('myblog.side.manage_post') }}
+						{{ $t('myblog.side.manage_post') }}
 					</v-list-item-title>
 				</v-list-item-content>
 			</v-list-item>
@@ -29,7 +29,7 @@
 
 				<v-list-item-content>
 					<v-list-item-title class="body-1">
-						{{ Lang('myblog.side.manage_category') }}
+						{{ $t('myblog.side.manage_category') }}
 					</v-list-item-title>
 				</v-list-item-content>
 			</v-list-item>
@@ -40,7 +40,7 @@
 		<v-list-item>
 			<v-list-item-content>
 				<v-list-item-title class="headline">
-					{{ Lang('myblog.side.setting_blog') }}
+					{{ $t('myblog.side.setting_blog') }}
 				</v-list-item-title>
 			</v-list-item-content>
 		</v-list-item>
@@ -54,7 +54,7 @@
 
 				<v-list-item-content>
 					<v-list-item-title>
-						{{ Lang('myblog.side.manage_template') }}
+						{{ $t('myblog.side.manage_template') }}
 					</v-list-item-title>
 				</v-list-item-content>
 			</v-list-item>
@@ -67,7 +67,7 @@
 
 				<v-list-item-content>
 					<v-list-item-title>
-						{{ Lang('myblog.side.setting_include') }}
+						{{ $t('myblog.side.setting_include') }}
 					</v-list-item-title>
 				</v-list-item-content>
 			</v-list-item>
@@ -80,7 +80,7 @@
 
 				<v-list-item-content>
 					<v-list-item-title>
-						{{ Lang('myblog.side.setting_comment') }}
+						{{ $t('myblog.side.setting_comment') }}
 					</v-list-item-title>
 				</v-list-item-content>
 			</v-list-item>
@@ -94,7 +94,7 @@
 
 				<v-list-item-content>
 					<v-list-item-title>
-						{{ Lang('myblog.side.setting_etc') }}
+						{{ $t('myblog.side.setting_etc') }}
 					</v-list-item-title>
 				</v-list-item-content>
 			</v-list-item>
@@ -104,7 +104,6 @@
 	</v-navigation-drawer>
 </template>
 <script>
-import Lang from '../../languages/Lang.js';
 import { routeAssignUrl  } from '../../modules/common.js';
 import EventBus from '../../modules/event-bus.js'
 
@@ -123,7 +122,6 @@ export default {
 		});
 	},
 	methods: {
-		Lang,
 		routeAssignUrl,
 		contentChange
 	},

@@ -4,8 +4,8 @@
 			<v-col class="pa-0">
 				<v-card width="100%" color="transparent" tile flat>
 					<v-toolbar class="tool-custom" flat color="transparent" dark>
-						<v-btn color="blue-grey darken-1" @click="createTag" dark class="mr-3" tile>{{ Lang('myblog.include.new_tag') }}</v-btn>
-						<v-btn color="success" @click="applyIncludeTags" dark tile>{{ Lang('apply') }}</v-btn>
+						<v-btn color="blue-grey darken-1" @click="createTag" dark class="mr-3" tile>{{ $t('myblog.include.new_tag') }}</v-btn>
+						<v-btn color="success" @click="applyIncludeTags" dark tile>{{ $t('apply') }}</v-btn>
 					</v-toolbar>
 					<v-tabs
 						dark
@@ -50,7 +50,7 @@
 																		<v-icon>mdi-pencil</v-icon> 
 																	</v-btn>
 																</template>
-																<span>{{ Lang('modify') }}</span>
+																<span>{{ $t('modify') }}</span>
 															</v-tooltip>
 														</v-list-item-action>
 														<v-list-item-action>
@@ -60,7 +60,7 @@
 																		<v-icon>mdi-trash-can</v-icon> 
 																	</v-btn>
 																</template>
-																<span>{{ Lang('delete') }}</span>
+																<span>{{ $t('delete') }}</span>
 															</v-tooltip>
 														</v-list-item-action>
 													</v-list-item>
@@ -91,7 +91,6 @@ header.tool-custom {
 </style>
 <script>
 import { findChildByTagName  } from '../../modules/common.js';
-import Lang from '../../languages/Lang.js';
 import Confirm from '../Util/Confirm';
 import IModal from '../Util/IModal';
 import Modal from '../Util/Modal';
@@ -127,10 +126,10 @@ const createTag = function() {
 	let id = this.currentTab;
 
 	let imodal = findChildByTagName(this, "IModal");
-	imodal.title = Lang('myblog.include.new_tag');
+	imodal.title = this.$t('myblog.include.new_tag');
 	imodal.inputText = '';
-	imodal.ok = Lang('add');
-	imodal.cancel = Lang('cancel');
+	imodal.ok = this.$t('add');
+	imodal.cancel = this.$t('cancel');
 	imodal.okClick = () => {
 		let text = imodal.inputText;
 		let tagArray = getTagArrayById(this.config, id);
@@ -144,10 +143,10 @@ const createTag = function() {
 
 const modifyTag = function(tag, id, idx) {
 	let imodal = findChildByTagName(this, "IModal");
-	imodal.title = Lang('myblog.include.modify_tag');
+	imodal.title = this.$t('myblog.include.modify_tag');
 	imodal.inputText = tag;
-	imodal.ok = Lang('modify');
-	imodal.cancel = Lang('cancel');
+	imodal.ok = this.$t('modify');
+	imodal.cancel = this.$t('cancel');
 	imodal.okClick = () => {
 		let text = imodal.inputText;
 		
@@ -161,10 +160,10 @@ const modifyTag = function(tag, id, idx) {
 
 const deleteTag = function(tag, id, idx) {
 	let confirm = findChildByTagName(this, "Confirm");
-	confirm.title = Lang('warning');
-	confirm.content = Lang('myblog.include.delete_tag');
-	confirm.ok = Lang('ok');
-	confirm.cancel = Lang('no');
+	confirm.title = this.$t('warning');
+	confirm.content = this.$t('myblog.include.delete_tag');
+	confirm.ok = this.$t('ok');
+	confirm.cancel = this.$t('no');
 	confirm.okClick = () => {
 		let tagArray = getTagArrayById(this.config, id);
 		tagArray.splice(idx, 1);
@@ -179,9 +178,9 @@ const applyIncludeTags = function() {
 	let task = this.$store.getters.task;
 	if ( task === true ) {
 		let modal = findChildByTagName(this, "Modal");
-		modal.title = Lang('notification');
-		modal.content = Lang('inprogress');
-		modal.ok = Lang('confirm');
+		modal.title = this.$t('notification');
+		modal.content = this.$t('inprogress');
+		modal.ok = this.$t('confirm');
 		modal.show();
 		return;
 	}
@@ -189,7 +188,7 @@ const applyIncludeTags = function() {
 	this.$store.commit('task', true);
 
 	let ploading = findChildByTagName(this, "PLoading");
-	ploading.content = Lang('applying');
+	ploading.content = this.$t('applying');
 	ploading.show();
 
 	let gitApi = this.$store.getters.api;
@@ -198,9 +197,9 @@ const applyIncludeTags = function() {
 		"content": config
 	}]).then(() => {
 		let modal = findChildByTagName(this, "Modal");
-		modal.title = Lang('notification');
-		modal.content = Lang('myblog.include.success_apply');
-		modal.ok = Lang('ok');
+		modal.title = this.$t('notification');
+		modal.content = this.$t('myblog.include.success_apply');
+		modal.ok = this.$t('ok');
 		modal.show();
 	}).finally(() => {
 		this.$store.commit('task', false);
@@ -230,7 +229,6 @@ export default {
 		});
 	},
 	methods: {
-		Lang,
 		modifyTag,
 		applyFunc: () => {},
 		deleteTag,

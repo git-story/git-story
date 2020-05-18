@@ -5,7 +5,7 @@
 				<v-row>
 					<v-col class="">
 						<h3 class="display-1 white--text">
-							{{ Lang('myblog.table.content-list') }}
+							{{ $t('myblog.table.content-list') }}
 						</h3>
 					</v-col>
 					<v-col>
@@ -13,7 +13,7 @@
 							dark
 							v-model="dt.search"
 							append-icon="mdi-magnify"
-							:label="Lang('myblog.table.search')"
+							:label="$t('myblog.table.search')"
 							single-line
 							hide-details
 							></v-text-field>
@@ -36,7 +36,7 @@
 									<v-icon dark>mdi-pencil</v-icon>
 								</v-btn>
 							</template>
-							<span>{{ Lang('modify') }}</span>
+							<span>{{ $t('modify') }}</span>
 						</v-tooltip>
 						<v-tooltip right>
 							<template v-slot:activator="{ on }">
@@ -44,7 +44,7 @@
 									<v-icon dark>mdi-trash-can</v-icon>
 								</v-btn>
 							</template>
-							<span>{{ Lang('delete') }}</span>
+							<span>{{ $t('delete') }}</span>
 						</v-tooltip>
 					</template>
 				</v-data-table>
@@ -72,7 +72,6 @@ import { getSubposts, routeAssignUrl, findChildByTagName, removePost } from '../
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
-import Lang from '../../languages/Lang.js';
 import EventBus from '../../modules/event-bus.js';
 
 const createTableItems = function(posts) {
@@ -121,28 +120,28 @@ const deletePost = function(post) {
 
 	let task = this.$store.getters.task;
 	if ( task === true ) {
-		modal.title = Lang('notification');
-		modal.content = Lang('inprogress');
-		modal.ok = Lang('confirm');
+		modal.title = this.$t('notification');
+		modal.content = this.$t('inprogress');
+		modal.ok = this.$t('confirm');
 		modal.show();
 		return;
 	}
 
 	this.$store.commit('task', true);
 
-	confirm.title = Lang('notification');
-	confirm.content = Lang('myblog.list.delete_post');
-	confirm.ok = Lang('ok');
-	confirm.cancel = Lang('no');
+	confirm.title = this.$t('notification');
+	confirm.content = this.$t('myblog.list.delete_post');
+	confirm.ok = this.$t('ok');
+	confirm.cancel = this.$t('no');
 	confirm.okClick = () => {
 		confirm.hide();
-		ploading.content = Lang('myblog.list.progress_delete');
+		ploading.content = this.$t('myblog.list.progress_delete');
 		ploading.show();
 		removePost(post, this).then((removed) => {
 			ploading.hide();
-			modal.title = Lang('notification');
-			modal.content = Lang('myblog.list.success_del_post');
-			modal.ok = Lang('confirm');
+			modal.title = this.$t('notification');
+			modal.content = this.$t('myblog.list.success_del_post');
+			modal.ok = this.$t('confirm');
 			modal.okClick = () => {
 				let desserts = createTableItems(removed);
 				this.dt.desserts = desserts;
@@ -152,9 +151,9 @@ const deletePost = function(post) {
 			modal.show();
 		}).catch(() => {
 			ploading.hide();
-			modal.title = Lang('error');
-			modal.content = Lang('myblog.list.fail_del_post');
-			modal.ok = Lang('confirm');
+			modal.title = this.$t('error');
+			modal.content = this.$t('myblog.list.fail_del_post');
+			modal.ok = this.$t('confirm');
 			modal.okClick = () => {
 				modal.hide();
 				routeAssignUrl('/');
@@ -215,7 +214,6 @@ export default {
 		});
 	},
 	methods: {
-		Lang,
 		deletePost,
 		modifyPost
 	},
@@ -227,10 +225,10 @@ export default {
 			dt: {
 				search: '',
 				headers: [
-					{ text: Lang('myblog.table.title'), value: 'title', align: 'left' },
-					{ text: Lang('myblog.table.date'), value: 'date', align: 'center' },
-					{ text: Lang('myblog.table.category'), value: 'category', align: 'center' },
-					{ text: Lang('action'), value: 'action', sortable: false, align: 'center' }
+					{ text: this.$t('myblog.table.title'), value: 'title', align: 'left' },
+					{ text: this.$t('myblog.table.date'), value: 'date', align: 'center' },
+					{ text: this.$t('myblog.table.category'), value: 'category', align: 'center' },
+					{ text: this.$t('action'), value: 'action', sortable: false, align: 'center' }
 				],
 				desserts: [
 				]
