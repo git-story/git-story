@@ -11,7 +11,7 @@
 				<v-row>
 					<v-col class="pa-0 d-none d-lg-flex"></v-col>
 					<v-col sm="12" md="12" lg="8" xl="6" class="pa-0">
-						<v-btn tile @click="routeAssignUrl('/edit')" block color="blue-grey darken-3" dark hover large>{{ $t('myblog.newpost') }}</v-btn>
+						<v-btn tile @click="$assign('/edit')" block color="blue-grey darken-3" dark hover large>{{ $t('myblog.newpost') }}</v-btn>
 						<!-- E:New Posting -->
 						<!-- S:Blog Contentes -->
 						<v-card tile class="mx-auto mt-3" style="background: rgba(80, 80, 80, 0.3)">
@@ -142,7 +142,7 @@
 import Confirm from './Util/Confirm';
 import Modal from './Util/Modal';
 import PLoading from './Util/PLoading';
-import { randomNumber, findChildByTagName, routeAssignUrl, mobileCheck  } from '../modules/common.js';
+import { randomNumber, findChildByTagName, mobileCheck  } from '../modules/common.js';
 import BlogSideBar from './MyBlog/BlogSideBar';
 import EventBus from '../modules/event-bus.js';
 
@@ -175,7 +175,6 @@ export default {
 		});
 	},
 	methods: {
-		routeAssignUrl,
         contentChange(target) {
             if ( typeof target === "string" ) {
                 let t = categoryList[target];
@@ -241,7 +240,7 @@ export default {
                 modal.ok = this.$t('confirm');
                 modal.okClick = () => {
                     modal.hide();
-                    routeAssignUrl('/');
+                    this.$assign('/');
                 };
                 modal.show();
             });
@@ -282,7 +281,7 @@ export default {
                                     confirm.hide();
                                 }
                                 confirm.cancelClick = () => {
-                                    routeAssignUrl('/', this);
+                                    this.$assign('/', this);
                                     confirm.hide();
                                 }
                                 confirm.show();
@@ -302,7 +301,7 @@ export default {
                             this.createRepository();
                         }
                         confirm.cancelClick = () => {
-                            routeAssignUrl('/', this);
+                            this.$assign('/', this);
                             confirm.hide();
                         }
                         confirm.show();

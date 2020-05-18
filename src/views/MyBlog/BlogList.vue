@@ -68,7 +68,7 @@ div.custom.v-data-table table tbody tr:hover {
 }
 </style>
 <script>
-import { getSubposts, routeAssignUrl, findChildByTagName, removePost } from '../../modules/common.js';
+import { getSubposts, findChildByTagName, removePost } from '../../modules/common.js';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
@@ -156,7 +156,7 @@ const deletePost = function(post) {
 			modal.ok = this.$t('confirm');
 			modal.okClick = () => {
 				modal.hide();
-				routeAssignUrl('/');
+				this.$assign('/');
 			};
 			modal.show();
 		}).finally(() => {

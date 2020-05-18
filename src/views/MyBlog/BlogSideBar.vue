@@ -104,7 +104,6 @@
 	</v-navigation-drawer>
 </template>
 <script>
-import { routeAssignUrl  } from '../../modules/common.js';
 import EventBus from '../../modules/event-bus.js'
 
 const contentChange = function(content) {
@@ -122,7 +121,6 @@ export default {
 		});
 	},
 	methods: {
-		routeAssignUrl,
 		contentChange
 	},
 	mounted: function() {

@@ -84,7 +84,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { genNowDate, findChildByTagName, routeAssignUrl, getObject, removePost } from '../modules/common.js';
+import { genNowDate, findChildByTagName, getObject, removePost } from '../modules/common.js';
 import PLoading from './Util/PLoading';
 import Modal from './Util/Modal';
 import beautify from 'js-beautify'
@@ -241,7 +241,7 @@ const doPostingContent = function() {
 			},
 		]).then(() => {
 			ploading.hide();
-			routeAssignUrl('/my-blog', this);
+			this.$assign('/my-blog');
 		}).finally(() => {
 			this.$store.commit('task', false);
 		});

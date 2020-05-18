@@ -47,22 +47,6 @@ const findRootComponent = (com) => {
 	}
 };
 
-// Vue route 이동
-export const routeAssignUrl = function(url, _this) {
-	let router = (this && this.$router) || (_this && _this.$router);
-	if ( typeof url === "string" && router ) {
-		if ( router.history.current.path !== url ) {
-			EventBus.$emit('page-loading-start');
-			router.push({ path: url });
-			
-			let root = findRootComponent(this);
-			if ( root && root.isHome ) {
-				root.isHome = (router.history.current.name === "Home");
-			}
-		}
-	}
-}
-
 // 새로운 탭으로 URL 열기
 export const openNewTabUrl = function(url) {
 	if ( typeof url === "string" ) {
