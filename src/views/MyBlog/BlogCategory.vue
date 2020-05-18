@@ -368,8 +368,8 @@ export default {
 		},
         updateCategory(posts = {}) {
             let categoryItems = createCategoryItems(posts);
-            _this.posts = posts;
-            _this.items = categoryItems;
+            this.posts = posts;
+            this.items = categoryItems;
         },
 
 	},

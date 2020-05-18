@@ -30,20 +30,6 @@ export const findChildByTagName = (target, name) => {
 	return searchChildByTagName(target, name);
 };
 
-const findRootComponent = (com) => {
-	if ( com ) {
-		let options = com.$options;
-		if ( options ) {
-			if ( !options._componentTag ) {
-				return com;
-			} else {
-				let parent = options.parent;
-				return findRootComponent(parent);
-			}
-		}
-	}
-};
-
 // 새로운 탭으로 URL 열기
 export const openNewTabUrl = function(url) {
 	if ( typeof url === "string" ) {
