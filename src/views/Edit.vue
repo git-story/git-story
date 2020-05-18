@@ -90,71 +90,6 @@ import Modal from './Util/Modal';
 import beautify from 'js-beautify'
 import TuiEditor from './TuiEditor';
 
-const buildContentHTML = function(_this = this, _html) {
-	let contentHTML = _html || _this.getContent();
-
-	//contentHTML = contentHTML.match(/\<code.*?\>/g, '<div style="background: grey">').replace(/\<\/code?\>/g, '</div>');
-	let html = document.createElement('html');
-	let cfg = _this.config;
-
-	const createChildElement = (e) => {
-		let child = document.createElement('div');
-		child.innerHTML = e;
-		return child.lastElementChild;
-	};
-
-	let head = document.createElement('head');
-	cfg.head.forEach(e => {
-		let child = createChildElement(e);
-			head.appendChild(child);
-	});
-	html.appendChild(head);
-
-	let body = document.createElement('body');
-	cfg.body.start.forEach(e => {
-		let child = createChildElement(e);
-		body.appendChild(child);
-	});
-
-	let bodyContent = document.createElement('main');
-	bodyContent.innerHTML = contentHTML;
-	body.appendChild(bodyContent);
-
-	// comment 
-	let commentDiv = document.createElement('div');
-	commentDiv.style.marginTop = "10px";
-
-	// disqus
-	if ( cfg.comment ) {
-		if ( cfg.comment.disqus ) {
-			commentDiv.innerHTML += cfg.comment.disqus;
-		}
-
-		// utterances
-		// 2020. 02. 11
-		// utterances 는 스크립트 형태가 아니라 객체로 저장함.
-		// 나중에 테마 제작자가 파싱해서 추가해야 함.
-		// if ( cfg.comment.utterances ) {
-			// commentDiv.innerHTML += cfg.comment.utterances;
-		// }
-
-		// facebook
-		if ( cfg.comment.facebook ) {
-			commentDiv.innerHTML += cfg.comment.facebook;
-		}
-	}
-
-	body.appendChild(commentDiv);
-
-	cfg.body.end.forEach(e => {
-		let child = createChildElement(e);
-		body.appendChild(child);
-	});
-	html.appendChild(body);
-	let outerHTML = html.outerHTML;
-	let beautyHTML = beautify.html(outerHTML, true);
-	return beautyHTML;
-};
 
 const doPostingContent = function() {
 	let task = this.$store.getters.task;
@@ -222,7 +157,7 @@ const doPostingContent = function() {
 		let gitApi = this.$store.getters.api;
 		let val = this.$refs['tui-editor'].getValues();
 
-		let contentHTML = buildContentHTML(this, val.html);
+		let contentHTML = this.buildContentHTML(val.html);
 		let reqHtmlUrl = requestBase + 'index.html';
 		let reqMdUrl = requestBase + 'index.md';
 		gitApi.repo.commitFiles(commitMsg, [
@@ -283,12 +218,77 @@ export default {
 	props: ['editinfo'],
 	methods: {
 		doPosting: doPostingContent,
-		getContent : function() {
+		getContent() {
 			return this.$refs.tuieditor.invoke('getHtml');
 		},
-		setContent : function(content) 	{
+		setContent(content) 	{
 			this.text = content;
 		},
+        buildContentHTML(_html) {
+            let contentHTML = _html || this.getContent();
+
+            //contentHTML = contentHTML.match(/\<code.*?\>/g, '<div style="background: grey">').replace(/\<\/code?\>/g, '</div>');
+            let html = document.createElement('html');
+            let cfg = this.config;
+
+            const createChildElement = (e) => {
+                let child = document.createElement('div');
+                child.innerHTML = e;
+                return child.lastElementChild;
+            };
+
+            let head = document.createElement('head');
+            cfg.head.forEach(e => {
+                let child = createChildElement(e);
+                head.appendChild(child);
+            });
+            html.appendChild(head);
+
+            let body = document.createElement('body');
+            cfg.body.start.forEach(e => {
+                let child = createChildElement(e);
+                body.appendChild(child);
+            });
+
+            let bodyContent = document.createElement('main');
+            bodyContent.innerHTML = contentHTML;
+            body.appendChild(bodyContent);
+
+            // comment 
+            let commentDiv = document.createElement('div');
+            commentDiv.style.marginTop = "10px";
+
+            // disqus
+            if ( cfg.comment ) {
+                if ( cfg.comment.disqus ) {
+                    commentDiv.innerHTML += cfg.comment.disqus;
+                }
+
+                // utterances
+                // 2020. 02. 11
+                // utterances 는 스크립트 형태가 아니라 객체로 저장함.
+                // 나중에 테마 제작자가 파싱해서 추가해야 함.
+                // if ( cfg.comment.utterances ) {
+                // commentDiv.innerHTML += cfg.comment.utterances;
+                // }
+
+                // facebook
+                if ( cfg.comment.facebook ) {
+                    commentDiv.innerHTML += cfg.comment.facebook;
+                }
+            }
+
+            body.appendChild(commentDiv);
+
+            cfg.body.end.forEach(e => {
+                let child = createChildElement(e);
+                body.appendChild(child);
+            });
+            html.appendChild(body);
+            let outerHTML = html.outerHTML;
+            let beautyHTML = beautify.html(outerHTML, true);
+            return beautyHTML;
+        },
 	},
 	mounted: function() {
 		let gitApi = this.$store.getters.api;

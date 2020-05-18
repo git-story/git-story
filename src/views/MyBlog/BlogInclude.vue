@@ -96,19 +96,6 @@ import IModal from '../Util/IModal';
 import Modal from '../Util/Modal';
 import PLoading from '../Util/PLoading';
 
-const updateIncludeItems = function(_this = this) {
-	let config = _this.config;
-	let header = config.head;
-	let bodyS = config.body.start;
-	let bodyE = config.body.end;
-
-	_this.tabItems = [
-		{ id: 'header', list: header },
-		{ id: 'body-start', list: bodyS },
-		{ id: 'body-end', list: bodyE }
-	];
-};
-
 const getTagArrayById = (config, id) => {
 	let tagArray = new Array();
 	if ( id === "header" ) {
@@ -133,7 +120,7 @@ const createTag = function() {
 		let text = imodal.inputText;
 		let tagArray = getTagArrayById(this.config, id);
 		tagArray.push(text);
-		updateIncludeItems(this);
+		this.updateIncludeItems();
 
 		imodal.hide();
 	}
@@ -151,7 +138,7 @@ const modifyTag = function(tag, id, idx) {
 		
 		let tagArray = getTagArrayById(this.config, id);
 		tagArray[idx] = text;
-		updateIncludeItems(this);
+		this.updateIncludeItems();
 		imodal.hide();
 	}
 	imodal.show();
@@ -222,7 +209,7 @@ export default {
 			this.config = config;
 			this.config_ori = res;
 
-			updateIncludeItems(this);
+			this.updateIncludeItems();
 
 			this.$evt.$emit('page-loading-end');
 		});
@@ -232,7 +219,20 @@ export default {
 		applyFunc: () => {},
 		deleteTag,
 		createTag,
-		applyIncludeTags
+		applyIncludeTags,
+        updateIncludeItems() {
+            let config = this.config;
+            let header = config.head;
+            let bodyS = config.body.start;
+            let bodyE = config.body.end;
+
+            this.tabItems = [
+                { id: 'header', list: header },
+                { id: 'body-start', list: bodyS },
+                { id: 'body-end', list: bodyE }
+            ];
+        },
+
 	},
 	mounted: function() {
 	},

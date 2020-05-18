@@ -145,12 +145,6 @@ const createCategoryItems = function(posts, id="") {
 	return obj;
 };
 
-const updateCategory = function(_this = this, posts = {}) {
-	let categoryItems = createCategoryItems(posts);
-	_this.posts = posts;
-	_this.items = categoryItems;
-};
-
 const createCategory = function() {
 	let active = this.active;
 
@@ -190,7 +184,7 @@ const createCategory = function() {
 				}
 			}
 
-			updateCategory(this, posts);
+			this.updateCategory(posts);
 
 			imodal.hide();
 		};
@@ -262,7 +256,7 @@ const renameCategory = function() {
 			d[rename] = d[k];
 			delete d[k];
 
-			updateCategory(this, posts);
+			this.updateCategory(posts);
 
 			imodal.hide();
 		}
@@ -301,7 +295,7 @@ const deleteCategory = function() {
 		confirm.cancel = this.$t('no');
 		confirm.okClick = () => {
 			delete d[k];
-			updateCategory(this, posts);
+			this.updateCategory(posts);
 			confirm.hide();
 		}
 		confirm.show();
@@ -356,7 +350,7 @@ export default {
 			then(res => {
 				let posts = res.json;
 				this.posts_ori = res;
-				updateCategory(this, posts);
+				this.updateCategory(posts);
 
 				this.$evt.$emit('page-loading-end');
 			});
@@ -366,12 +360,18 @@ export default {
 		renameCategory,
 		deleteCategory,
 		applyCategory,
-		outClick: function() {
+		outClick() {
 			let vMobile = this.vMobile;
 			if ( vMobile === true ) {
 				this.active = [];
 			}
-		}
+		},
+        updateCategory(posts = {}) {
+            let categoryItems = createCategoryItems(posts);
+            _this.posts = posts;
+            _this.items = categoryItems;
+        },
+
 	},
 	mounted: function() {
 	},
