@@ -40,7 +40,6 @@
 
 <script>
 import FooterComponent from './Com/Footer';
-import EventBus from '../modules/event-bus.js';
 
 export default {
 	name: 'Home',
@@ -55,7 +54,7 @@ export default {
 			let vContent = document.querySelector('#router-view');
 			vContent.style.background = "white";
 		}
-		EventBus.$emit('page-loading-end');
+		this.$evt.$emit('page-loading-end');
 	},
 	data: () => ({
 		//

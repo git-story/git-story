@@ -118,7 +118,6 @@ import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
 import { findChildByTagName } from '../../modules/common.js';
-import EventBus from '../../modules/event-bus.js';
 
 const changeTheme = function() {
 	let sTheme = this.sTheme;
@@ -297,7 +296,7 @@ export default {
 			});
 
 			Promise.all(proms).then(() => {
-				EventBus.$emit('page-loading-end');
+				this.$evt.$emit('page-loading-end');
 			});
 		});
 	},

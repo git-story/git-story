@@ -90,7 +90,6 @@
 <script>
 import { auth } from 'firebase';
 import { openNewTabUrl } from '../../modules/common.js'
-import EventBus from '../../modules/event-bus.js'
 
 
 export default {
@@ -144,7 +143,7 @@ export default {
         },
         // 새 글 작성 클릭
         sideBarToggle() {
-            EventBus.$emit("sidebarToggle");
+            this.$evt.$emit("sidebarToggle");
         },
 	},
 	created: function() {
@@ -159,10 +158,10 @@ export default {
 			this.$store.commit('vMobile', false);
 		}
 
-		EventBus.$on('page-loading-start', () => {
+		this.$evt.$on('page-loading-start', () => {
 			this.loading = true;
 		});
-		EventBus.$on('page-loading-end', () => {
+		this.$evt.$on('page-loading-end', () => {
 			this.loading = false;
 		});
 	},

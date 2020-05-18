@@ -104,31 +104,27 @@
 	</v-navigation-drawer>
 </template>
 <script>
-import EventBus from '../../modules/event-bus.js'
-
-const contentChange = function(content) {
-	EventBus.$emit('content-change', content);
-	this.vMobile = false;
-};
-
 export default {
 	name: 'BlogSideBar',
 	components: {
 	},
-	created: function() {
-		EventBus.$on('sidebarToggle', () => {
+	created() {
+		this.$evt.$on('sidebarToggle', () => {
 			this.vMobile = !this.vMobile;
 		});
 	},
 	methods: {
-		contentChange
+		contentChange(content) {
+            this.$evt.$emit('content-change', content);
+            this.vMobile = false;
+        },
 	},
-	mounted: function() {
+	mounted() {
 	},
-	data: function() {
+	data() {
 		return {
-			vMobile: false
-		}
+			vMobile: false,
+		};
 	},
 };
 </script>

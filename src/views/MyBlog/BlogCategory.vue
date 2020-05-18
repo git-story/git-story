@@ -119,7 +119,6 @@ import IModal from '../Util/IModal';
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
-import EventBus from '../../modules/event-bus.js';
 
 const createCategoryItems = function(posts, id="") {
 	let keys = Object.keys(posts);
@@ -359,7 +358,7 @@ export default {
 				this.posts_ori = res;
 				updateCategory(this, posts);
 
-				EventBus.$emit('page-loading-end');
+				this.$evt.$emit('page-loading-end');
 			});
 	},
 	methods: {

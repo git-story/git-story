@@ -88,7 +88,6 @@ import { genNowDate, findChildByTagName, getObject, removePost } from '../module
 import PLoading from './Util/PLoading';
 import Modal from './Util/Modal';
 import beautify from 'js-beautify'
-import EventBus from '../modules/event-bus.js';
 import TuiEditor from './TuiEditor';
 
 const buildContentHTML = function(_this = this, _html) {
@@ -343,7 +342,7 @@ export default {
 		proms.push(p);
 
 		Promise.all(proms).then(() => {
-			EventBus.$emit('page-loading-end');
+			this.$evt.$emit('page-loading-end');
 		});
 
 	},

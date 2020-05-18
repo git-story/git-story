@@ -1,6 +1,3 @@
-import EventBus from './event-bus.js';
-
-
 // 태그 이름으로 하위 컴포넌트에서 가장 먼저 찾은 것을 반환.
 const searchChildByTagName = (target, tagName, result) => {
 

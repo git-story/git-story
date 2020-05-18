@@ -30,6 +30,10 @@ const firebaseConfig = {
 };
 initializeApp(firebaseConfig);
 
+// Event Bus 
+Vue.prototype.$evt = new Vue();
+
+
 Vue.config.productionTip = false
 new Vue({
 	router,

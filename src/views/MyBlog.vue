@@ -144,7 +144,6 @@ import Modal from './Util/Modal';
 import PLoading from './Util/PLoading';
 import { randomNumber, findChildByTagName, mobileCheck  } from '../modules/common.js';
 import BlogSideBar from './MyBlog/BlogSideBar';
-import EventBus from '../modules/event-bus.js';
 
 const categoryList = {
 	"BlogList": ()=>import('./MyBlog/BlogList'),
@@ -167,10 +166,10 @@ export default {
 	created: function() {
 		//this.$store.commit('blogContent', BlogList);
 		this.contentChange('BlogList');
-		EventBus.$on('content-change', (content) => {
+		this.$evt.$on('content-change', (content) => {
 			this.contentChange(content);
 		});
-		EventBus.$on('myblog.call-mounted', () => {
+		this.$evt.$on('myblog.call-mounted', () => {
 			this.loadBlog();
 		});
 	},
@@ -181,7 +180,7 @@ export default {
                 if ( t ) {
                     if ( this.currentComponent ) {
                         if ( this.currentComponent.target !== target ) {
-                            EventBus.$emit('page-loading-start');
+                            this.$evt.$emit('page-loading-start');
                             this.currentComponent = { target, t };
                         }
                     }
@@ -231,7 +230,7 @@ export default {
                 modal.ok = this.$t('confirm');
                 modal.okClick = () => {
                     modal.hide();
-                    EventBus.$emit('myblog.list.reload');
+                    this.$evt.$emit('myblog.list.reload');
                 };
                 modal.show();
             }).catch(() => {

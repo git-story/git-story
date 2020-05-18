@@ -72,131 +72,6 @@ import { getSubposts, findChildByTagName, removePost } from '../../modules/commo
 import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
-import EventBus from '../../modules/event-bus.js';
-
-const createTableItems = function(posts) {
-	let keys = Object.keys(posts);
-	let obj = [];
-
-	keys.forEach((category) => {
-		let cat = posts[category];
-		let postList = cat.posts;
-
-
-		postList.forEach((p) => {
-			let postDate = p.href.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}/g).join('');
-			let po  = { // push object target
-				"title": p.title,
-				"category": category,
-				"date": postDate,
-				"href": p.href
-			};
-			obj.push(po);
-		});
-
-		let subs = cat.sub;
-		let childs = createTableItems(subs);
-
-		obj = obj.concat(childs);
-	});
-
-	return obj;
-};
-
-const modifyPost = function(post) {
-
-	let editInfoObj = {"title": post.title, "href": post.href}
-	let editInfoJsonString = JSON.stringify(editInfoObj)
-
-	let editInfoJsonStringb64 = Buffer.from(editInfoJsonString, 'utf8').toString('base64');
-	this.$router.push("/edit/" + editInfoJsonStringb64) 
-
-}
-
-const deletePost = function(post) {
-	let ploading = findChildByTagName(this, "PLoading");
-	let modal = findChildByTagName(this, "Modal");
-	let confirm = findChildByTagName(this, "Confirm");
-
-	let task = this.$store.getters.task;
-	if ( task === true ) {
-		modal.title = this.$t('notification');
-		modal.content = this.$t('inprogress');
-		modal.ok = this.$t('confirm');
-		modal.show();
-		return;
-	}
-
-	this.$store.commit('task', true);
-
-	confirm.title = this.$t('notification');
-	confirm.content = this.$t('myblog.list.delete_post');
-	confirm.ok = this.$t('ok');
-	confirm.cancel = this.$t('no');
-	confirm.okClick = () => {
-		confirm.hide();
-		ploading.content = this.$t('myblog.list.progress_delete');
-		ploading.show();
-		removePost(post, this).then((removed) => {
-			ploading.hide();
-			modal.title = this.$t('notification');
-			modal.content = this.$t('myblog.list.success_del_post');
-			modal.ok = this.$t('confirm');
-			modal.okClick = () => {
-				let desserts = createTableItems(removed);
-				this.dt.desserts = desserts;
-				this.$forceUpdate();
-				modal.hide();
-			};
-			modal.show();
-		}).catch(() => {
-			ploading.hide();
-			modal.title = this.$t('error');
-			modal.content = this.$t('myblog.list.fail_del_post');
-			modal.ok = this.$t('confirm');
-			modal.okClick = () => {
-				modal.hide();
-				this.$assign('/');
-			};
-			modal.show();
-		}).finally(() => {
-			this.$store.commit('task', false);
-		});
-	};
-	confirm.show();
-};
-
-const loadPosting = async function(_this = this) {
-	let gitApi = _this.$store.getters.api;
-
-	let retryCnt = -1;
-	const MAX_RETRY_CNT = 5;
-	let data;
-	do {
-		try {
-			data = await gitApi.repo.getJsonData("posts.json");
-		} catch (err) {
-			retryCnt++;
-		}
-	} while ( !data && retryCnt < MAX_RETRY_CNT );
-
-	if ( retryCnt >= MAX_RETRY_CNT ) {
-		// 최대 재시도 횟수 초과시
-		EventBus.$emit('myblog.call-mounted');
-	} else {
-		let posts = data.json;
-		let postList = getSubposts(posts);
-		// TODO: postList 시간 최신순 정렬
-
-		let rtn = createTableItems(posts);
-		_this.dt.desserts = rtn;
-
-		_this.postList = postList;
-		_this.posts = posts;
-		_this.posts_ori = data;
-		EventBus.$emit('page-loading-end');
-	}
-};
 
 export default {
 	name: 'BlogList',
@@ -207,15 +82,133 @@ export default {
 	},
 	created: function() {
 		// get posts.json
-		loadPosting(this);
+		this.loadPosting();
 
-		EventBus.$on('myblog.list.reload', () => {
-			loadPosting(this);
+		this.$evt.$on('myblog.list.reload', () => {
+			this.loadPosting();
 		});
 	},
 	methods: {
-		deletePost,
-		modifyPost
+        createTableItems(posts) {
+            let keys = Object.keys(posts);
+            let obj = [];
+
+            keys.forEach((category) => {
+                let cat = posts[category];
+                let postList = cat.posts;
+
+
+                postList.forEach((p) => {
+                    let postDate = p.href.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}/g).join('');
+                    let po  = { // push object target
+                        "title": p.title,
+                        "category": category,
+                        "date": postDate,
+                        "href": p.href
+                    };
+                    obj.push(po);
+                });
+
+                let subs = cat.sub;
+                let childs = this.createTableItems(subs);
+
+                obj = obj.concat(childs);
+            });
+
+            return obj;
+        },
+        modifyPost(post) {
+
+            let editInfoObj = {"title": post.title, "href": post.href}
+            let editInfoJsonString = JSON.stringify(editInfoObj)
+
+            let editInfoJsonStringb64 = Buffer.from(editInfoJsonString, 'utf8').toString('base64');
+            this.$router.push("/edit/" + editInfoJsonStringb64) 
+
+        },
+        deletePost (post) {
+            let ploading = findChildByTagName(this, "PLoading");
+            let modal = findChildByTagName(this, "Modal");
+            let confirm = findChildByTagName(this, "Confirm");
+
+            let task = this.$store.getters.task;
+            if ( task === true ) {
+                modal.title = this.$t('notification');
+                modal.content = this.$t('inprogress');
+                modal.ok = this.$t('confirm');
+                modal.show();
+                return;
+            }
+
+            this.$store.commit('task', true);
+
+            confirm.title = this.$t('notification');
+            confirm.content = this.$t('myblog.list.delete_post');
+            confirm.ok = this.$t('ok');
+            confirm.cancel = this.$t('no');
+            confirm.okClick = () => {
+                confirm.hide();
+                ploading.content = this.$t('myblog.list.progress_delete');
+                ploading.show();
+                removePost(post, this).then((removed) => {
+                    ploading.hide();
+                    modal.title = this.$t('notification');
+                    modal.content = this.$t('myblog.list.success_del_post');
+                    modal.ok = this.$t('confirm');
+                    modal.okClick = () => {
+                        let desserts = this.createTableItems(removed);
+                        this.dt.desserts = desserts;
+                        this.$forceUpdate();
+                        modal.hide();
+                    };
+                    modal.show();
+                }).catch(() => {
+                    ploading.hide();
+                    modal.title = this.$t('error');
+                    modal.content = this.$t('myblog.list.fail_del_post');
+                    modal.ok = this.$t('confirm');
+                    modal.okClick = () => {
+                        modal.hide();
+                        this.$assign('/');
+                    };
+                    modal.show();
+                }).finally(() => {
+                    this.$store.commit('task', false);
+                });
+            };
+            confirm.show();
+        },
+        async loadPosting () {
+            let gitApi = this.$store.getters.api;
+
+            let retryCnt = -1;
+            const MAX_RETRY_CNT = 5;
+            let data;
+            do {
+                try {
+                    data = await gitApi.repo.getJsonData("posts.json");
+                } catch (err) {
+                    retryCnt++;
+                }
+            } while ( !data && retryCnt < MAX_RETRY_CNT );
+
+            if ( retryCnt >= MAX_RETRY_CNT ) {
+                // 최대 재시도 횟수 초과시
+                this.$evt.$emit('myblog.call-mounted');
+            } else {
+                let posts = data.json;
+                let postList = getSubposts(posts);
+                // TODO: postList 시간 최신순 정렬
+
+                let rtn = this.createTableItems(posts);
+                this.dt.desserts = rtn;
+
+                this.postList = postList;
+                this.posts = posts;
+                this.posts_ori = data;
+                this.$evt.$emit('page-loading-end');
+            }
+        },
 	},
 	mounted: function() {
 	},
