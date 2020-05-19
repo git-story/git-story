@@ -133,16 +133,6 @@
 			</v-col>
 		</v-row>
 
-        <!--
-		<Confirm
-            :title="confirm.title"
-            :content="confirm.content"
-            :open.sync="confirm.open"
-            :text-ok="confirm.textOk"
-            :text-cancel="confirm.textCancel"
-            @cancel="confirm.cancel"
-            @ok="confirm.ok"/>
-        -->
 		<Modal ref="Modal"/>
 		<PLoading ref="PLoading"/>
 	</v-content>

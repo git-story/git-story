@@ -71,7 +71,6 @@
 				</v-card>
 			</v-col>
 		</v-row>
-		<Confirm ref="Confirm"/>
 		<PLoading ref="PLoading"/>
 		<Modal ref="Modal"/>
 	</v-container>
@@ -114,116 +113,10 @@ div.v-card.custom-img div div.v-image__image--cover:hover {
 }
 </style>
 <script>
-import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
 import { findChildByTagName } from '../../modules/common.js';
 
-const changeTheme = function() {
-	let sTheme = this.sTheme;
-
-	let task = this.$store.getters.task;
-	if ( task === true ) {
-		let modal = findChildByTagName(this, 'Modal');
-		modal.title = this.$t('notification');
-		modal.content = this.$t('inprogress');
-		modal.ok = this.$t('confirm');
-		modal.show();
-		return;
-	}
-
-	let confirm = findChildByTagName(this, 'Confirm');
-	confirm.title = this.$t('warning');
-	confirm.content = this.$t('myblog.template.change_theme');
-	confirm.ok = this.$t('ok');
-	confirm.cancel = this.$t('cancel');
-	confirm.okClick = () => {
-		confirm.hide();
-
-		let ploading = findChildByTagName(this, "PLoading");
-		ploading.content = this.$t('myblog.template.changing_theme');
-		ploading.show();
-
-		this.$store.commit('task', true);
-
-		let gitApi = this.$store.getters.api;
-		gitApi.repo.getJsonData("config.json").then(rconfig => {
-			let config = rconfig.json;
-
-			let reqFiles = [];
-			// remove now theme dependency files
-			// add commit request list
-			config.theme.files.forEach((l) => {
-				let file = l.dist || l.src;
-				reqFiles.push({
-					path: file,
-					content: null
-				});
-			});
-
-			gitApi.repo.getJsonData("config.json", sTheme.full_name).
-				then(async (res) => {
-					let targetConfig = res.json;
-					let theme = targetConfig.theme;
-
-					// theme config update
-					config.theme = targetConfig.theme;
-
-					// config json commit
-					reqFiles.push({
-						path: "config.json",
-						content: config
-					});
-
-					let getThemeReq = [];
-					let dist = {};
-					theme.files.forEach(tf => {
-						let file = tf.src;
-						if ( file[0] === "/" ) {
-							file = file.substr(1);
-						}
-
-						dist[file] = tf.dist || file;
-
-						getThemeReq.push(gitApi.repo.getData(file, sTheme.full_name));
-					});
-
-					let _res = await Promise.all(getThemeReq);
-					_res.forEach(r => {
-						let data = r.data;
-						let file = dist[data.path];
-						if ( file[0] === "/" ) {
-							file = file.substr(1);
-						}
-						reqFiles.push({
-							"path": file,
-							"content": Buffer.from(data.content, 'base64'),
-							"encoding": "base64",
-						});
-					});
-
-					return gitApi.repo.commitFiles("theme change", reqFiles);
-				}).
-				// eslint-disable-next-line
-				then((res) => {
-					// eslint-disable-next-line
-					console.log("commit done.");
-					this.$store.commit('task', false);
-					ploading.hide();
-				}).
-				catch((err) => {
-					if ( err.data ) {
-						// eslint-disable-next-line
-						console.error(err.data);
-					} else {
-						// eslint-disable-next-line
-						console.error(err);
-					}
-				});
-		});
-	};
-	confirm.show();
-}
 
 const showTheme = function(idx) {
 	let themes = this.themes;
@@ -248,7 +141,6 @@ const showTheme = function(idx) {
 export default {
 	name: 'BlogTemplate',
 	components: {
-		Confirm,
 		PLoading,
 		Modal,
 	},
@@ -302,7 +194,111 @@ export default {
 	},
 	methods: {
 		showTheme,
-		changeTheme
+		changeTheme() {
+			let sTheme = this.sTheme;
+
+			let task = this.$store.getters.task;
+			if ( task === true ) {
+				let modal = findChildByTagName(this, 'Modal');
+				modal.title = this.$t('notification');
+				modal.content = this.$t('inprogress');
+				modal.ok = this.$t('confirm');
+				modal.show();
+				return;
+			}
+
+			this.$confirm({
+				title: this.$t('warning'),
+				content: this.$t('myblog.template.change_theme'),
+				textOk: this.$t('ok'),
+				textCancel: this.$t('cancel'),
+				ok: () => {
+					let ploading = findChildByTagName(this, "PLoading");
+					ploading.content = this.$t('myblog.template.changing_theme');
+					ploading.show();
+
+					this.$store.commit('task', true);
+
+					let config = {};
+					let reqFiles = [];
+					let gitApi = this.$store.getters.api;
+
+					gitApi.repo.getJsonData("config.json")
+						.then(rconfig => {
+							config = rconfig.json;
+
+							// remove now theme dependency files
+							// add commit request list
+							config.theme.files.forEach((l) => {
+								let file = l.dist || l.src;
+								reqFiles.push({
+									path: file,
+									content: null
+								});
+							});
+
+							return gitApi.repo.getJsonData("config.json", sTheme.full_name);
+						})
+						.then(async (res) => {
+							let targetConfig = res.json;
+							let theme = targetConfig.theme;
+
+							// theme config update
+							config.theme = targetConfig.theme;
+
+							// config json commit
+							reqFiles.push({
+								path: "config.json",
+								content: config
+							});
+
+							let getThemeReq = [];
+							let dist = {};
+							theme.files.forEach(tf => {
+								let file = tf.src;
+								if ( file[0] === "/" ) {
+									file = file.substr(1);
+								}
+
+								dist[file] = tf.dist || file;
+
+								getThemeReq.push(gitApi.repo.getData(file, sTheme.full_name));
+							});
+
+							let _res = await Promise.all(getThemeReq);
+							_res.forEach(r => {
+								let data = r.data;
+								let file = dist[data.path];
+								if ( file[0] === "/" ) {
+									file = file.substr(1);
+								}
+								reqFiles.push({
+									"path": file,
+									"content": Buffer.from(data.content, 'base64'),
+									"encoding": "base64",
+								});
+							});
+
+							return gitApi.repo.commitFiles("theme change", reqFiles);
+						})
+						.then(() => {
+							// eslint-disable-next-line
+							console.log("commit done.");
+							this.$store.commit('task', false);
+							ploading.hide();
+						})
+						.catch((err) => {
+							if ( err.data ) {
+								// eslint-disable-next-line
+								console.error(err.data);
+							} else {
+								// eslint-disable-next-line
+								console.error(err);
+							}
+						});
+				}, // end ok
+			});
+		},
 	},
 	mounted: function() {
 	},

@@ -108,7 +108,6 @@
 			</v-col>
 		</v-row>
 		<IModal ref="IModal"/>
-		<Confirm ref="Confirm"/>
 		<PLoading ref="PLoading"/>
 		<Modal ref="Modal"/>
 	</v-container>
@@ -116,7 +115,6 @@
 <script>
 import { findChildByTagName, getObject } from '../../modules/common.js';
 import IModal from '../Util/IModal';
-import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
 
@@ -264,43 +262,6 @@ const renameCategory = function() {
 	}
 };
 
-const deleteCategory = function() {
-	let active = this.active;
-
-	let vMobile = this.vMobile;
-	if ( vMobile === true ) {
-		this.dialog = false;
-		this.active = [];
-	}
-
-	if ( active.length <= 0 ) {
-		let modal = findChildByTagName(this, "Modal");
-		modal.title = this.$t("notification");
-		modal.content = this.$t("myblog.category.not_selected");
-		modal.ok = this.$t("confirm");
-		modal.show();
-		return;
-	}
-
-	let posts = this.posts;
-	let search = active[0];
-	let { k, d } = getObject(posts, search, 1);
-
-	let confirm = findChildByTagName(this, "Confirm");
-
-	if ( confirm ) {
-		confirm.title = this.$t('warning');
-		confirm.content = `[${k}] ` + this.$t('myblog.category.delete_check');
-		confirm.ok = this.$t('ok');
-		confirm.cancel = this.$t('no');
-		confirm.okClick = () => {
-			delete d[k];
-			this.updateCategory(posts);
-			confirm.hide();
-		}
-		confirm.show();
-	}
-};
 
 const applyCategory = function() {
 	let posts = this.posts;
@@ -338,7 +299,6 @@ export default {
 	name: 'BlogCategory',
 	components: {
 		IModal,
-		Confirm,
 		PLoading,
 		Modal
 	},
@@ -358,7 +318,39 @@ export default {
 	methods: {
 		createCategory,
 		renameCategory,
-		deleteCategory,
+		deleteCategory() {
+			let active = this.active;
+
+			let vMobile = this.vMobile;
+			if ( vMobile === true ) {
+				this.dialog = false;
+				this.active = [];
+			}
+
+			if ( active.length <= 0 ) {
+				let modal = findChildByTagName(this, "Modal");
+				modal.title = this.$t("notification");
+				modal.content = this.$t("myblog.category.not_selected");
+				modal.ok = this.$t("confirm");
+				modal.show();
+				return;
+			}
+
+			let posts = this.posts;
+			let search = active[0];
+			let { k, d } = getObject(posts, search, 1);
+
+			this.$confirm({
+				title: this.$t('warning'),
+				content: `[${k}] ` + this.$t('myblog.category.delete_check'),
+				textOk: this.$t('ok'),
+				textCancel: this.$t('no'),
+				ok: () => {
+					delete d[k];
+					this.updateCategory(posts);
+				},
+			});
+		},
 		applyCategory,
 		outClick() {
 			let vMobile = this.vMobile;

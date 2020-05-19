@@ -338,16 +338,6 @@
 				</v-tabs-items>
 			</v-col>
 		</v-row>
-        <!--
-		<Confirm
-            :title="confirm.title"
-            :content="confirm.content"
-            :open.sync="confirm.open"
-            :text-ok="confirm.textOk"
-            :text-cancel="confirm.textCancel"
-            @cancel="confirm.cancel"
-            @ok="confirm.ok"/>
-        -->
 		<PLoading ref="PLoading"/>
 		<Modal ref="Modal"/>
 	</v-container>
@@ -406,20 +396,19 @@ const clickFacebook = function() {
 		comment.facebook = facebook.code;
 	} else {
 		if ( facebook.has === true ) {
-			let confirm = findChildByTagName(this, 'Confirm');
-			confirm.title = this.$t('warning');
-			confirm.content = this.$t('myblog.comment.confirm-delete');
-			confirm.ok = this.$t('ok');
-			confirm.cancel = this.$t('cancel');
-			confirm.okClick = () => {
-				if ( this.comment.facebook ) {
-					delete this.comment.facebook;
-				}
-				facebook.has = false;
-				facebook.code = '';
-				confirm.hide();
-			};
-			confirm.show();
+			this.$confirm({
+				title: this.$t('warning'),
+				content: this.$t('myblog.comment.confirm-delete'),
+				textOk: this.$t('ok'),
+				textCancel: this.$t('cancel'),
+				okClick: () => {
+					if ( this.comment.facebook ) {
+						delete this.comment.facebook;
+					}
+					facebook.has = false;
+					facebook.code = '';
+				},
+			});
 		} else {
 			facebook.view = true;
 		}
@@ -441,20 +430,19 @@ const clickUtterances = function() {
 		comment.utterances = utterances.code;
 	} else {
 		if ( utterances.has === true ) {
-			let confirm = findChildByTagName(this, 'Confirm');
-			confirm.title = this.$t('warning');
-			confirm.content = this.$t('myblog.comment.confirm-delete');
-			confirm.ok = this.$t('ok');
-			confirm.cancel = this.$t('cancel');
-			confirm.okClick = () => {
-				if ( this.comment.utterances ) {
-					delete this.comment.utterances;
-				}
-				utterances.has = false;
-				utterances.code = '';
-				confirm.hide();
-			};
-			confirm.show();
+			this.$confirm({
+				title: this.$t('warning'),
+				content: this.$t('myblog.comment.confirm-delete'),
+				textOk: this.$t('ok'),
+				textCancel: this.$t('cancel'),
+				okClick: () => {
+					if ( this.comment.utterances ) {
+						delete this.comment.utterances;
+					}
+					utterances.has = false;
+					utterances.code = '';
+				},
+			});
 		} else {
 			utterances.view = true;
 		}
@@ -473,20 +461,19 @@ const clickDisqus = function() {
 		comment.disqus = disqus.code;
 	} else {
 		if ( disqus.has === true ) {
-			let confirm = findChildByTagName(this, 'Confirm');
-			confirm.title = this.$t('warning');
-			confirm.content = this.$t('myblog.comment.confirm-delete');
-			confirm.ok = this.$t('ok');
-			confirm.cancel = this.$t('cancel');
-			confirm.okClick = () => {
-				if ( this.comment.disqus ) {
-					delete this.comment.disqus;
-				}
-				disqus.has = false;
-				disqus.code = '';
-				confirm.hide();
-			};
-			confirm.show();
+			this.$confirm({
+				title: this.$t('warning'),
+				content: this.$t('myblog.comment.confirm-delete'),
+				textOk: this.$t('ok'),
+				textCancel: this.$t('cancel'),
+				okClick: () => {
+					if ( this.comment.disqus ) {
+						delete this.comment.disqus;
+					}
+					disqus.has = false;
+					disqus.code = '';
+				},
+			});
 		} else {
 			disqus.view = true;
 		}

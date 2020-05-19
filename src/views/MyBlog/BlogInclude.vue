@@ -78,7 +78,6 @@
 			</v-col>
 			<v-col cols="4" class="d-none d-lg-flex"></v-col>
 		</v-row>
-		<Confirm ref="Confirm"/>
 		<IModal ref="IModal"/>
 		<Modal ref="Modal"/>
 		<PLoading ref="PLoading"/>
@@ -91,7 +90,6 @@ header.tool-custom {
 </style>
 <script>
 import { findChildByTagName  } from '../../modules/common.js';
-import Confirm from '../Util/Confirm';
 import IModal from '../Util/IModal';
 import Modal from '../Util/Modal';
 import PLoading from '../Util/PLoading';
@@ -144,20 +142,6 @@ const modifyTag = function(tag, id, idx) {
 	imodal.show();
 };
 
-const deleteTag = function(tag, id, idx) {
-	let confirm = findChildByTagName(this, "Confirm");
-	confirm.title = this.$t('warning');
-	confirm.content = this.$t('myblog.include.delete_tag');
-	confirm.ok = this.$t('ok');
-	confirm.cancel = this.$t('no');
-	confirm.okClick = () => {
-		let tagArray = getTagArrayById(this.config, id);
-		tagArray.splice(idx, 1);
-		confirm.hide();
-	};
-	confirm.show();
-};
-
 const applyIncludeTags = function() {
 	let config = this.config;
 
@@ -196,7 +180,6 @@ const applyIncludeTags = function() {
 export default {
 	name: 'BlogInclude',
 	components: {
-		Confirm,
 		IModal,
 		Modal,
 		PLoading
@@ -217,7 +200,18 @@ export default {
 	methods: {
 		modifyTag,
 		applyFunc: () => {},
-		deleteTag,
+		deleteTag(tag, id, idx) {
+			this.$confirm({
+				title: this.$t('warning'),
+				content: this.$t('myblog.include.delete_tag'),
+				textOk: this.$t('ok'),
+				textCancel: this.$t('no'),
+				ok: () => {
+					let tagArray = getTagArrayById(this.config, id);
+					tagArray.splice(idx, 1);
+				},
+			});
+		},
 		createTag,
 		applyIncludeTags,
         updateIncludeItems() {
