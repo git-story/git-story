@@ -133,13 +133,21 @@
 			</v-col>
 		</v-row>
 
-		<Confirm ref="Confirm"/>
+        <!--
+		<Confirm
+            :title="confirm.title"
+            :content="confirm.content"
+            :open.sync="confirm.open"
+            :text-ok="confirm.textOk"
+            :text-cancel="confirm.textCancel"
+            @cancel="confirm.cancel"
+            @ok="confirm.ok"/>
+        -->
 		<Modal ref="Modal"/>
 		<PLoading ref="PLoading"/>
 	</v-content>
 </template>
 <script>
-import Confirm from './Util/Confirm';
 import Modal from './Util/Modal';
 import PLoading from './Util/PLoading';
 import { randomNumber, findChildByTagName, mobileCheck  } from '../modules/common.js';
@@ -158,7 +166,6 @@ const categoryList = {
 export default {
 	name: 'MyBlog',
 	components: {
-		Confirm,
 		Modal,
 		PLoading,
 		BlogSideBar
@@ -248,12 +255,11 @@ export default {
             let gitApi = this.$store.getters.api;
             gitApi.user.listRepos().
                 then((res) => {
-                    let confirm = findChildByTagName(this, "Confirm");
                     let ploading = findChildByTagName(this, "PLoading");
                     ploading.content = this.$t('creating_blog');
 
                     let repos = res.data;
-                    let ridx = repos.findIndex(r => r.name === `${this.$store.getters.user.name}.github.io`.toLowerCase());
+                    let ridx = repos.findIndex(r => r.name.toLowerCase() === `${this.$store.getters.user.name}.github.io`.toLowerCase());
                     if ( ridx >= 0 ) {
                         // 블로그 레포지토리가 있을 때
                         // Git Page 가 있는지 확인한다.
@@ -265,45 +271,42 @@ export default {
                                 this.authorUpdate();	
                             }).catch(() => {
                                 // posts.json 이 없을 때 
-                                confirm.title = this.$t('notification');
-                                confirm.content = this.$t('have_repo_but');
-                                confirm.ok = this.$t('ok');
-                                confirm.cancel = this.$t('no');
-                                confirm.okClick = () => {
-                                    // 레포지토리 삭제 후 생성
-                                    ploading.show();
-                                    gitApi.repo.deleteRepo().
-                                        then(() => {
-                                            return this.createRepository();
-                                        });
-
-                                    confirm.hide();
-                                }
-                                confirm.cancelClick = () => {
-                                    this.$assign('/', this);
-                                    confirm.hide();
-                                }
-                                confirm.show();
+                                this.$confirm({
+                                    title: this.$t('notification'),
+                                    content: this.$t('have_repo_but'),
+                                    textOk: this.$t('ok'),
+                                    textCancel: this.$t('no'),
+                                    ok: () => {
+                                        // 레포지토리 삭제 후 생성
+                                        ploading.show();
+                                        gitApi.repo.deleteRepo().
+                                            then(() => {
+                                                return this.createRepository();
+                                            });
+                                    },
+                                    cancel: () => {
+                                        this.$assign('/');
+                                    },
+                                });
                             });
                             // don't have posts.json 
                         } // repo has pages
                     } else {
                         // 블로그 레포지토리가 없을 때
-                        confirm.title = this.$t('notification');
-                        confirm.content = this.$t('not_have_repo');
-                        confirm.ok = this.$t('ok');
-                        confirm.cancel = this.$t('no'); 
-                        confirm.okClick = () => {
-                            // 레포지토리 생성
-                            ploading.show();
-                            confirm.hide();
-                            this.createRepository();
-                        }
-                        confirm.cancelClick = () => {
-                            this.$assign('/', this);
-                            confirm.hide();
-                        }
-                        confirm.show();
+                        this.$confirm({
+                            title: this.$t('notification'),
+                            content: this.$t('not_have_repo'),
+                            textOk: this.$t('ok'),
+                            textCancel: this.$t('no'),
+                            ok: () => {
+                                // 레포지토리 삭제 후 생성
+                                ploading.show();
+                                this.createRepository();
+                            },
+                            cancel: () => {
+                                this.$assign('/');
+                            },
+                        });
                     }
                 }); // git api listRepos
         },
@@ -332,11 +335,20 @@ export default {
             this.loadBlog(this);
         } // if cur page MyBlog
     },
-    data: function() {
+    data() {
         return {
             isDialogShow: false,
             currentComponent: { target: '', t: null },
-            vMobile: false
+            vMobile: false,
+            confirm: {
+                title: '',
+                content: '',
+                open: false,
+                textOk: this.$t('ok'),
+                textCancel: this.$t('cancel'),
+                ok: () => {},
+                cancel: () => {},
+            },
         }
     },
 };

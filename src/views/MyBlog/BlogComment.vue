@@ -338,14 +338,22 @@
 				</v-tabs-items>
 			</v-col>
 		</v-row>
-		<Confirm ref="Confirm"/>
+        <!--
+		<Confirm
+            :title="confirm.title"
+            :content="confirm.content"
+            :open.sync="confirm.open"
+            :text-ok="confirm.textOk"
+            :text-cancel="confirm.textCancel"
+            @cancel="confirm.cancel"
+            @ok="confirm.ok"/>
+        -->
 		<PLoading ref="PLoading"/>
 		<Modal ref="Modal"/>
 	</v-container>
 </template>
 <script>
 import { findChildByTagName } from '../../modules/common.js';
-import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
 
@@ -488,7 +496,6 @@ const clickDisqus = function() {
 export default {
 	name: 'BlogComment',
 	components: {
-		Confirm,
 		PLoading,
 		Modal,
 	},

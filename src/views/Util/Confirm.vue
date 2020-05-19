@@ -1,6 +1,6 @@
 <template>
 	<v-dialog 
-		v-model="isShow"
+		v-model="open"
 		persistent
 		max-width="500px"
 		width="70%">
@@ -13,49 +13,50 @@
 				<v-btn
 					color="red darken-1"
 					text
-					@click="cancelClick">
-					{{ cancel }}
+					@click="$emit('cancel', $event); $emit('update:open', false);">
+					{{ textCancel }}
 				</v-btn>
 
 				<v-btn
 					color="green darken-1"
 					text
-					@click="okClick">
-					{{ ok }}
+					@click="$emit('ok', $event); $emit('update:open', false);">
+					{{ textOk }}
 				</v-btn>
 			</v-card-actions>
 		</v-card>
 	</v-dialog>
 </template>
 <script>
-/**
- * Confirm 사용법.
- * import Confirm from './Confirm' 으로 컴포넌트를 추가한다.
- * 사용할 템플릿 안에 <Confirm/> 태그를 추가한다.
- * 추가된 Confrim 컴포넌트를 찾아 title, content, 등을 수정하고
- * Confirm.show 함수로 화면을 띄운다.
- */
 
 export default {
 	name: 'Confirm',
+    props: {
+        'open': {
+            type: Boolean,
+            default: false,
+        },
+        'title': {
+            type: String,
+            default: 'Confirm Title',
+        },
+        'content': {
+            type: String,
+            default: 'Confirm Content',
+        },
+        'textCancel': {
+            type: String,
+            default: 'Cancel',
+        },
+        'textOk': {
+            type: String,
+            default: 'Ok',
+        },
+    },
 	methods: {
 	},
 	data: function () {
 		return {
-			isShow: false,
-			el: null,
-			title: '',
-			content: '',
-			ok: 'ok',
-			cancel: 'cancel',
-			okClick: () => { this.hide(); },
-			cancelClick: () => { this.hide(); },
-			show: () => {
-				this.isShow = true;
-			},
-			hide: () => {
-				this.isShow = false;
-			}
 		}
 	}
 }

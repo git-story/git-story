@@ -22,7 +22,7 @@ div.v-sheet main.v-content {
 }
 </style>
 <script>
-import HeaderComponent from './views/Com/Header';
+import HeaderComponent from '@/views/Com/Header';
 // import HeaderElevate from './views/Com/HeaderElevate';
 // import HeaderHome from './views/Com/HeaderHome';
 
@@ -33,6 +33,8 @@ export default {
 		// HeaderElevate,
 		// HeaderHome,
 	},
+    mounted() {
+    },
 	data: function() {
 		return {
 			isHome: (this.$route.name === "Home")

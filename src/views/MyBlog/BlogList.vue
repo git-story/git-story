@@ -51,7 +51,6 @@
 			</v-col>
 			<v-col cols="2" class="d-none d-md-flex"></v-col>
 		</v-row>
-		<Confirm ref="Confirm"/>
 		<PLoading ref="PLoading"/>
 		<Modal ref="Modal"/>
 	</v-container>
@@ -69,14 +68,12 @@ div.custom.v-data-table table tbody tr:hover {
 </style>
 <script>
 import { getSubposts, findChildByTagName, removePost } from '../../modules/common.js';
-import Confirm from '../Util/Confirm';
 import PLoading from '../Util/PLoading';
 import Modal from '../Util/Modal';
 
 export default {
 	name: 'BlogList',
 	components: {
-		Confirm,
 		PLoading,
 		Modal
 	},
@@ -126,12 +123,11 @@ export default {
             this.$router.push("/edit/" + editInfoJsonStringb64) 
 
         },
-        deletePost (post) {
-            let ploading = findChildByTagName(this, "PLoading");
+        deletePost(item) {
             let modal = findChildByTagName(this, "Modal");
-            let confirm = findChildByTagName(this, "Confirm");
-
             let task = this.$store.getters.task;
+
+            this.targetPost = null;
             if ( task === true ) {
                 modal.title = this.$t('notification');
                 modal.content = this.$t('inprogress');
@@ -140,43 +136,53 @@ export default {
                 return;
             }
 
+            this.targetPost = item;
+            this.$confirm({
+                title: this.$t('notification'),
+                content: this.$t('myblog.list.delete_post'),
+                textOk: this.$t('ok'),
+                textCancel: this.$t('no'),
+                ok: this.realDeletePost,
+            });
+        },
+        realDeletePost() {
+            let ploading = findChildByTagName(this, "PLoading");
+            let modal = findChildByTagName(this, "Modal");
+            const post = this.targetPost;
+            if ( !post ) {
+                return;
+            }
+
             this.$store.commit('task', true);
 
-            confirm.title = this.$t('notification');
-            confirm.content = this.$t('myblog.list.delete_post');
-            confirm.ok = this.$t('ok');
-            confirm.cancel = this.$t('no');
-            confirm.okClick = () => {
-                confirm.hide();
-                ploading.content = this.$t('myblog.list.progress_delete');
-                ploading.show();
-                removePost(post, this).then((removed) => {
-                    ploading.hide();
-                    modal.title = this.$t('notification');
-                    modal.content = this.$t('myblog.list.success_del_post');
-                    modal.ok = this.$t('confirm');
-                    modal.okClick = () => {
-                        let desserts = this.createTableItems(removed);
-                        this.dt.desserts = desserts;
-                        this.$forceUpdate();
-                        modal.hide();
-                    };
-                    modal.show();
-                }).catch(() => {
-                    ploading.hide();
-                    modal.title = this.$t('error');
-                    modal.content = this.$t('myblog.list.fail_del_post');
-                    modal.ok = this.$t('confirm');
-                    modal.okClick = () => {
-                        modal.hide();
-                        this.$assign('/');
-                    };
-                    modal.show();
-                }).finally(() => {
-                    this.$store.commit('task', false);
-                });
-            };
-            confirm.show();
+            ploading.content = this.$t('myblog.list.progress_delete');
+            ploading.show();
+
+            removePost(post, this).then((removed) => {
+                ploading.hide();
+                modal.title = this.$t('notification');
+                modal.content = this.$t('myblog.list.success_del_post');
+                modal.ok = this.$t('confirm');
+                modal.okClick = () => {
+                    let desserts = this.createTableItems(removed);
+                    this.dt.desserts = desserts;
+                    this.$forceUpdate();
+                    modal.hide();
+                };
+                modal.show();
+            }).catch(() => {
+                ploading.hide();
+                modal.title = this.$t('error');
+                modal.content = this.$t('myblog.list.fail_del_post');
+                modal.ok = this.$t('confirm');
+                modal.okClick = () => {
+                    modal.hide();
+                    this.$assign('/');
+                };
+                modal.show();
+            }).finally(() => {
+                this.$store.commit('task', false);
+            });
         },
         async loadPosting () {
             let gitApi = this.$store.getters.api;
@@ -225,7 +231,8 @@ export default {
 				],
 				desserts: [
 				]
-			}
+			},
+            targetPost: null,
 		}
 	},
 };

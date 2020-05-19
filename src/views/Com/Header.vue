@@ -132,7 +132,7 @@ export default {
         isLoginCheck(redirect = false) {
             let isLogin = this.$store.getters.token !== null;
             if ( isLogin === false && redirect === true ) {
-                this.assign('/', this);
+                this.$assign('/', this);
             }
             return isLogin;
         },
