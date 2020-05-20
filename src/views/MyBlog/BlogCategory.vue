@@ -109,14 +109,12 @@
 		</v-row>
 		<IModal ref="IModal"/>
 		<PLoading ref="PLoading"/>
-		<Modal ref="Modal"/>
 	</v-container>
 </template>
 <script>
 import { findChildByTagName, getObject } from '../../modules/common.js';
 import IModal from '../Util/IModal';
 import PLoading from '../Util/PLoading';
-import Modal from '../Util/Modal';
 
 const createCategoryItems = function(posts, id="") {
 	let keys = Object.keys(posts);
@@ -222,11 +220,11 @@ const renameCategory = function() {
 	}
 
 	if ( active.length <= 0 ) {
-		let modal = findChildByTagName(this, "Modal");
-		modal.title = this.$t("notification");
-		modal.content = this.$t("myblog.category.not_selected");
-		modal.ok = this.$t("confirm");
-		modal.show();
+        this.$modal({
+            title: this.$t("notification"),
+            content: this.$t("myblog.category.not_selected"),
+            textOk: this.$t("confirm"),
+        });
 		return;
 	}
 
@@ -270,11 +268,11 @@ const applyCategory = function() {
 
 	let task = this.$store.getters.task;
 	if ( task === true ) {
-		let modal = findChildByTagName(this, "Modal");
-		modal.title = this.$t("notification");
-		modal.content = this.$t("inprogress");
-		modal.ok = this.$t("confirm");
-		modal.show();
+        this.$modal({
+            title: this.$t("notification"),
+            content: this.$t("inprogress"),
+            textOk: this.$t("confirm"),
+        });
 		return;
 	}
 
@@ -300,7 +298,6 @@ export default {
 	components: {
 		IModal,
 		PLoading,
-		Modal
 	},
 	created: function() {
 		this.vMobile = this.$store.getters.vMobile;
@@ -328,11 +325,11 @@ export default {
 			}
 
 			if ( active.length <= 0 ) {
-				let modal = findChildByTagName(this, "Modal");
-				modal.title = this.$t("notification");
-				modal.content = this.$t("myblog.category.not_selected");
-				modal.ok = this.$t("confirm");
-				modal.show();
+                this.$modal({
+                    title: this.$t("notification"),
+                    content: this.$t("myblog.category.not_selected"),
+                    textOk: this.$t("confirm"),
+                });
 				return;
 			}
 

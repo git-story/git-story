@@ -1,52 +1,60 @@
 <template>
 	<v-dialog
-		v-model="isShow"
+		v-model="open"
 		persistent
 		max-width="500px"
 		width="70%">
-		<v-card>
-			<v-card-title class="headline">{{ title }}</v-card-title>
-			<v-card-text><span v-html="content"></span></v-card-text>
-			<v-card-actions>
-				<div class="flex-grow-1"></div>
+		<v-card align="center">
+            <v-card-text class="pt-8 py-6">
+                <v-row class="ma-0" align="center">
+                    <v-col cols="12" align="center">
+                        <h1 class="mb-8">{{ title }}</h1>
+                        <span class="subtitle-1" v-html="content"></span>
+                    </v-col>
+                </v-row>
+                <v-row class="ma-0 mt-4" align="center">
+                    <v-col cols="12" align="center">
+                        <div class="flex-grow-1"></div>
 
-				<v-btn
-					color="info darken-1"
-					text
-					@click="okClick">
-					{{ ok }}
-				</v-btn>
-			</v-card-actions>
+                        <v-btn
+                            color="indigo"
+                            large
+                            dark
+                            @click="$emit('ok', $event); $emit('update:open', false);">
+                            {{ textOk }}
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-card-text>
 		</v-card>
 	</v-dialog>
 </template>
 <script>
-/**
- * Modal 사용법.
- * import Modal from './Modal' 으로 컴포넌트를 추가한다.
- * 사용할 템플릿 안에 <Modal/> 태그를 추가한다.
- * 추가된 Modal 컴포넌트를 찾아 title, content, 등을 수정하고
- * Modal.show 함수로 화면을 띄운다.
- */
 
 export default {
 	name: 'Modal',
+    props: {
+        'open': {
+            type: Boolean,
+            default: false,
+        },
+        'title': {
+            type: String,
+            default: 'Modal Title',
+        },
+        'content': {
+            type: String,
+            default: 'Modal Content',
+        },
+        'textOk': {
+            type: String,
+            default: 'Ok',
+        },
+    },
 	methods: {
 	},
-	data: function () {
+	data() {
 		return {
-			isShow: false,
-			el: null,
-			title: '',
-			content: '',
-			ok: 'ok',
-			okClick: () => { this.hide(); },
-			show: () => {
-				this.isShow = true;
-			},
-			hide: () => {
-				this.isShow = false;
-			}
 		}
 	}
 }

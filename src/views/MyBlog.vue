@@ -133,12 +133,10 @@
 			</v-col>
 		</v-row>
 
-		<Modal ref="Modal"/>
 		<PLoading ref="PLoading"/>
 	</v-content>
 </template>
 <script>
-import Modal from './Util/Modal';
 import PLoading from './Util/PLoading';
 import { randomNumber, findChildByTagName, mobileCheck  } from '../modules/common.js';
 import BlogSideBar from './MyBlog/BlogSideBar';
@@ -156,7 +154,6 @@ const categoryList = {
 export default {
 	name: 'MyBlog',
 	components: {
-		Modal,
 		PLoading,
 		BlogSideBar
 	},
@@ -211,7 +208,6 @@ export default {
             let templates = this.$store.getters.config.templates;
             let template = templates[randomNumber(templates.length)];
 
-            let modal = findChildByTagName(this, "Modal");
             let ploading = findChildByTagName(this, "PLoading");
 
             gitApi.repo.createTemplateRepo(template, {
@@ -222,23 +218,23 @@ export default {
             }).then(() => {
                 // 레포지토리 생성 성공
                 ploading.hide();
-                modal.title = this.$t('notification');
-                modal.content = this.$t('success_create_blog');
-                modal.ok = this.$t('confirm');
-                modal.okClick = () => {
-                    modal.hide();
-                    this.$evt.$emit('myblog.list.reload');
-                };
-                modal.show();
+                this.$modal({
+                    title: this.$t('notification'),
+                    content: this.$t('success_create_blog'),
+                    textOk: this.$t('confirm'),
+                    ok: () => {
+                        this.$evt.$emit('myblog.list.reload');
+                    },
+                });
             }).catch(() => {
-                modal.title = this.$t('error');
-                modal.content = this.$t('can_not_del_repo');
-                modal.ok = this.$t('confirm');
-                modal.okClick = () => {
-                    modal.hide();
-                    this.$assign('/');
-                };
-                modal.show();
+                this.$modal({
+                    title: this.$t('error'),
+                    content: this.$t('can_not_del_repo'),
+                    textOk: this.$t('confirm'),
+                    ok: () => {
+                        this.$assign('/');
+                    },
+                });
             });
         },
         loadBlog() {

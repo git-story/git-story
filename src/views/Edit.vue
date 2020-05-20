@@ -77,7 +77,6 @@
 		
 		<!-- S:Util Component -->
 		<PLoading ref="PLoading"/>
-		<Modal ref="Modal"/>
 		<!-- E:Util Component -->
 		
 	</v-content>
@@ -86,7 +85,6 @@
 import axios from 'axios';
 import { genNowDate, findChildByTagName, getObject, removePost } from '../modules/common.js';
 import PLoading from './Util/PLoading';
-import Modal from './Util/Modal';
 import beautify from 'js-beautify'
 import TuiEditor from './TuiEditor';
 
@@ -94,11 +92,11 @@ import TuiEditor from './TuiEditor';
 const doPostingContent = function() {
 	let task = this.$store.getters.task;
 	if ( task === true ) {
-		let modal = findChildByTagName(this, "Modal");
-		modal.title = this.$t('notification');
-		modal.content = this.$t('inprogress');
-		modal.ok = this.$t('confirm');
-		modal.show();
+        this.$modal({
+            title: this.$t('notification'),
+            content: this.$t('inprogress'),
+            ok: this.$t('confirm'),
+        });
 		return;
 	}
 	
@@ -211,7 +209,6 @@ export default {
 	name: 'Edit',
 	components: {
 		PLoading,
-		Modal,
 		TuiEditor,
 		// Editor,
 	},

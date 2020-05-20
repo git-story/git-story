@@ -79,7 +79,6 @@
 			<v-col cols="4" class="d-none d-lg-flex"></v-col>
 		</v-row>
 		<IModal ref="IModal"/>
-		<Modal ref="Modal"/>
 		<PLoading ref="PLoading"/>
 	</v-container>
 </template>
@@ -91,7 +90,6 @@ header.tool-custom {
 <script>
 import { findChildByTagName  } from '../../modules/common.js';
 import IModal from '../Util/IModal';
-import Modal from '../Util/Modal';
 import PLoading from '../Util/PLoading';
 
 const getTagArrayById = (config, id) => {
@@ -147,11 +145,11 @@ const applyIncludeTags = function() {
 
 	let task = this.$store.getters.task;
 	if ( task === true ) {
-		let modal = findChildByTagName(this, "Modal");
-		modal.title = this.$t('notification');
-		modal.content = this.$t('inprogress');
-		modal.ok = this.$t('confirm');
-		modal.show();
+        this.$modal({
+            title: this.$t('notification'),
+            content: this.$t('inprogress'),
+            textOk: this.$t('confirm'),
+        });
 		return;
 	}
 
@@ -166,11 +164,11 @@ const applyIncludeTags = function() {
 		"path": "config.json",
 		"content": config
 	}]).then(() => {
-		let modal = findChildByTagName(this, "Modal");
-		modal.title = this.$t('notification');
-		modal.content = this.$t('myblog.include.success_apply');
-		modal.ok = this.$t('ok');
-		modal.show();
+        this.$modal({
+            title: this.$t('notification'),
+            content: this.$t('myblog.include.success_apply'),
+            textOk: this.$t('ok'),
+        });
 	}).finally(() => {
 		this.$store.commit('task', false);
 		ploading.hide();
@@ -181,7 +179,6 @@ export default {
 	name: 'BlogInclude',
 	components: {
 		IModal,
-		Modal,
 		PLoading
 	},
 	created: function() {

@@ -52,7 +52,6 @@
 			<v-col cols="2" class="d-none d-md-flex"></v-col>
 		</v-row>
 		<PLoading ref="PLoading"/>
-		<Modal ref="Modal"/>
 	</v-container>
 </template>
 <style>
@@ -69,13 +68,11 @@ div.custom.v-data-table table tbody tr:hover {
 <script>
 import { getSubposts, findChildByTagName, removePost } from '../../modules/common.js';
 import PLoading from '../Util/PLoading';
-import Modal from '../Util/Modal';
 
 export default {
 	name: 'BlogList',
 	components: {
 		PLoading,
-		Modal
 	},
 	created: function() {
 		// get posts.json
@@ -124,15 +121,15 @@ export default {
 
         },
         deletePost(item) {
-            let modal = findChildByTagName(this, "Modal");
             let task = this.$store.getters.task;
 
             this.targetPost = null;
             if ( task === true ) {
-                modal.title = this.$t('notification');
-                modal.content = this.$t('inprogress');
-                modal.ok = this.$t('confirm');
-                modal.show();
+                this.$modal({
+                    title: this.$t('notification'),
+                    content: this.$t('inprogress'),
+                    textOk: this.$t('confirm'),
+                });
                 return;
             }
 
@@ -147,7 +144,6 @@ export default {
         },
         realDeletePost() {
             let ploading = findChildByTagName(this, "PLoading");
-            let modal = findChildByTagName(this, "Modal");
             const post = this.targetPost;
             if ( !post ) {
                 return;
@@ -160,26 +156,26 @@ export default {
 
             removePost(post, this).then((removed) => {
                 ploading.hide();
-                modal.title = this.$t('notification');
-                modal.content = this.$t('myblog.list.success_del_post');
-                modal.ok = this.$t('confirm');
-                modal.okClick = () => {
-                    let desserts = this.createTableItems(removed);
-                    this.dt.desserts = desserts;
-                    this.$forceUpdate();
-                    modal.hide();
-                };
-                modal.show();
+                this.$modal({
+                    title: this.$t('notification'),
+                    content: this.$t('myblog.list.success_del_post'),
+                    textOk: this.$t('confirm'),
+                    ok: () => {
+                        let desserts = this.createTableItems(removed);
+                        this.dt.desserts = desserts;
+                        this.$forceUpdate();
+                    },
+                });
             }).catch(() => {
                 ploading.hide();
-                modal.title = this.$t('error');
-                modal.content = this.$t('myblog.list.fail_del_post');
-                modal.ok = this.$t('confirm');
-                modal.okClick = () => {
-                    modal.hide();
-                    this.$assign('/');
-                };
-                modal.show();
+                this.$modal({
+                    title: this.$t('error'),
+                    content: this.$t('myblog.list.fail_del_post'),
+                    textOk: this.$t('confirm'),
+                    ok: () => {
+                        this.$assign('/');
+                    },
+                });
             }).finally(() => {
                 this.$store.commit('task', false);
             });

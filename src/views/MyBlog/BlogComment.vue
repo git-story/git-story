@@ -339,22 +339,20 @@
 			</v-col>
 		</v-row>
 		<PLoading ref="PLoading"/>
-		<Modal ref="Modal"/>
 	</v-container>
 </template>
 <script>
 import { findChildByTagName } from '../../modules/common.js';
 import PLoading from '../Util/PLoading';
-import Modal from '../Util/Modal';
 
 const commentApply = function() {
 	let task = this.$store.getters.task;
 	if ( task === true ) {
-		let modal = findChildByTagName(this, "Modal");
-		modal.title = this.$t('notification');
-		modal.content = this.$t('inprogress');
-		modal.ok = this.$t('confirm');
-		modal.show();
+        this.$modal({
+            title: this.$t('notification'),
+            content: this.$t('inprogress'),
+            textOk: this.$t('confirm'),
+        });
 		return;
 	}
 
@@ -484,7 +482,6 @@ export default {
 	name: 'BlogComment',
 	components: {
 		PLoading,
-		Modal,
 	},
 	created() {
 		let gitApi = this.$store.getters.api;

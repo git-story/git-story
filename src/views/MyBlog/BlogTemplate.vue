@@ -72,7 +72,6 @@
 			</v-col>
 		</v-row>
 		<PLoading ref="PLoading"/>
-		<Modal ref="Modal"/>
 	</v-container>
 </template>
 <style>
@@ -114,7 +113,6 @@ div.v-card.custom-img div div.v-image__image--cover:hover {
 </style>
 <script>
 import PLoading from '../Util/PLoading';
-import Modal from '../Util/Modal';
 import { findChildByTagName } from '../../modules/common.js';
 
 
@@ -142,7 +140,6 @@ export default {
 	name: 'BlogTemplate',
 	components: {
 		PLoading,
-		Modal,
 	},
 	created: function() {
 		let gitApi = this.$store.getters.api;
@@ -199,11 +196,11 @@ export default {
 
 			let task = this.$store.getters.task;
 			if ( task === true ) {
-				let modal = findChildByTagName(this, 'Modal');
-				modal.title = this.$t('notification');
-				modal.content = this.$t('inprogress');
-				modal.ok = this.$t('confirm');
-				modal.show();
+                this.$modal({
+                    title: this.$t('notification'),
+                    content: this.$t('inprogress'),
+                    textOk: this.$t('confirm'),
+                });
 				return;
 			}
 
