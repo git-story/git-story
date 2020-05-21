@@ -13,4 +13,7 @@ export default new Vuetify({
         locales: { ko },
         current: 'ko',
     },
+    theme: {
+        dark: false,
+    },
 });
