@@ -34,14 +34,6 @@ export default {
 		// HeaderHome,
 	},
     mounted() {
-        this.$modal({
-            title: '타이틀이당.',
-            content: '콘텐츠당',
-            textOk: '확인',
-            ok: () => {
-                console.log("화긴을 눌러땅");
-            },
-        });
     },
 	data: function() {
 		return {
