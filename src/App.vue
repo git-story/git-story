@@ -1,8 +1,5 @@
 <template>
 	<v-app width="100%">
-		<!-- <Header v-if="!isHome"/> -->
-		<!-- <HeaderHome v-if="isHome"/> -->
-		<!-- <HeaderElevate v-if="isHome"/> -->
 		<Header />
 
 		<v-sheet id="router-view" class="overflow-y-auto" tile max-height="100vh">
@@ -23,15 +20,11 @@ div.v-sheet main.v-content {
 </style>
 <script>
 import HeaderComponent from '@/views/Com/Header';
-// import HeaderElevate from './views/Com/HeaderElevate';
-// import HeaderHome from './views/Com/HeaderHome';
 
 export default {
 	name: 'App',
 	components: {
 		Header: HeaderComponent,
-		// HeaderElevate,
-		// HeaderHome,
 	},
     mounted() {
     },

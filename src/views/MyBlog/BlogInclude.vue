@@ -78,7 +78,6 @@
 			</v-col>
 			<v-col cols="4" class="d-none d-lg-flex"></v-col>
 		</v-row>
-		<IModal ref="IModal"/>
 	</v-container>
 </template>
 <style>
@@ -87,9 +86,6 @@ header.tool-custom {
 }
 </style>
 <script>
-import { findChildByTagName  } from '../../modules/common.js';
-import IModal from '../Util/IModal';
-
 const getTagArrayById = (config, id) => {
 	let tagArray = new Array();
 	if ( id === "header" ) {
@@ -105,37 +101,31 @@ const getTagArrayById = (config, id) => {
 const createTag = function() {
 	let id = this.currentTab;
 
-	let imodal = findChildByTagName(this, "IModal");
-	imodal.title = this.$t('myblog.include.new_tag');
-	imodal.inputText = '';
-	imodal.ok = this.$t('add');
-	imodal.cancel = this.$t('cancel');
-	imodal.okClick = () => {
-		let text = imodal.inputText;
-		let tagArray = getTagArrayById(this.config, id);
-		tagArray.push(text);
-		this.updateIncludeItems();
-
-		imodal.hide();
-	}
-	imodal.show();
+    this.$prompt.show({
+        title: this.$t('myblog.include.new_tag'),
+        content: '',
+        textOk: this.$t('add'),
+        textCancel: this.$t('cancel'),
+        ok: (text) => {
+            let tagArray = getTagArrayById(this.config, id);
+            tagArray.push(text);
+            this.updateIncludeItems();
+        },
+    });
 };
 
 const modifyTag = function(tag, id, idx) {
-	let imodal = findChildByTagName(this, "IModal");
-	imodal.title = this.$t('myblog.include.modify_tag');
-	imodal.inputText = tag;
-	imodal.ok = this.$t('modify');
-	imodal.cancel = this.$t('cancel');
-	imodal.okClick = () => {
-		let text = imodal.inputText;
-		
-		let tagArray = getTagArrayById(this.config, id);
-		tagArray[idx] = text;
-		this.updateIncludeItems();
-		imodal.hide();
-	}
-	imodal.show();
+    this.$prompt.show({
+        title: this.$t('myblog.include.modify_tag'),
+        defaultText: tag,
+        textOk: this.$t('modify'),
+        textCancel: this.$t('cancel'),
+        ok: (text) => {
+            let tagArray = getTagArrayById(this.config, id);
+            tagArray[idx] = text;
+            this.updateIncludeItems();
+        }
+    });
 };
 
 const applyIncludeTags = function() {
@@ -175,7 +165,6 @@ const applyIncludeTags = function() {
 export default {
 	name: 'BlogInclude',
 	components: {
-		IModal,
 	},
 	created: function() {
 		let gitApi = this.$store.getters.api;

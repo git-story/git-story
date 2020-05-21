@@ -107,12 +107,10 @@
 				</v-card>
 			</v-col>
 		</v-row>
-		<IModal ref="IModal"/>
 	</v-container>
 </template>
 <script>
-import { findChildByTagName, getObject } from '../../modules/common.js';
-import IModal from '../Util/IModal';
+import { getObject } from '@/modules/common.js';
 
 const createCategoryItems = function(posts, id="") {
 	let keys = Object.keys(posts);
@@ -148,42 +146,38 @@ const createCategory = function() {
 		this.active = [];
 	}
 
-	let imodal = findChildByTagName(this, "IModal");
-	if ( imodal ) {
-		imodal.title = this.$t('myblog.category.add_category');
-		imodal.inputText = "";
-		imodal.okClick = () => {
-			let posts = this.posts;
-			let parent = posts;
-			let category = imodal.inputText;
+    this.$prompt.show({
+        title: this.$t('myblog.category.add_category'),
+        content: '',
+        ok: (text) => {
+            let posts = this.posts;
+            let parent = posts;
+            let category = text;
 
-			if ( active.length > 0 ) {
-				let search = active[0];
-				parent = getObject(posts, search);
-				if ( !parent ) {
-					imodal.hide();
-					return;
-				}
+            if ( active.length > 0 ) {
+                let search = active[0];
+                parent = getObject(posts, search);
+                if ( !parent ) {
+                    return;
+                }
 
-				parent.sub[category] = {
-					"href" : `${parent.href}${category}/`,
-					"sub": {},
-					"posts" : []
-				}
-			} else {
-				parent[category] = {
-					"href" : `/posts/${category}/`,
-					"sub": {},
-					"posts" : []
-				}
-			}
+                parent.sub[category] = {
+                    "href" : `${parent.href}${category}/`,
+                    "sub": {},
+                    "posts" : []
+                }
+            } else {
+                parent[category] = {
+                    "href" : `/posts/${category}/`,
+                    "sub": {},
+                    "posts" : []
+                }
+            }
 
-			this.updateCategory(posts);
+            this.updateCategory(posts);
 
-			imodal.hide();
-		};
-		imodal.show();
-	}
+        }
+    });
 };
 
 const allChangeHref = (obj, ori, dst) => {
@@ -230,32 +224,28 @@ const renameCategory = function() {
 	let search = active[0];
 	let { k, d } = getObject(posts, search, 1);
 
-	let imodal = findChildByTagName(this, "IModal");
-	if ( imodal ) {
-		imodal.title = this.$t('myblog.category.modify_category');
-		imodal.inputText = k;
-		imodal.okClick = () => {
-			let rename = imodal.inputText;
-			if ( rename === k ) {
-				imodal.hide();
-				return;
-			}
+    this.$prompt.show({
+        title: this.$t('myblog.category.modify_category'),
+        defaultText: k,
+        content: '',
+        ok: (text) => {
+            let rename = text;
+            if ( rename === k ) {
+                return;
+            }
 
-			let target = d[k];
-			let oriHref = target.href;
-			let regex = new RegExp(`${k.toLowerCase()}(?=/$)`);
-			target.href = target.href.replace(regex, rename.toLowerCase());
-			allChangeHref(target, oriHref, target.href);
+            let target = d[k];
+            let oriHref = target.href;
+            let regex = new RegExp(`${k.toLowerCase()}(?=/$)`);
+            target.href = target.href.replace(regex, rename.toLowerCase());
+            allChangeHref(target, oriHref, target.href);
 
-			d[rename] = d[k];
-			delete d[k];
+            d[rename] = d[k];
+            delete d[k];
 
-			this.updateCategory(posts);
-
-			imodal.hide();
-		}
-		imodal.show();
-	}
+            this.updateCategory(posts);
+        },
+    });
 };
 
 
@@ -293,7 +283,6 @@ const applyCategory = function() {
 export default {
 	name: 'BlogCategory',
 	components: {
-		IModal,
 	},
 	created: function() {
 		this.vMobile = this.$store.getters.vMobile;
