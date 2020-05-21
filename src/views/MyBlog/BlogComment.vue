@@ -394,7 +394,7 @@ const clickFacebook = function() {
 		comment.facebook = facebook.code;
 	} else {
 		if ( facebook.has === true ) {
-			this.$confirm({
+			this.$confirm.show({
 				title: this.$t('warning'),
 				content: this.$t('myblog.comment.confirm-delete'),
 				textOk: this.$t('ok'),
@@ -428,7 +428,7 @@ const clickUtterances = function() {
 		comment.utterances = utterances.code;
 	} else {
 		if ( utterances.has === true ) {
-			this.$confirm({
+			this.$confirm.show({
 				title: this.$t('warning'),
 				content: this.$t('myblog.comment.confirm-delete'),
 				textOk: this.$t('ok'),
@@ -459,7 +459,7 @@ const clickDisqus = function() {
 		comment.disqus = disqus.code;
 	} else {
 		if ( disqus.has === true ) {
-			this.$confirm({
+			this.$confirm.show({
 				title: this.$t('warning'),
 				content: this.$t('myblog.comment.confirm-delete'),
 				textOk: this.$t('ok'),

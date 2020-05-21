@@ -218,7 +218,7 @@ export default {
             }).then(() => {
                 // 레포지토리 생성 성공
                 ploading.hide();
-                this.$modal({
+                this.$modal.show({
                     title: this.$t('notification'),
                     content: this.$t('success_create_blog'),
                     textOk: this.$t('confirm'),
@@ -227,7 +227,7 @@ export default {
                     },
                 });
             }).catch(() => {
-                this.$modal({
+                this.$modal.show({
                     title: this.$t('error'),
                     content: this.$t('can_not_del_repo'),
                     textOk: this.$t('confirm'),
@@ -257,7 +257,7 @@ export default {
                                 this.authorUpdate();	
                             }).catch(() => {
                                 // posts.json 이 없을 때 
-                                this.$confirm({
+                                this.$confirm.show({
                                     title: this.$t('notification'),
                                     content: this.$t('have_repo_but'),
                                     textOk: this.$t('ok'),
@@ -279,7 +279,7 @@ export default {
                         } // repo has pages
                     } else {
                         // 블로그 레포지토리가 없을 때
-                        this.$confirm({
+                        this.$confirm.show({
                             title: this.$t('notification'),
                             content: this.$t('not_have_repo'),
                             textOk: this.$t('ok'),

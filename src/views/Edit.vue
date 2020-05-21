@@ -92,7 +92,7 @@ import TuiEditor from './TuiEditor';
 const doPostingContent = function() {
 	let task = this.$store.getters.task;
 	if ( task === true ) {
-        this.$modal({
+        this.$modal.show({
             title: this.$t('notification'),
             content: this.$t('inprogress'),
             ok: this.$t('confirm'),

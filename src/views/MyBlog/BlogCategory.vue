@@ -220,7 +220,7 @@ const renameCategory = function() {
 	}
 
 	if ( active.length <= 0 ) {
-        this.$modal({
+        this.$modal.show({
             title: this.$t("notification"),
             content: this.$t("myblog.category.not_selected"),
             textOk: this.$t("confirm"),
@@ -268,7 +268,7 @@ const applyCategory = function() {
 
 	let task = this.$store.getters.task;
 	if ( task === true ) {
-        this.$modal({
+        this.$modal.show({
             title: this.$t("notification"),
             content: this.$t("inprogress"),
             textOk: this.$t("confirm"),
@@ -325,7 +325,7 @@ export default {
 			}
 
 			if ( active.length <= 0 ) {
-                this.$modal({
+                this.$modal.show({
                     title: this.$t("notification"),
                     content: this.$t("myblog.category.not_selected"),
                     textOk: this.$t("confirm"),
@@ -337,7 +337,7 @@ export default {
 			let search = active[0];
 			let { k, d } = getObject(posts, search, 1);
 
-			this.$confirm({
+			this.$confirm.show({
 				title: this.$t('warning'),
 				content: `[${k}] ` + this.$t('myblog.category.delete_check'),
 				textOk: this.$t('ok'),

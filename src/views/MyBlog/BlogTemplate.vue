@@ -196,7 +196,7 @@ export default {
 
 			let task = this.$store.getters.task;
 			if ( task === true ) {
-                this.$modal({
+                this.$modal.show({
                     title: this.$t('notification'),
                     content: this.$t('inprogress'),
                     textOk: this.$t('confirm'),
@@ -204,7 +204,7 @@ export default {
 				return;
 			}
 
-			this.$confirm({
+			this.$confirm.show({
 				title: this.$t('warning'),
 				content: this.$t('myblog.template.change_theme'),
 				textOk: this.$t('ok'),

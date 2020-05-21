@@ -125,7 +125,7 @@ export default {
 
             this.targetPost = null;
             if ( task === true ) {
-                this.$modal({
+                this.$modal.show({
                     title: this.$t('notification'),
                     content: this.$t('inprogress'),
                     textOk: this.$t('confirm'),
@@ -134,7 +134,7 @@ export default {
             }
 
             this.targetPost = item;
-            this.$confirm({
+            this.$confirm.show({
                 title: this.$t('notification'),
                 content: this.$t('myblog.list.delete_post'),
                 textOk: this.$t('ok'),
@@ -156,7 +156,7 @@ export default {
 
             removePost(post, this).then((removed) => {
                 ploading.hide();
-                this.$modal({
+                this.$modal.show({
                     title: this.$t('notification'),
                     content: this.$t('myblog.list.success_del_post'),
                     textOk: this.$t('confirm'),
@@ -168,7 +168,7 @@ export default {
                 });
             }).catch(() => {
                 ploading.hide();
-                this.$modal({
+                this.$modal.show({
                     title: this.$t('error'),
                     content: this.$t('myblog.list.fail_del_post'),
                     textOk: this.$t('confirm'),

@@ -145,7 +145,7 @@ const applyIncludeTags = function() {
 
 	let task = this.$store.getters.task;
 	if ( task === true ) {
-        this.$modal({
+        this.$modal.show({
             title: this.$t('notification'),
             content: this.$t('inprogress'),
             textOk: this.$t('confirm'),
@@ -164,7 +164,7 @@ const applyIncludeTags = function() {
 		"path": "config.json",
 		"content": config
 	}]).then(() => {
-        this.$modal({
+        this.$modal.show({
             title: this.$t('notification'),
             content: this.$t('myblog.include.success_apply'),
             textOk: this.$t('ok'),
@@ -198,7 +198,7 @@ export default {
 		modifyTag,
 		applyFunc: () => {},
 		deleteTag(tag, id, idx) {
-			this.$confirm({
+			this.$confirm.show({
 				title: this.$t('warning'),
 				content: this.$t('myblog.include.delete_tag'),
 				textOk: this.$t('ok'),
