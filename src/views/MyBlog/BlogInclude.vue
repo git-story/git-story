@@ -79,7 +79,6 @@
 			<v-col cols="4" class="d-none d-lg-flex"></v-col>
 		</v-row>
 		<IModal ref="IModal"/>
-		<PLoading ref="PLoading"/>
 	</v-container>
 </template>
 <style>
@@ -90,7 +89,6 @@ header.tool-custom {
 <script>
 import { findChildByTagName  } from '../../modules/common.js';
 import IModal from '../Util/IModal';
-import PLoading from '../Util/PLoading';
 
 const getTagArrayById = (config, id) => {
 	let tagArray = new Array();
@@ -155,9 +153,8 @@ const applyIncludeTags = function() {
 
 	this.$store.commit('task', true);
 
-	let ploading = findChildByTagName(this, "PLoading");
-	ploading.content = this.$t('applying');
-	ploading.show();
+    this.$loader.text = this.$t('applying');
+    this.$loader.start();
 
 	let gitApi = this.$store.getters.api;
 	gitApi.repo.commitFiles("Include Tag Apply", [{
@@ -171,7 +168,7 @@ const applyIncludeTags = function() {
         });
 	}).finally(() => {
 		this.$store.commit('task', false);
-		ploading.hide();
+        this.$loader.stop();
 	});
 };
 
@@ -179,7 +176,6 @@ export default {
 	name: 'BlogInclude',
 	components: {
 		IModal,
-		PLoading
 	},
 	created: function() {
 		let gitApi = this.$store.getters.api;

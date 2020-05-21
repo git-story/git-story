@@ -71,7 +71,6 @@
 				</v-card>
 			</v-col>
 		</v-row>
-		<PLoading ref="PLoading"/>
 	</v-container>
 </template>
 <style>
@@ -112,9 +111,6 @@ div.v-card.custom-img div div.v-image__image--cover:hover {
 }
 </style>
 <script>
-import PLoading from '../Util/PLoading';
-import { findChildByTagName } from '../../modules/common.js';
-
 
 const showTheme = function(idx) {
 	let themes = this.themes;
@@ -139,7 +135,6 @@ const showTheme = function(idx) {
 export default {
 	name: 'BlogTemplate',
 	components: {
-		PLoading,
 	},
 	created: function() {
 		let gitApi = this.$store.getters.api;
@@ -210,9 +205,8 @@ export default {
 				textOk: this.$t('ok'),
 				textCancel: this.$t('cancel'),
 				ok: () => {
-					let ploading = findChildByTagName(this, "PLoading");
-					ploading.content = this.$t('myblog.template.changing_theme');
-					ploading.show();
+                    this.$loader.text = this.$t('myblog.template.changing_theme');
+                    this.$loader.start();
 
 					this.$store.commit('task', true);
 
@@ -282,9 +276,10 @@ export default {
 							// eslint-disable-next-line
 							console.log("commit done.");
 							this.$store.commit('task', false);
-							ploading.hide();
+                            this.$loader.stop();
 						})
 						.catch((err) => {
+                            this.$loader.stop();
 							if ( err.data ) {
 								// eslint-disable-next-line
 								console.error(err.data);

@@ -133,12 +133,10 @@
 			</v-col>
 		</v-row>
 
-		<PLoading ref="PLoading"/>
 	</v-content>
 </template>
 <script>
-import PLoading from './Util/PLoading';
-import { randomNumber, findChildByTagName, mobileCheck  } from '../modules/common.js';
+import { randomNumber, mobileCheck  } from '../modules/common.js';
 import BlogSideBar from './MyBlog/BlogSideBar';
 
 const categoryList = {
@@ -154,7 +152,6 @@ const categoryList = {
 export default {
 	name: 'MyBlog',
 	components: {
-		PLoading,
 		BlogSideBar
 	},
 	created: function() {
@@ -208,7 +205,6 @@ export default {
             let templates = this.$store.getters.config.templates;
             let template = templates[randomNumber(templates.length)];
 
-            let ploading = findChildByTagName(this, "PLoading");
 
             gitApi.repo.createTemplateRepo(template, {
                 "owner": user.name,
@@ -217,7 +213,7 @@ export default {
                 "private": false
             }).then(() => {
                 // 레포지토리 생성 성공
-                ploading.hide();
+                this.$loader.stop();
                 this.$modal.show({
                     title: this.$t('notification'),
                     content: this.$t('success_create_blog'),
@@ -241,8 +237,7 @@ export default {
             let gitApi = this.$store.getters.api;
             gitApi.user.listRepos().
                 then((res) => {
-                    let ploading = findChildByTagName(this, "PLoading");
-                    ploading.content = this.$t('creating_blog');
+                    this.$loader.text = this.$t('creating_blog');
 
                     let repos = res.data;
                     let ridx = repos.findIndex(r => r.name.toLowerCase() === `${this.$store.getters.user.name}.github.io`.toLowerCase());
@@ -264,7 +259,7 @@ export default {
                                     textCancel: this.$t('no'),
                                     ok: () => {
                                         // 레포지토리 삭제 후 생성
-                                        ploading.show();
+                                        this.$loader.start();
                                         gitApi.repo.deleteRepo().
                                             then(() => {
                                                 return this.createRepository();
@@ -286,7 +281,7 @@ export default {
                             textCancel: this.$t('no'),
                             ok: () => {
                                 // 레포지토리 삭제 후 생성
-                                ploading.show();
+                                this.$loader.start();
                                 this.createRepository();
                             },
                             cancel: () => {

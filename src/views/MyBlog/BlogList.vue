@@ -51,7 +51,6 @@
 			</v-col>
 			<v-col cols="2" class="d-none d-md-flex"></v-col>
 		</v-row>
-		<PLoading ref="PLoading"/>
 	</v-container>
 </template>
 <style>
@@ -66,13 +65,11 @@ div.custom.v-data-table table tbody tr:hover {
 }
 </style>
 <script>
-import { getSubposts, findChildByTagName, removePost } from '../../modules/common.js';
-import PLoading from '../Util/PLoading';
+import { getSubposts, removePost } from '../../modules/common.js';
 
 export default {
 	name: 'BlogList',
 	components: {
-		PLoading,
 	},
 	created: function() {
 		// get posts.json
@@ -143,7 +140,6 @@ export default {
             });
         },
         realDeletePost() {
-            let ploading = findChildByTagName(this, "PLoading");
             const post = this.targetPost;
             if ( !post ) {
                 return;
@@ -151,11 +147,11 @@ export default {
 
             this.$store.commit('task', true);
 
-            ploading.content = this.$t('myblog.list.progress_delete');
-            ploading.show();
+            this.$loader.text = this.$t('myblog.list.progress_delete');
+            this.$loader.start();
 
             removePost(post, this).then((removed) => {
-                ploading.hide();
+                this.$loader.stop();
                 this.$modal.show({
                     title: this.$t('notification'),
                     content: this.$t('myblog.list.success_del_post'),
@@ -167,7 +163,7 @@ export default {
                     },
                 });
             }).catch(() => {
-                ploading.hide();
+                this.$loader.stop();
                 this.$modal.show({
                     title: this.$t('error'),
                     content: this.$t('myblog.list.fail_del_post'),

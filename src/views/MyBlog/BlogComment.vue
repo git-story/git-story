@@ -338,12 +338,9 @@
 				</v-tabs-items>
 			</v-col>
 		</v-row>
-		<PLoading ref="PLoading"/>
 	</v-container>
 </template>
 <script>
-import { findChildByTagName } from '../../modules/common.js';
-import PLoading from '../Util/PLoading';
 
 const commentApply = function() {
 	let task = this.$store.getters.task;
@@ -360,9 +357,8 @@ const commentApply = function() {
 
 	let commitMsg = `📚 [GITSTORY] 📜 Comment UPDATE : [config.json]`;
 
-	let ploading = findChildByTagName(this, "PLoading");
-	ploading.content = this.$t('applying');
-	ploading.show();
+    this.$loader.text = this.$t('applying');
+    this.$loader.start();
 	
 	let comment = this.comment;
 	let config = this.config;
@@ -374,9 +370,9 @@ const commentApply = function() {
 		"path": "config.json",
 		"content": config
 	}]).then(() => {
-		ploading.hide();
+        this.$loader.stop();
 	}).catch(() => {
-		ploading.hide();
+        this.$loader.stop();
 	}).finally(() => {
 		this.$store.commit('task', false);
 	});
@@ -481,7 +477,6 @@ const clickDisqus = function() {
 export default {
 	name: 'BlogComment',
 	components: {
-		PLoading,
 	},
 	created() {
 		let gitApi = this.$store.getters.api;

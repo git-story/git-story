@@ -108,13 +108,11 @@
 			</v-col>
 		</v-row>
 		<IModal ref="IModal"/>
-		<PLoading ref="PLoading"/>
 	</v-container>
 </template>
 <script>
 import { findChildByTagName, getObject } from '../../modules/common.js';
 import IModal from '../Util/IModal';
-import PLoading from '../Util/PLoading';
 
 const createCategoryItems = function(posts, id="") {
 	let keys = Object.keys(posts);
@@ -278,16 +276,15 @@ const applyCategory = function() {
 
 	this.$store.commit('task', true);
 
-	let ploading = findChildByTagName(this, "PLoading");
-	ploading.content = this.$t('applying');
-	ploading.show();
+    this.$loader.text = this.$t('applying');
+    this.$loader.start();
 	gitApi.repo.commitFiles(commitMsg, [{
 		"path": "posts.json",
 		"content": posts
 	}]).then(() => {
-		ploading.hide();
+        this.$loader.stop();
 	}).catch(() => {
-		ploading.hide();
+        this.$loader.stop();
 	}).finally(() => {
 		this.$store.commit('task', false);
 	});
@@ -297,7 +294,6 @@ export default {
 	name: 'BlogCategory',
 	components: {
 		IModal,
-		PLoading,
 	},
 	created: function() {
 		this.vMobile = this.$store.getters.vMobile;

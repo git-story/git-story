@@ -75,16 +75,11 @@
 		</v-footer>
 		<!-- E:Footer -->
 		
-		<!-- S:Util Component -->
-		<PLoading ref="PLoading"/>
-		<!-- E:Util Component -->
-		
 	</v-content>
 </template>
 <script>
 import axios from 'axios';
-import { genNowDate, findChildByTagName, getObject, removePost } from '../modules/common.js';
-import PLoading from './Util/PLoading';
+import { genNowDate, getObject, removePost } from '../modules/common.js';
 import beautify from 'js-beautify'
 import TuiEditor from './TuiEditor';
 
@@ -147,9 +142,9 @@ const doPostingContent = function() {
 		});
 
 		let commitMsg = `📚 [GITSTORY] 📝 POSTING : [${this.title.toUpperCase()}]`;
-		let ploading = findChildByTagName(this, "PLoading");
-		ploading.content = this.$t('editor.uploading');
-		ploading.show();
+
+        this.$loader.text = this.$t('editor.uploading');
+        this.$loader.start();
 
 		// posting
 		let gitApi = this.$store.getters.api;
@@ -172,7 +167,7 @@ const doPostingContent = function() {
 				"content": val.md,
 			},
 		]).then(() => {
-			ploading.hide();
+            this.$loader.stop();
 			this.$assign('/my-blog');
 		}).finally(() => {
 			this.$store.commit('task', false);
@@ -208,7 +203,6 @@ const createCategoryItems = function(posts, id="", level=0) {
 export default {
 	name: 'Edit',
 	components: {
-		PLoading,
 		TuiEditor,
 		// Editor,
 	},
