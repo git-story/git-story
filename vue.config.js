@@ -1,12 +1,13 @@
-const path = require('path');
-
 module.exports = {
-    configureWebpack: {
-        resolve: {
-            alias: {
-                '@': path.join(__dirname, 'src'),
-            },
-        },
-    },
-    runtimeCompiler: true,
-};
+  "configureWebpack": {
+    "resolve": {
+      "alias": {
+        "@": "/home/youn/proj/node/vue/git-story/src"
+      }
+    }
+  },
+  "runtimeCompiler": true,
+  "transpileDependencies": [
+    "vuetify"
+  ]
+}

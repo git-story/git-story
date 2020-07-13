@@ -1,37 +1,61 @@
 <template>
-	<v-app width="100%">
-		<Header />
+  <v-app>
+    <v-app-bar
+      app
+      color="primary"
+      dark
+    >
+      <div class="d-flex align-center">
+        <v-img
+          alt="Vuetify Logo"
+          class="shrink mr-2"
+          contain
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          transition="scale-transition"
+          width="40"
+        />
 
-		<v-sheet id="router-view" class="overflow-y-auto" tile max-height="100vh">
-			<router-view/>
-		</v-sheet>
-	</v-app>
+        <v-img
+          alt="Vuetify Name"
+          class="shrink mt-1 hidden-sm-and-down"
+          contain
+          min-width="100"
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
+          width="100"
+        />
+      </div>
+
+      <v-spacer></v-spacer>
+
+      <v-btn
+        href="https://github.com/vuetifyjs/vuetify/releases/latest"
+        target="_blank"
+        text
+      >
+        <span class="mr-2">Latest Release</span>
+        <v-icon>mdi-open-in-new</v-icon>
+      </v-btn>
+    </v-app-bar>
+
+    <v-content>
+      <HelloWorld/>
+    </v-content>
+  </v-app>
 </template>
-<style>
-html {
-	overflow-y: hidden !important;
-}
-div.row {
-	width: 100%;
-}
-div.v-sheet main.v-content {
-	height: 100vh;
-}
-</style>
-<script>
-import HeaderComponent from '@/views/Com/Header';
 
-export default {
+<script lang="ts">
+import Vue from 'vue';
+import HelloWorld from './components/HelloWorld.vue';
+
+export default Vue.extend({
 	name: 'App',
+
 	components: {
-		Header: HeaderComponent,
+		HelloWorld,
 	},
-    mounted() {
-    },
-	data: function() {
-		return {
-			isHome: (this.$route.name === "Home")
-		}
-	}
-};
+
+	data: () => ({
+		//
+	}),
+});
 </script>
