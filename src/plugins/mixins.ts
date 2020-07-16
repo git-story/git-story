@@ -28,4 +28,14 @@ export default class Mixin extends VueDecorator {
 
 		return instance;
 	}
+
+	public $assign(url: string) {
+		const router = this && this.$router;
+		console.log(router);
+		if ( router ) {
+			if ( router.currentRoute.path !== url ) {
+				router.push({ path: url });
+			}
+		}
+	}
 }

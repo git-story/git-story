@@ -22,7 +22,7 @@ GIT-STORY 는 그런 작업들을 전부 없애주고, 하나의 블로그 플�
 
 ### 프로젝트 다운로드
 
-프로젝트를 다운로드 후 yarn을 이용하여 빌드하세요.
+프로젝트를 다운로드 후 yarn을 이용하여 종속된 모듈을 설치하세요.
 
 ```bash
 git clone https://github.com/mobbing/git-story.git
@@ -39,12 +39,18 @@ yarn serve
 
 ### 프로젝트 빌드
 
-다음 명령어를 사용하여 배포를 위한 컴파일을 진행하세요.
+다음 명령어를 사용하여 배포를 위한 빌드를 진행하세요.
 ```bash
 yarn build
 ```
 
-자세한 개발 문서는 [이곳](./doc/DEV.ko.md) 을 참고하세요.
+### 개발 규칙
+
+#### 파일명
+
+Vue 파일은 `PascalCase` 로 생성.
+이외 파일은 `kebab-case` 로 생성.
+폴더의 경우, vue 파일이 존재하기 위한 경우엔 `PascalCase`, 이외의 경우는 `kebab-case`로 생성
 
 ## 라이센스
 

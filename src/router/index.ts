@@ -4,6 +4,10 @@ import VueRouter, { RouteConfig } from 'vue-router';
 Vue.use(VueRouter);
 
 const routes: RouteConfig[] = [
+	{
+		path: '/',
+		component: () => import('views/Home/Home.vue'),
+	},
 ];
 
 const router = new VueRouter({

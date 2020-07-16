@@ -1,11 +1,10 @@
 /*
  * index.ts
- * Created on Mon Jul 13 2020
+ * Created on Wed Jul 15 2020
  *
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
  */
-import home from './home';
 
-export default {
-	home,
-};
+export interface Imgs {
+	[key: string]: any;
+}
