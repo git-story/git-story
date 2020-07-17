@@ -104,6 +104,7 @@
 				align="center"
 				justify="center"
 				style="background-color: rgba(0, 0, 0, 0.6)"
+				class="ma-0"
 				>
 				<v-col class="text-center" cols="12">
 					<h1 class="display-1 mb-4">{{ $t('home.foot.title') }}</h1>
@@ -118,6 +119,11 @@
 		<HomeFooter/>
 	</v-main>
 </template>
+<style scope>
+.v-parallax__content {
+	padding: unset;
+}
+</style>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';

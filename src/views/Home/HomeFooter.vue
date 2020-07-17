@@ -15,6 +15,7 @@
 			<v-card-text>
 				<v-btn
 					class="mx-4"
+					@click="$assign('https://github.com/git-story/git-story/', true)"
 					icon>
 					<v-icon size="24px">mdi-github</v-icon>
 				</v-btn>
