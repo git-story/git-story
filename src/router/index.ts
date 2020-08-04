@@ -8,6 +8,10 @@ const routes: RouteConfig[] = [
 		path: '/',
 		component: () => import('views/Home/Home.vue'),
 	},
+	{
+		path: '/register',
+		component: () => import('views/Register/Register.vue'),
+	},
 ];
 
 const router = new VueRouter({
