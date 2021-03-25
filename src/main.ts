@@ -15,6 +15,7 @@ import firebase from 'firebase';
 import axios from 'axios';
 
 import session from './plugins/session';
+import logger from './plugins/logger';
 
 Vue.config.productionTip = false;
 
@@ -34,7 +35,9 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 Vue.prototype.$firebase = firebase;
 Vue.prototype.$axios = axios;
+
 Vue.use(session);
+Vue.use(logger);
 
 new Vue({
 	router,

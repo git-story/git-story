@@ -22,10 +22,14 @@ import { User } from '@/interface/user';
 export default class App extends Mixins(GlobalMixins) {
 
 	public created() {
+		this.$logger.debug('app', 'App created');
 		const user = this.$session.read<User>('userInfo', JSON.parse);
 		if ( user ) {
+			this.$logger.info('app', 'Has login user info.', user);
 			this.$store.commit('setUser', user);
-			this.$assign('/dashboard');
+			if ( this.$route.path === '/' ) {
+				this.$assign('/dashboard');
+			}
 		}
 	}
 

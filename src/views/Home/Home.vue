@@ -144,5 +144,9 @@ export default class Home extends Mixins(GlobalMixins) {
 		img3: require('assets/home/image-3.gif'),
 		foot: require('assets/home/foot-banner.jpg'),
 	};
+
+	public mounted() {
+		this.$logger.debug('app', 'Home mounted');
+	}
 }
 </script>

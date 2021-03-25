@@ -21,5 +21,9 @@ import { Imgs } from 'types/index';
 export default class Dashboard extends Mixins(GlobalMixins) {
 	private imgs: Imgs = {
 	};
+
+	public mounted() {
+		this.$logger.debug('app', 'Dashboard mounted');
+	}
 }
 </script>
