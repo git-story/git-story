@@ -16,40 +16,16 @@
 							{{ $t('home.login.baner') }}
 						</h1>
 						<p class="mt-12 white--text" style="word-break: keep-all;" v-html="$t('home.login.desc')"></p>
-						<p class="text-right ma-0 mr-0 mt-10">
+					</v-col>
+					<v-col cols="12" md="5" align="right" style="height: unset;" align-self="end">
 						<v-btn
 							text
 							tile
-							large
-							@click="$assign('/register/')"
+							x-large
+							@click="githubLogin"
 							color="indigo lighten-4">
 							{{ $t('home.login.sign-in') }}
 						</v-btn>
-						</p>
-					</v-col>
-					<v-col cols="12" md="5" align="right" style="height: unset;">
-						<v-form>
-							<v-text-field
-								:label="$t('home.login.email')"
-								regular dark
-								v-model="form.email"
-								color="indigo lighten-3"></v-text-field>
-							<v-text-field
-								:label="$t('home.login.pw')"
-								regular dark
-								v-model="form.passwd"
-								color="indigo lighten-3"
-								type="password"></v-text-field>
-							<v-btn
-								color="indigo darken-2"
-								class="mt-9"
-								@click="login"
-								:loading="loading"
-								:disabled="loading"
-								large block dark tile>
-								{{ $t('home.login.login') }}
-							</v-btn>
-						</v-form>
 					</v-col>
 				</v-row>
 			</v-col>
@@ -74,11 +50,8 @@ import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { Imgs } from 'types/index';
 import HomeHeader from './HomeHeader.vue';
-
-interface LoginForm {
-	email: string;
-	passwd: string;
-}
+import firebase from 'firebase';
+import { User } from '@/interface/user';
 
 @Component({
 	components: {
@@ -90,11 +63,34 @@ export default class HomeBanner extends Mixins(GlobalMixins) {
 		loginBanner: require('assets/home/banner.jpg'),
 	};
 
-	private form: LoginForm = { email: '', passwd: '' };
 	private loading: boolean = false;
 
-	private login() {
-		/* empty */
+	public githubLogin() {
+		const provider = new firebase.auth.GithubAuthProvider();
+		provider.addScope('repo');
+		provider.addScope('admin:repo_hook');
+		provider.addScope('user');
+		provider.addScope('delete_repo');
+		provider.addScope('workflow');
+
+		firebase
+			.auth()
+			.signInWithPopup(provider)
+			.then((result: Record<string, any>) => {
+				const user: User = {
+					displayName: result.user.displayName,
+					photoURL: result.user.photoURL,
+					email: result.user.email,
+					accessToken: result.credential.accessToken,
+					userName: result.additionalUserInfo.username,
+				};
+				console.log('user', user);
+				this.$store.commit('setUser', user);
+				this.$session.write('userInfo', user);
+				this.$assign('/dashboard');
+			}).catch((error) => {
+				console.error(error);
+			});
 	}
 }
 </script>

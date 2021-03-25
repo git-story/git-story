@@ -14,6 +14,8 @@ import vuetify from './plugins/vuetify';
 import firebase from 'firebase';
 import axios from 'axios';
 
+import session from './plugins/session';
+
 Vue.config.productionTip = false;
 
 // Your web app's Firebase configuration
@@ -32,6 +34,7 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 Vue.prototype.$firebase = firebase;
 Vue.prototype.$axios = axios;
+Vue.use(session);
 
 new Vue({
 	router,

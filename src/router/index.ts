@@ -12,6 +12,10 @@ const routes: RouteConfig[] = [
 		path: '/register',
 		component: () => import('views/Register/Register.vue'),
 	},
+	{
+		path: '/dashboard',
+		component: () => import('views/Dashboard/Dashboard.vue'),
+	},
 ];
 
 const router = new VueRouter({

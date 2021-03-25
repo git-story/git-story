@@ -11,6 +11,19 @@ import Vuetify from '@/plugins/vuetify';
 
 @Component
 export default class Mixin extends VueDecorator {
+
+	/*
+	 * Must be binding mixin method.
+	 * Because sometimes this becomes undefined when call in another scope.
+	 */
+	constructor() {
+		super();
+
+		this.$t = this.$t.bind(this);
+		this.mount = this.mount.bind(this);
+		this.$assign = this.$assign.bind(this);
+	}
+
 	public $t(key: string) {
 		const tmp: any = this;
 		return tmp.$vuetify.lang.t('$vuetify.' + key);

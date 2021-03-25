@@ -16,8 +16,18 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
+import { User } from '@/interface/user';
 
 @Component
 export default class App extends Mixins(GlobalMixins) {
+
+	public created() {
+		const user = this.$session.read<User>('userInfo', JSON.parse);
+		if ( user ) {
+			this.$store.commit('setUser', user);
+			this.$assign('/dashboard');
+		}
+	}
+
 }
 </script>
