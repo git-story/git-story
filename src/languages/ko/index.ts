@@ -6,8 +6,10 @@
  */
 import home from './home';
 import register from './register';
+import dashboard from './dashboard';
 
 export default {
 	home,
 	register,
+	dashboard,
 };

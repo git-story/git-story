@@ -10,6 +10,7 @@ import App from '@/App.vue';
 import router from './router';
 import store from './store';
 import vuetify from './plugins/vuetify';
+import './main.css';
 
 import firebase from 'firebase';
 import axios from 'axios';
@@ -33,8 +34,10 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
+
 Vue.prototype.$firebase = firebase;
 Vue.prototype.$axios = axios;
+Vue.prototype.$evt = new Vue();
 
 Vue.use(session);
 Vue.use(logger);
