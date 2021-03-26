@@ -14,7 +14,41 @@ const routes: RouteConfig[] = [
 	},
 	{
 		path: '/dashboard',
+		redirect: '/dashboard/posts',
+	},
+	{
+		path: '/dashboard/:selected(.*)',
 		component: () => import('views/Dashboard/Dashboard.vue'),
+		children: [
+			{
+				path: '/dashboard/posts',
+				component: () => import('views/Dashboard/DashboardPosts.vue'),
+			},
+			{
+				path: '/dashboard/category',
+				component: () => import('views/Dashboard/DashboardCategory.vue'),
+			},
+			{
+				path: '/dashboard/theme',
+				component: () => import('views/Dashboard/DashboardTheme.vue'),
+			},
+			{
+				path: '/dashboard/template',
+				component: () => import('views/Dashboard/DashboardTemplate.vue'),
+			},
+			{
+				path: '/dashboard/comment',
+				component: () => import('views/Dashboard/DashboardComment.vue'),
+			},
+			{
+				path: '/dashboard/setting',
+				component: () => import('views/Dashboard/DashboardSetting.vue'),
+			},
+			{
+				path: '',
+				redirect: '/dashboard/posts',
+			},
+		],
 	},
 ];
 

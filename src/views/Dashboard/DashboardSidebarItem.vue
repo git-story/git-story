@@ -5,7 +5,7 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<v-list-item @click="">
+	<v-list-item @click="$assign(href);" :class="SelectedClass">
 		<v-list-item-icon>
 			<v-icon v-text="'mdi-' + icon" />
 		</v-list-item-icon>
@@ -28,6 +28,13 @@ export default class DashboardSidebar extends Mixins(GlobalMixins) {
 
 	@Prop(String) public icon!: string;
 	@Prop(String) public href!: string;
+
+	get SelectedClass() {
+		if ( this.$route.path === this.href ) {
+			return 'indigo lighten-5';
+		}
+		return '';
+	}
 
 }
 </script>

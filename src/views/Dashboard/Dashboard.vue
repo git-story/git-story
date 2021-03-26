@@ -11,7 +11,7 @@
 				<dashboard-sidebar />
 			</v-col>
 			<v-col cols="6">
-				center
+				<router-view></router-view>
 			</v-col>
 			<v-col cols="3">
 				write
