@@ -27,9 +27,11 @@ export default class App extends Mixins(GlobalMixins) {
 		if ( user ) {
 			this.$logger.info('app', 'Has login user info.', user);
 			this.$store.commit('setUser', user);
-			if ( this.$route.path === '/' ) {
-				this.$assign('/dashboard');
-			}
+			window.addEventListener('load', () => {
+				if ( this.$route.path === '/' ) {
+					this.$assign('/dashboard');
+				}
+			});
 		}
 	}
 
