@@ -17,12 +17,19 @@
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { User } from '@/interface/user';
+import { Github } from '@/plugins/github';
 
 @Component
 export default class App extends Mixins(GlobalMixins) {
 
 	public created() {
 		this.$logger.debug('app', 'App created');
+
+		this.$store.watch(() => this.$store.getters.user, (u: User) => {
+			this.$git = new Github(u);
+			this.$logger.debug('github', 'Octokit login', this.$git);
+		});
+
 		const user = this.$session.read<User>('userInfo', JSON.parse);
 		if ( user ) {
 			this.$logger.info('app', 'Has login user info.', user);
