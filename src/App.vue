@@ -26,7 +26,7 @@ export default class App extends Mixins(GlobalMixins) {
 		this.$logger.debug('app', 'App created');
 
 		this.$store.watch(() => this.$store.getters.user, (u: User) => {
-			this.$git = new Github(u);
+			this.$git.setUser(u);
 			this.$logger.debug('github', 'Octokit login', this.$git);
 		});
 

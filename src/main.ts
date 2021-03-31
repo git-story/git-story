@@ -17,6 +17,7 @@ import axios from 'axios';
 
 import session from './plugins/session';
 import logger from './plugins/logger';
+import { Github } from './plugins/github';
 
 Vue.config.productionTip = false;
 
@@ -38,6 +39,7 @@ firebase.analytics();
 Vue.prototype.$firebase = firebase;
 Vue.prototype.$axios = axios;
 Vue.prototype.$evt = new Vue();
+Vue.prototype.$git = new Github();
 
 Vue.use(session);
 Vue.use(logger);

@@ -84,7 +84,6 @@ export default class HomeBanner extends Mixins(GlobalMixins) {
 					accessToken: result.credential.accessToken,
 					userName: result.additionalUserInfo.username,
 				};
-				console.log('user', user);
 				this.$store.commit('setUser', user);
 				this.$session.write('userInfo', user);
 				this.$assign('/dashboard');

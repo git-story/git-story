@@ -23,10 +23,26 @@ export class Github {
 
 	public repo!: Repository;
 
-	private octokit: Octokit;
+	private octokit!: Octokit;
 	private commitList: Blob[] = [];
+	private user!: User;
 
-	constructor(public user: User) {
+	constructor(user?: User) {
+		if ( user ) {
+			this.setUser(user);
+		}
+	}
+
+	get rest() {
+		return this.octokit.rest;
+	}
+
+	get User() {
+		return this.user;
+	}
+
+	public setUser(user: User) {
+		this.user = user;
 		this.octokit = new Octokit({
 			auth: user.accessToken,
 			log: {
@@ -36,10 +52,6 @@ export class Github {
 				error: (...args: any[]) => logger.error('github', ...args),
 			},
 		});
-	}
-
-	get rest() {
-		return this.octokit.rest;
 	}
 
 	public async add(file: string, data: string, encoding: BlobEncoding = 'utf-8') {

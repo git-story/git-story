@@ -30,9 +30,15 @@ export default class Mixin extends VueDecorator {
 		this.$assign = this.$assign.bind(this);
 	}
 
-	public $t(key: string) {
+	public $t(key: string, ...args: string[]) {
 		const tmp: any = this;
-		return tmp.$vuetify.lang.t('$vuetify.' + key);
+		let str: string = tmp.$vuetify.lang.t('$vuetify.' + key);
+
+		args.forEach((arg: string, idx: number) => {
+			const regx = new RegExp(`\\$${idx}`, 'g');
+			str = str.replace(regx, arg);
+		});
+		return str;
 	}
 
 	public mount(component: any, options: any = {}, selector?: (string | HTMLElement)) {
