@@ -9,3 +9,12 @@ export interface Service {
 	name: string;
 	template: string;
 }
+
+export interface MetaData {
+	title: string;
+	href: string;
+	updated: string;
+	src: string;
+	categories: any[]; //unknown
+	tags: any[]; //unknown
+}

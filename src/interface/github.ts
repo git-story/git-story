@@ -84,3 +84,13 @@ export interface TreeRef {
 	sha?: string;
 	success: boolean;
 }
+
+export interface GitContent {
+	name: string;
+	path: string;
+	sha: string;
+	size: number;
+	type: string;
+	content: string;
+	encoding: string;
+}

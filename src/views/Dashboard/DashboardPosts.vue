@@ -13,6 +13,7 @@
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { Repository } from '@/interface/github';
+import { MetaData } from '@/interface/service';
 
 @Component({
 	components: {
@@ -35,12 +36,31 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 					name: repoName,
 					owner: this.$store.getters.user.userName,
 					private: false,
-					description: '📚 [GITSTORY] 🚥 Writing post easier and faster',
+					description: this.$t('github.description'),
 				});
 			});
 		}
 
-		console.log('repo', repo);
+		const content = await this.$git.getContent<MetaData>({
+			owner: this.$store.getters.user.userName,
+			repo: repoName,
+			path: 'meta-data.json',
+		}, 'json');
+
+		if ( !content ) {
+			await this.$confirm({
+				title: this.$t('notice'),
+				content: this.$t('dashboard.blog.not-found-meta-data'),
+				type: 'warning',
+				textOk: this.$t('create-new'),
+				textCancel: this.$t('logout'),
+			}).then(async () => {
+				// TODO: Remove and Create repository
+			}).catch(async () => {
+				// TODO: Logout
+			});
+		}
+		console.log('content', content);
 	}
 
 	public async getBlogRepo(name: string): Promise<Repository|void> {

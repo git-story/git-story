@@ -16,6 +16,7 @@ import {
 	Owner,
 	Repository,
 	TreeRef,
+	GitContent,
 } from '@/interface/github';
 
 
@@ -101,6 +102,30 @@ export class Github {
 			ret.sha = res.data.sha;
 			ret.ref = obj.sha;
 			ret.success = true;
+		}
+		return ret;
+	}
+
+	public async getContent<T extends object>(args: any, type: 'json'|'string' = 'string'): Promise<void|T> {
+		let ret: any;
+		try {
+			const res = await this.rest.repos.getContent(args);
+			const data = res.data as GitContent;
+			switch ( data.encoding ) {
+				case 'base64':
+					ret = Buffer.from(data.content, 'base64').toString('utf8');
+					break;
+				default:
+					ret = data.content;
+			}
+
+			switch ( type ) {
+				case 'json':
+					ret = JSON.parse(ret) as T;
+					break;
+			}
+		} catch (err) {
+			logger.error('github', err);
 		}
 		return ret;
 	}
