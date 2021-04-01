@@ -17,4 +17,6 @@ export default {
 	'notice': '알림',
 	'create-new': '새로 만들기',
 	'logout': '로그아웃',
+	'remove': '삭제',
+	'modify': '수정',
 };
