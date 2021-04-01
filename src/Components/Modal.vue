@@ -31,6 +31,7 @@
 							color="indigo"
 							large
 							dark
+	   						:loading="loadingOk"
 							@click="$emit('ok', $event); $emit('update:open', false);">
 							{{ textOk }}
 						</v-btn>
@@ -63,6 +64,10 @@ export default {
 		textOk: {
 			type: String,
 			default: 'Ok',
+		},
+		loadingOk: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	data() {

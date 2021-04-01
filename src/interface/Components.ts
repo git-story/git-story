@@ -21,8 +21,10 @@ export interface NotiOption extends ComponentOption {
 export interface ModalOption extends ComponentOption {
 	title?: string;
 	textOk?: string;
+	loadingOk?: boolean; // private
 }
 
 export interface ConfirmOption extends ModalOption {
 	textCancel?: string;
+	loadingCancel?: boolean; // private
 }

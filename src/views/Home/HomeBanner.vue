@@ -65,7 +65,7 @@ export default class HomeBanner extends Mixins(GlobalMixins) {
 
 	private loading: boolean = false;
 
-	public githubLogin() {
+	public async githubLogin() {
 		const provider = new firebase.auth.GithubAuthProvider();
 		provider.addScope('repo');
 		provider.addScope('admin:repo_hook');

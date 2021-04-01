@@ -101,7 +101,7 @@ export default class Mixin extends VueDecorator {
 		});
 	}
 
-	public $modal(options: ModalOption = {}): Promise<MouseEvent> {
+	public $modal(options: ModalOption = {}): Promise<() => void> {
 		return new Promise((resolve, reject) => {
 			const defaultOptions: ModalOption = {
 				open: true,
@@ -109,6 +109,7 @@ export default class Mixin extends VueDecorator {
 				title: 'Modal Title',
 				content: 'Modal Content',
 				textOk: 'Ok',
+				loadingOk: false,
 			};
 
 			for ( const [key, val] of Object.entries(options) ) {
@@ -122,19 +123,22 @@ export default class Mixin extends VueDecorator {
 			}
 
 			let instance: any = this.mount(Modal, { propsData: defaultOptions });
-			instance.$once('ok', (evt: any) => {
-				instance.open = false;
-				Vue.nextTick(() => {
-					instance.$el.remove();
-					instance = null;
+			instance.$on('ok', () => {
+				instance.loadingOk = true;
+				resolve(() => {
+					instance.loadingOk = false;
+					instance.open = false;
+					Vue.nextTick(() => {
+						instance.$el.remove();
+						instance = null;
+					});
 				});
-				resolve(evt);
 			});
 			document.body.appendChild(instance.$el);
 		});
 	}
 
-	public $confirm(options: ConfirmOption = {}): Promise<MouseEvent> {
+	public $confirm(options: ConfirmOption = {}): Promise<() => void> {
 		return new Promise((resolve, reject) => {
 			const defaultOptions: ConfirmOption = {
 				open: true,
@@ -143,6 +147,8 @@ export default class Mixin extends VueDecorator {
 				content: 'Confirm Content',
 				textOk: 'Ok',
 				textCancel: 'Cancel',
+				loadingOk: false,
+				loadingCancel: false,
 			};
 
 			for ( const [key, val] of Object.entries(options) ) {
@@ -156,20 +162,26 @@ export default class Mixin extends VueDecorator {
 			}
 
 			let instance: any = this.mount(Confirm, { propsData: defaultOptions });
-			instance.$once('ok', (evt: MouseEvent) => {
-				instance.open = false;
-				Vue.nextTick(() => {
-					instance.$el.remove();
-					instance = null;
-					resolve(evt);
+			instance.$on('ok', () => {
+				instance.loadingOk = true;
+				resolve(() => {
+					instance.loadingOk = false;
+					instance.open = false;
+					Vue.nextTick(() => {
+						instance.$el.remove();
+						instance = null;
+					});
 				});
 			});
-			instance.$once('cancel', (evt: MouseEvent) => {
-				instance.open = false;
-				Vue.nextTick(() => {
-					instance.$el.remove();
-					instance = null;
-					reject(evt);
+			instance.$on('cancel', () => {
+				instance.loadingCancel = true;
+				reject(() => {
+					instance.loadingCancel = false;
+					instance.open = false;
+					Vue.nextTick(() => {
+						instance.$el.remove();
+						instance = null;
+					});
 				});
 			});
 			document.body.appendChild(instance.$el);
