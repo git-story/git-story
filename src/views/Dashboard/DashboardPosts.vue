@@ -22,7 +22,7 @@
 			<v-divider class="mx-4"></v-divider>
 
 			<v-card-actions>
-				<v-row align="right">
+				<v-row>
 					<v-col cols="12" align="right" class="pr-6">
 						<v-btn color="red" dark class="mr-4" tile depressed>
 							{{ $t('remove') }}
@@ -105,7 +105,8 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 			});
 		}
 
-		this.postList = content;
+		this.postList = content as MetaData[];
+		console.log(this.postList);
 	}
 
 	public async getBlogRepo(name: string): Promise<Repository|void> {

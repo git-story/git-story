@@ -19,4 +19,6 @@ export default {
 	'logout': '로그아웃',
 	'remove': '삭제',
 	'modify': '수정',
+	'title': '제목',
+	'content': '내용',
 };

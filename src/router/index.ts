@@ -17,6 +17,10 @@ const routes: RouteConfig[] = [
 		redirect: '/dashboard/posts',
 	},
 	{
+		path: '/posting/:href(.*)',
+		component: () => import('views/Posting/Posting.vue'),
+	},
+	{
 		path: '/dashboard/:selected(.*)',
 		component: () => import('views/Dashboard/Dashboard.vue'),
 		children: [

@@ -9,8 +9,9 @@
 		<v-btn
 	 		tile dark
 	  		large block
-			color="indigo darken-3">
-			새 글 작성
+			color="indigo darken-3"
+			@click="$assign('/editor/')">
+			{{ $t('dashboard.new-posting') }}
 		</v-btn>
 
 		<v-card tile class="mt-4">

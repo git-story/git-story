@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@octokit/rest": "^18.5.0",
+    "@voraciousdev/vue-markdown-editor": "^0.3.0",
     "axios": "^0.19.2",
     "core-js": "^3.6.5",
     "firebase": "^7.16.1",
