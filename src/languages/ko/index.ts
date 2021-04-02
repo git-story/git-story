@@ -8,12 +8,14 @@ import home from './home';
 import register from './register';
 import dashboard from './dashboard';
 import github from './github';
+import posting from './posting';
 
 export default {
 	home,
 	register,
 	dashboard,
 	github,
+	posting,
 	'notice': '알림',
 	'create-new': '새로 만들기',
 	'logout': '로그아웃',
