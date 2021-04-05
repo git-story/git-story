@@ -12,9 +12,9 @@
 			<v-col class="py-0" cols="12" sm="10" md="8" lg="6">
 				<v-row style="background-color: white; height: calc(100% - 3px);" class="ma-0 editor-shadow">
 					<v-col cols="12">
-						<v-row class="mx-0 pt-5 px-5">
+						<v-row class="ma-0 pt-5 px-5">
 							<v-col cols="12">
-								<input type="text" class="title-input" spellcheck="false" :placeholder="$t('title')">
+								<input v-model="postTitle" type="text" class="title-input" spellcheck="false" :placeholder="$t('title')">
 							</v-col>
 						</v-row>
 						<v-divider class="mx-8" />
@@ -36,7 +36,9 @@
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import MarkdownEditor from '@git-story/md-editor';
+import Markdown from '@git-story/md-editor/src/common/markdown/markdown.js';
 import Header from './PostingHeader.vue';
+import { TempPost, TempPostImage } from '@/interface/service';
 
 @Component({
 	components: {
@@ -52,9 +54,41 @@ export default class Posting extends Mixins(GlobalMixins) {
 			enabled: true,
 		},
 	};
+	public postTitle: string = '';
 
 	public mounted() {
 		this.$logger.debug('app', 'Posting mounted');
+		this.$evt.$on('post:temp.save', async (end: (post: TempPost) => void) => {
+			const md = new Markdown(this.markdown);
+			const editor = this.$refs.editor as any;
+			const imgs = md.images();
+			const post: TempPost = {
+				title: this.postTitle || '',
+				content: '',
+				updated: new Date().toJSON(),
+				imgs: [],
+			};
+
+			for ( let idx = 0; idx < imgs.length; idx++ ) {
+				const img = imgs[idx];
+				if ( img.url.startsWith('blob:') ) {
+					const b64data = await editor.blobToBase64(img.url);
+					const name = img.alt;
+					const id = `${name}...${idx}`;
+
+					post.imgs.push({
+						id,
+						name,
+						b64data,
+					} as TempPostImage);
+
+					md.replaceLine(img.line, `![${id}](${b64data})`);
+				}
+			}
+
+			post.content = md.text;
+			end(post);
+		});
 	}
 
 	public editorFocusEnd() {

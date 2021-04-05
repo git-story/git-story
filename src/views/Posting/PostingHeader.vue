@@ -17,7 +17,10 @@
 
 		<v-spacer />
 
-		<v-btn tile elevation="1" color="teal--text text--darken-3 white">
+		<v-btn tile elevation="1"
+			:loading="tempPostLoading"
+			color="teal--text text--darken-3 white"
+			@click="postSave">
 			{{ $t('posting.temp-save') }}
 		</v-btn>
 
@@ -42,9 +45,16 @@
 			</template>
 
 			<v-card tile elevation="1">
-				<v-list>
-					<v-list-item>
-						<!-- TODO: 임시 저장 목록 -->
+				<v-list flat max-width="500px" width="80%">
+					<v-list-item
+						v-for="(post, i) in tempPosts"
+						:key="post.id">
+						<v-list-item-content>
+							<v-list-item-title v-text="post.updated"></v-list-item-title>
+						</v-list-item-content>
+						<v-list-item-icon>
+							<v-icon>mdi-trash</v-icon>
+						</v-list-item-icon>
 					</v-list-item>
 				</v-list>
 			</v-card>
@@ -58,11 +68,30 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
+import { TempPost, TempPostImage } from '@/interface/service';
 
 @Component({
 	components: {
 	},
 })
 export default class Header extends Mixins(GlobalMixins) {
+
+	public tempPosts: TempPost[] = [];
+	public tempPostLoading: boolean = false;
+
+	public mounted() {
+		this.tempPosts = this.$session.read<TempPost[]>('temp_posting', JSON.parse) as TempPost[] || [];
+		this.$logger.debug('post', 'Temp post list', this.tempPosts);
+	}
+
+	public postSave() {
+		this.tempPostLoading = true;
+		this.$evt.$emit('post:temp.save', (post: TempPost) => {
+			this.tempPosts.push(post);
+			this.$session.write('temp_posting', this.tempPosts);
+			this.tempPostLoading = false;
+		});
+	}
+
 }
 </script>

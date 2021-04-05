@@ -18,3 +18,16 @@ export interface MetaData {
 	categories: any[]; //unknown
 	tags: any[]; //unknown
 }
+
+export interface TempPostImage {
+	id: string;
+	name: string;
+	b64data: string;
+}
+
+export interface TempPost {
+	title: string;
+	content: string;
+	updated: string;
+	imgs: TempPostImage[];
+}

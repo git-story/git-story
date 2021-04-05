@@ -11,5 +11,6 @@ declare module 'vue/types/vue' {
 		$session: Session;
 		$logger: Logger;
 		$git: Github;
+		$evt: Vue;
 	}
 }
