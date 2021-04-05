@@ -21,7 +21,7 @@
 						<v-row class="mx-0 pt-4 px-6" style="height: 90%; cursor: text;" @click="editorFocusEnd">
 							<v-col cols="12">
 								<div @click.stop="">
-									<MarkdownEditor ref="editor" v-model="markdown"/>
+									<MarkdownEditor ref="editor" v-model="markdown" :settings="mdOptions"/>
 								</div>
 							</v-col>
 						</v-row>
@@ -35,7 +35,7 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
-import MarkdownEditor from '@voraciousdev/vue-markdown-editor';
+import MarkdownEditor from '@git-story/md-editor';
 import Header from './PostingHeader.vue';
 
 @Component({
@@ -47,6 +47,11 @@ import Header from './PostingHeader.vue';
 export default class Posting extends Mixins(GlobalMixins) {
 
 	public markdown: string = this.$t('content');
+	public mdOptions: Record<string, unknown> = {
+		images: {
+			enabled: true,
+		},
+	};
 
 	public mounted() {
 		this.$logger.debug('app', 'Posting mounted');

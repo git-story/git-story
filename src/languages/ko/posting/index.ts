@@ -8,4 +8,4 @@
 export default {
 	'temp-save': '임시저장',
 	'posting': '포스팅',
-}
+};

@@ -10,7 +10,7 @@
 	 		tile dark
 	  		large block
 			color="indigo darken-3"
-			@click="$assign('/editor/')">
+			@click="$assign('/posting/')">
 			{{ $t('dashboard.new-posting') }}
 		</v-btn>
 
