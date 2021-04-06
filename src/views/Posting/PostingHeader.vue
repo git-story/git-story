@@ -80,7 +80,7 @@ export default class Header extends Mixins(GlobalMixins) {
 	public tempPostLoading: boolean = false;
 
 	public mounted() {
-		this.tempPosts = this.$session.read<TempPost[]>('temp_posting', JSON.parse) as TempPost[] || [];
+		this.tempPosts = this.$local.read<TempPost[]>('temp_posting', JSON.parse) as TempPost[] || [];
 		this.$logger.debug('post', 'Temp post list', this.tempPosts);
 	}
 
@@ -88,7 +88,7 @@ export default class Header extends Mixins(GlobalMixins) {
 		this.tempPostLoading = true;
 		this.$evt.$emit('post:temp.save', (post: TempPost) => {
 			this.tempPosts.push(post);
-			this.$session.write('temp_posting', this.tempPosts);
+			this.$local.write('temp_posting', this.tempPosts);
 			this.tempPostLoading = false;
 		});
 	}
