@@ -16,6 +16,7 @@ import firebase from 'firebase';
 import axios from 'axios';
 
 import session from './plugins/session';
+import local from './plugins/local';
 import logger from './plugins/logger';
 import { Github } from './plugins/github';
 
@@ -42,6 +43,7 @@ Vue.prototype.$evt = new Vue();
 Vue.prototype.$git = new Github();
 
 Vue.use(session);
+Vue.use(local);
 Vue.use(logger);
 
 new Vue({

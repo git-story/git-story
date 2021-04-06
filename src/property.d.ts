@@ -3,12 +3,14 @@
  */
 import Vue from 'vue';
 import { Session } from './plugins/session';
+import { Local } from './plugins/local';
 import { Logger } from './plugins/logger';
 import { Github } from './plugins/github';
 
 declare module 'vue/types/vue' {
 	interface Vue {
 		$session: Session;
+		$local: Local;
 		$logger: Logger;
 		$git: Github;
 		$evt: Vue;
