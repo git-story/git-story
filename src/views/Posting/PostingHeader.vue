@@ -45,16 +45,23 @@
 			</template>
 
 			<v-card tile elevation="1">
-				<v-list flat max-width="500px" width="80%">
-					<v-list-item
-						v-for="(post, i) in tempPosts"
-						:key="post.id">
+				<v-list flat>
+					<div v-if="tempPosts.length > 0">
+						<v-list-item
+							v-for="(post, i) in tempPosts"
+							:key="post.id">
+							<v-list-item-content>
+								<v-list-item-title v-text="post.updated"></v-list-item-title>
+							</v-list-item-content>
+							<v-list-item-icon>
+								<v-icon>mdi-trash</v-icon>
+							</v-list-item-icon>
+						</v-list-item>
+					</div>
+					<v-list-item v-else>
 						<v-list-item-content>
-							<v-list-item-title v-text="post.updated"></v-list-item-title>
+							<v-list-item-title v-text="$t('posting.not-have')"></v-list-item-title>
 						</v-list-item-content>
-						<v-list-item-icon>
-							<v-icon>mdi-trash</v-icon>
-						</v-list-item-icon>
 					</v-list-item>
 				</v-list>
 			</v-card>
