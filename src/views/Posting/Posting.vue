@@ -10,7 +10,7 @@
 		<v-row class="mx-0" style="background-color: #f2f4f7; height: calc(100vh - 64px); overflow-y: auto;">
 			<v-col class="d-none d-sm-block py-0" sm="1"  md="2" lg="3"></v-col>
 			<v-col class="py-0" cols="12" sm="10" md="8" lg="6">
-				<v-row style="background-color: white; height: calc(100% - 3px);" class="ma-0 editor-shadow">
+				<v-row style="background-color: white; height: 100%;" class="ma-0 editor-shadow">
 					<v-col cols="12">
 						<v-row class="ma-0 pt-5 px-5">
 							<v-col cols="12">
@@ -18,7 +18,7 @@
 							</v-col>
 						</v-row>
 						<v-divider class="mx-8" />
-						<v-row class="mx-0 pt-4 px-6" style="height: 90%; cursor: text;" @click="editorFocusEnd">
+						<v-row class="mx-0 pt-4 px-6" style="height: 85%; cursor: text;" @click="editorFocusEnd">
 							<v-col cols="12">
 								<div @click.stop="">
 									<MarkdownEditor ref="editor" v-model="markdown" :settings="mdOptions"/>

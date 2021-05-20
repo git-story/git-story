@@ -87,7 +87,12 @@ export default class Header extends Mixins(GlobalMixins) {
 	public postSave() {
 		this.tempPostLoading = true;
 		this.$evt.$emit('post:temp.save', (post: TempPost) => {
-			this.tempPosts.push(post);
+			const idx = this.tempPosts.findIndex((p: TempPost) => p.title === post.title);
+			if ( idx >= 0 ) {
+				this.tempPosts[idx] = post;
+			} else {
+				this.tempPosts.push(post);
+			}
 			this.$local.write('temp_posting', this.tempPosts);
 			this.tempPostLoading = false;
 		});
