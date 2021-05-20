@@ -9,4 +9,5 @@ export default {
 	'temp-save': '임시저장',
 	'posting': '포스팅',
 	'not-have': '임시저장된 포스팅이 없습니다.',
+	'untitle': '제목 없음',
 };

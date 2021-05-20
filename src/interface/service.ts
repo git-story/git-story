@@ -19,10 +19,15 @@ export interface MetaData {
 	tags: any[]; //unknown
 }
 
+export interface ImgData {
+	text: string;
+	type: string;
+}
+
 export interface TempPostImage {
 	id: string;
 	name: string;
-	b64data: string;
+	data: ImgData;
 }
 
 export interface TempPost {

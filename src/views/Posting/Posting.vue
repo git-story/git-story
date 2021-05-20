@@ -38,7 +38,15 @@ import GlobalMixins from '@/plugins/mixins';
 import MarkdownEditor from '@git-story/md-editor';
 import Markdown from '@git-story/md-editor/src/common/markdown/markdown.js';
 import Header from './PostingHeader.vue';
-import { TempPost, TempPostImage } from '@/interface/service';
+import { TempPost, TempPostImage, ImgData } from '@/interface/service';
+
+type EndFunction = (post: TempPost) => void;
+declare global {
+	interface Window {
+		LZString: any;
+	}
+}
+
 
 @Component({
 	components: {
@@ -56,10 +64,29 @@ export default class Posting extends Mixins(GlobalMixins) {
 	};
 	public postTitle: string = '';
 
+	public async compress(url: string): Promise<ImgData> {
+		const res = await fetch(url);
+		const blob = await res.blob();
+		const text = Buffer.from(new Uint8Array(await blob.arrayBuffer())).toString('hex');
+		return {
+			text: window.LZString.compressToUTF16(text),
+			type: blob.type,
+		};
+	}
+
+	public decompress(data: string, type: string): string {
+		const text = window.LZString.decompressFromUTF16(data);
+		const uint8array = Buffer.from(text, 'hex');
+		const blob = new Blob([ uint8array ], { type });
+		return URL.createObjectURL(blob);
+	}
+
 	public mounted() {
 		this.$logger.debug('app', 'Posting mounted');
-		this.$evt.$on('post:temp.save', async (end: (post: TempPost) => void) => {
+		this.$evt.$off('post:temp.save');
+		this.$evt.$on('post:temp.save', async (end: EndFunction) => {
 			const md = new Markdown(this.markdown);
+			const splMd = md.text.split('\n');
 			const editor = this.$refs.editor as any;
 			const imgs = md.images();
 			const post: TempPost = {
@@ -69,25 +96,44 @@ export default class Posting extends Mixins(GlobalMixins) {
 				imgs: [],
 			};
 
+			console.log('save event', Date.now());
+
 			for ( let idx = 0; idx < imgs.length; idx++ ) {
 				const img = imgs[idx];
 				if ( img.url.startsWith('blob:') ) {
-					const b64data = await editor.blobToBase64(img.url);
+					const data = await this.compress(img.url);
 					const name = img.alt;
 					const id = `${name}...${idx}`;
 
 					post.imgs.push({
 						id,
 						name,
-						b64data,
+						data,
+						line: img.line,
 					} as TempPostImage);
 
-					md.replaceLine(img.line, `![${id}](${b64data})`);
+					const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `<img:${id}>`);
+					md.replaceLine(img.line, repl);
 				}
 			}
 
 			post.content = md.text;
 			end(post);
+		});
+
+		this.$evt.$off('post:temp.set');
+		this.$evt.$on('post:temp.set', async (post: TempPost) => {
+			this.postTitle = post.title;
+			const md = new Markdown(post.content);
+			const editor = this.$refs.editor as any;
+			const splMd = md.text.split('\n');
+			for ( const img of post.imgs ) {
+				let url = this.decompress(img.data.text, img.data.type);
+				const regx = new RegExp(`<img:${img.id}>`);
+				const repl = splMd[img.line].replace(regx, `![${img.name}](${url})`);
+				md.replaceLine(img.line, repl);
+			}
+			this.markdown = md.text;
 		});
 	}
 

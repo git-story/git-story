@@ -46,18 +46,28 @@
 
 			<v-card tile elevation="1">
 				<v-list flat>
-					<div v-if="tempPosts.length > 0">
+					<v-list-item-group
+		 				v-if="tempPosts.length > 0"
+		 				v-model="selectedPostIdx"
+	   					color="indigo">
 						<v-list-item
 							v-for="(post, i) in tempPosts"
+		  					@click="selectTempPost(i)"
 							:key="post.id">
 							<v-list-item-content>
-								<v-list-item-title v-text="post.updated"></v-list-item-title>
+								<v-list-item-title v-text="post.title || $t('posting.untitle')"></v-list-item-title>
+								<v-list-item-subtitle
+									class="blue-grey--text text--lighten-2 mt-2"
+		 							v-text="post.content.replace(/\\n/g, ' ').substr(0, 20)"/>
 							</v-list-item-content>
-							<v-list-item-icon>
-								<v-icon>mdi-trash</v-icon>
-							</v-list-item-icon>
+							<v-list-item-action>
+								<v-list-item-action-text v-text="dateFormat(post.updated)" />
+								<v-btn class="mt-1" icon color="red" @click.stop="deleteTempPost(i)">
+									<v-icon>mdi-delete</v-icon>
+								</v-btn>
+							</v-list-item-action>
 						</v-list-item>
-					</div>
+					</v-list-item-group>
 					<v-list-item v-else>
 						<v-list-item-content>
 							<v-list-item-title v-text="$t('posting.not-have')"></v-list-item-title>
@@ -85,6 +95,7 @@ export default class Header extends Mixins(GlobalMixins) {
 
 	public tempPosts: TempPost[] = [];
 	public tempPostLoading: boolean = false;
+	public selectedPostIdx: number = -1;
 
 	public mounted() {
 		this.tempPosts = this.$local.read<TempPost[]>('temp_posting', JSON.parse) as TempPost[] || [];
@@ -100,9 +111,28 @@ export default class Header extends Mixins(GlobalMixins) {
 			} else {
 				this.tempPosts.push(post);
 			}
+			console.log(JSON.stringify(this.tempPosts));
 			this.$local.write('temp_posting', this.tempPosts);
 			this.tempPostLoading = false;
 		});
+	}
+
+	public dateFormat(dstr: string) {
+		const date = new Date(dstr);
+		const year = date.getFullYear();
+		const month = (date.getMonth() + 1).toString().padStart(2, '0');
+		const day = date.getDate().toString().padStart(2, '0');
+		return `${year}. ${month}. ${day}`;
+	}
+
+	public deleteTempPost(idx: number) {
+		this.tempPosts.splice(idx, 1);
+		this.$local.write('temp_posting', this.tempPosts);
+	}
+
+	public selectTempPost(idx: number) {
+		this.selectedPostIdx = -1;
+		this.$evt.$emit('post:temp.set', this.tempPosts[idx]);
 	}
 
 }
