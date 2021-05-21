@@ -6,7 +6,7 @@
  */
 
 export type BlobEncoding = 'utf-8'|'base64';
-type AnyTree = Blob|Tree<'blob'>|Tree<'tree'>;
+export type AnyTree = Blob|Tree<'blob'>|Tree<'tree'>;
 
 export interface Tree<T> {
 	sha?: null|string;

@@ -17,8 +17,9 @@ import {
 	Repository,
 	TreeRef,
 	GitContent,
+	AnyTree,
 } from '@/interface/github';
-
+import path from 'path';
 
 export class Github {
 
@@ -93,6 +94,7 @@ export class Github {
 					break;
 			}
 		} catch (err) {
+			// empty
 		}
 		return ret;
 	}
@@ -110,22 +112,22 @@ export class Github {
 			cur = path.join(cur, p);
 			if ( !dep[p] ) {
 				dep[p] = {
-					'type': 'tree',
-					'mode': '160000',
-					'tree': {},
+					type: 'tree',
+					mode: '160000',
+					tree: {},
 				};
 				const org = this.repoTree.tree.find((d: AnyTree) => d.path === cur);
 				if ( org ) {
-					dep[p]['sha'] = org.sha;
+					dep[p].sha = org.sha;
 				}
 			}
-			dep = dep[p]['tree'] as AnyTree;
+			dep = dep[p].tree as AnyTree;
 		}
 
 		dep[file] = {
-			'type': 'blob',
-			'mode': '100644',
-			'content': data,
+			type: 'blob',
+			mode: '100644',
+			content: data,
 			encoding,
 		} as Blob;
 	}
@@ -134,7 +136,7 @@ export class Github {
 		console.log(JSON.stringify(this.curTree, null, '\t'));
 		const build = await this.buildTree(this.curTree);
 		const treeData = this.repoTree;
-		const treeObj = treeData.tree; 
+		const treeObj = treeData.tree;
 
 		for ( const b of build ) {
 			const idx = treeObj.findIndex((tree: AnyTree) => tree.path === b.path);
@@ -176,9 +178,9 @@ export class Github {
 			.filter((tree: AnyTree) => !!tree.sha);
 	}
 
-	private async buildTree(tree: AnyTree): Promise<AnyTree[]> {
-		const entries = Object.entries(tree.tree as any);
-		let dep = tree.tree as AnyTree;
+	private async buildTree(t: AnyTree): Promise<AnyTree[]> {
+		const entries = Object.entries(t.tree as any);
+		const dep = t.tree as AnyTree;
 
 		const trees: AnyTree[] = [];
 
@@ -194,22 +196,22 @@ export class Github {
 					const { data } = await this.rest.git.getTree({
 						owner: this.user.userName,
 						repo: this.repo.name,
-						tree_sha: cur.sha
+						tree_sha: cur.sha,
 					});
-					data.tree.forEach((tree: any) => {
+					data.tree.forEach((tr: any) => {
 						const c = cur.tree as any;
-						if ( c[tree.path] === undefined ) {
-							reqTree.push(tree);
+						if ( c[tr.path] === undefined ) {
+							reqTree.push(tr);
 						}
 					});
 				}
 
 				const treeData = await this.tree(reqTree);
 				const TD: AnyTree = {
-					'mode': '040000',
-					'type': 'tree',
-					'sha' : treeData.sha,
-					'path': key,
+					mode: '040000',
+					type: 'tree',
+					sha : treeData.sha,
+					path: key,
 				};
 				trees.push(TD);
 			} else if ( cur.type === 'blob' ) {
@@ -294,9 +296,9 @@ export class Github {
 
 	private initTree() {
 		this.curTree = {
-			'type': 'tree',
-			'mode': '160000',
-			'tree': {},
+			type: 'tree',
+			mode: '160000',
+			tree: {},
 		};
 	}
 
