@@ -111,8 +111,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 
 	public async getBlogRepo(name: string): Promise<Repository|void> {
 		try {
-			const { data } = await this.$git.getRepo(name);
-			return data as Repository;
+			return await this.$git.initRepo(name);
 		} catch (err) {
 			this.$logger.error('github', err);
 		}

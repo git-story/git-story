@@ -6,6 +6,7 @@
  */
 
 export type BlobEncoding = 'utf-8'|'base64';
+type AnyTree = Blob|Tree<'blob'>|Tree<'tree'>;
 
 export interface Tree<T> {
 	sha?: null|string;
@@ -13,10 +14,15 @@ export interface Tree<T> {
 	type?: T;
 	mode?: string;
 	path?: string;
+	tree?: {
+		[key: string]: AnyTree;
+	};
 }
 
 export interface Blob extends Tree<'blob'> {
 	size?: number;
+	content?: string;
+	encoding?: string;
 }
 
 export interface Permission {
@@ -79,7 +85,7 @@ export interface Repository {
 }
 
 export interface TreeRef {
-	tree?: Array<Tree<'blob'|'tree'>>;
+	tree?: AnyTree[];
 	ref?: string;
 	sha?: string;
 	success: boolean;
@@ -94,3 +100,4 @@ export interface GitContent {
 	content: string;
 	encoding: string;
 }
+
