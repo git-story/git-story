@@ -27,6 +27,7 @@ export interface ImgData {
 export interface TempPostImage {
 	id: string;
 	name: string;
+	line: number;
 	data: ImgData;
 }
 
@@ -35,4 +36,17 @@ export interface TempPost {
 	content: string;
 	updated: string;
 	imgs: TempPostImage[];
+}
+
+// https://hexo.io/docs/front-matter.html#Settings-amp-Their-Default-Values
+export interface PostConfig {
+	layout?: string;
+	title?: string;
+	date?: Date;
+	updated?: Date;
+	comments?: boolean;
+	tags?: string[];
+	categories?: string[];
+	permalink?: string;
+	cover?: string;
 }

@@ -77,15 +77,52 @@
 			</v-card>
 		</v-menu>
 
-		<v-btn tile elevation="1" color="teal darken-3" dark>
-			{{ $t('posting.posting') }}
-		</v-btn>
+		<v-menu
+			content-class="mt-6 elevation-2"
+			bottom left
+			rounded="0"
+			transition="slide-y-transition"
+			nudge-width="800px"
+	  		:close-on-content-click="false"
+			offset-y>
+			<template v-slot:activator="{ on, attrs }">
+				<v-btn tile dark
+					elevation="1"
+					color="teal darken-3"
+	 				v-bind="attrs"
+					v-on="on">
+					{{ $t('posting.posting') }}
+				</v-btn>
+			</template>
+
+			<v-card tile elevation="1" width="500px">
+				<v-row class="ma-0 pa-3" align="center">
+					<v-col cols="3">
+						<h5>Cover 이미지</h5>
+					</v-col>
+					<v-col cols="7">
+						<v-text-field v-model="postConfig.cover" />
+					</v-col>
+					<v-col cols="2">
+						<v-file-input
+		  					class="pa-0"
+							prepend-icon="mdi-image"
+							hide-input
+							@change="selectCover"/>
+					</v-col>
+				</v-row>
+			</v-card>
+		</v-menu>
 	</v-app-bar>
 </template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
-import { TempPost, TempPostImage } from '@/interface/service';
+import {
+	TempPost,
+	TempPostImage,
+	PostConfig,
+} from '@/interface/service';
 
 @Component({
 	components: {
@@ -96,6 +133,10 @@ export default class Header extends Mixins(GlobalMixins) {
 	public tempPosts: TempPost[] = [];
 	public tempPostLoading: boolean = false;
 	public selectedPostIdx: number = -1;
+	public postConfig: PostConfig = {
+		cover: '',
+	};
+	public imgFile!: File;
 
 	public mounted() {
 		this.tempPosts = this.$local.read<TempPost[]>('temp_posting', JSON.parse) as TempPost[] || [];
@@ -111,7 +152,6 @@ export default class Header extends Mixins(GlobalMixins) {
 			} else {
 				this.tempPosts.push(post);
 			}
-			console.log(JSON.stringify(this.tempPosts));
 			this.$local.write('temp_posting', this.tempPosts);
 			this.tempPostLoading = false;
 		});
@@ -133,6 +173,17 @@ export default class Header extends Mixins(GlobalMixins) {
 	public selectTempPost(idx: number) {
 		this.selectedPostIdx = -1;
 		this.$evt.$emit('post:temp.set', this.tempPosts[idx]);
+	}
+
+	public posting() {
+		this.$evt.$emit('post:get', (post: TempPost) => {
+			console.log('post', post);
+		});
+	}
+
+	public selectCover(file: File) {
+		this.imgFile = file;
+		this.postConfig.cover = this.imgFile.name;
 	}
 
 }

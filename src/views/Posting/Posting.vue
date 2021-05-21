@@ -96,8 +96,6 @@ export default class Posting extends Mixins(GlobalMixins) {
 				imgs: [],
 			};
 
-			console.log('save event', Date.now());
-
 			for ( let idx = 0; idx < imgs.length; idx++ ) {
 				const img = imgs[idx];
 				if ( img.url.startsWith('blob:') ) {
@@ -128,12 +126,23 @@ export default class Posting extends Mixins(GlobalMixins) {
 			const editor = this.$refs.editor as any;
 			const splMd = md.text.split('\n');
 			for ( const img of post.imgs ) {
-				let url = this.decompress(img.data.text, img.data.type);
+				const url = this.decompress(img.data.text, img.data.type);
 				const regx = new RegExp(`<img:${img.id}>`);
 				const repl = splMd[img.line].replace(regx, `![${img.name}](${url})`);
 				md.replaceLine(img.line, repl);
 			}
 			this.markdown = md.text;
+		});
+
+		this.$evt.$off('post:get');
+		this.$evt.$on('post:get', (end: EndFunction) => {
+			const post = {
+				title: this.postTitle,
+				content: this.markdown,
+				updated: new Date().toJSON(),
+				imgs: [],
+			};
+			end(post);
 		});
 	}
 
