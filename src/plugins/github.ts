@@ -18,6 +18,7 @@ import {
 	TreeRef,
 	GitContent,
 	AnyTree,
+	ContentType,
 } from '@/interface/github';
 import path from 'path';
 import yaml from 'js-yaml';
@@ -37,7 +38,7 @@ export class Github {
 		sha: string,
 		ref: string,
 	};
-	public curTree: Tree<'tree'> = {};
+	private curTree: Tree<'tree'> = {};
 	private refStr: string = '';
 
 	constructor(user?: User) {
@@ -78,7 +79,7 @@ export class Github {
 		return this.repo;
 	}
 
-	public async getContent<T extends object>(p: string, type: 'json'|'utf8'|'yaml'|'base64' = 'utf8', repo?: string): Promise<void|T> {
+	public async getContent<T extends object>(p: string, type: ContentType = 'utf8', repo?: string): Promise<void|T> {
 		let ret: any;
 		try {
 			const res = await this.rest.repos.getContent({
@@ -194,8 +195,8 @@ export class Github {
 	}
 
 	public async clear() {
-		this.curTree = {};
 		await this.initRepo(this.repo.name);
+		this.initTree();
 	}
 
 	private getReqTreeArr(trees: AnyTree[]) {
@@ -208,7 +209,6 @@ export class Github {
 		const dep = t.tree as AnyTree;
 
 		const trees: AnyTree[] = [];
-
 
 		for ( const [ key, tree ] of entries ) {
 			const cur = dep[key] as AnyTree;
@@ -223,10 +223,16 @@ export class Github {
 						repo: this.repo.name,
 						tree_sha: cur.sha,
 					});
+					const c = cur.tree as any;
 					data.tree.forEach((tr: any) => {
-						const c = cur.tree as any;
-						if ( c[tr.path] === undefined ) {
-							reqTree.push(tr);
+						if ( Array.isArray(c) ) {
+							if ( !c.find((v: any) => v.path === tr.path) ) {
+								reqTree.push(tr);
+							}
+						} else {
+							if ( c[tr.path] === undefined ) {
+								reqTree.push(tr);
+							}
 						}
 					});
 				}

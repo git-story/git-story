@@ -23,4 +23,7 @@ export default {
 	'modify': '수정',
 	'title': '제목',
 	'content': '내용',
+	'confirm': '확인',
+	'yes': '예',
+	'no': '아니요',
 };

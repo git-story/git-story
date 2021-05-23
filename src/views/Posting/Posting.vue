@@ -5,9 +5,9 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<v-main style="overflow: hidden;">
+	<v-main style="overflow: hidden; height: 100vh;">
 		<Header />
-		<v-row class="mx-0" style="background-color: #f2f4f7; height: calc(100vh - 64px); overflow-y: auto;">
+		<v-row class="mx-0 mt-0" style="background-color: #f2f4f7; height: calc(100vh - 64px); overflow-y: auto;">
 			<v-col class="d-none d-sm-block py-0" sm="1"  md="2" lg="3"></v-col>
 			<v-col class="py-0" cols="12" sm="10" md="8" lg="6">
 				<v-row style="background-color: white; height: 100%;" class="ma-0 editor-shadow">

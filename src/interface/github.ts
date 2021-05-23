@@ -7,6 +7,7 @@
 
 export type BlobEncoding = 'utf-8'|'base64';
 export type AnyTree = Blob|Tree<'blob'>|Tree<'tree'>;
+export type ContentType = 'json'|'utf8'|'yaml'|'base64';
 
 export interface Tree<T> {
 	sha?: null|string;

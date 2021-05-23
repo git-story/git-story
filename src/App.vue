@@ -6,6 +6,20 @@
 -->
 <template>
 	<v-app>
+		<v-layout row justify-center>
+			<v-dialog v-model="loading" persistent fullscreen content-class="loading-dialog">
+				<v-container fill-height>
+					<v-layout row justify-center align-center>
+						<v-progress-circular
+		  					indeterminate
+		  					:size="70"
+		  					:width="7"
+							color="indigo">
+						</v-progress-circular>
+					</v-layout>
+				</v-container>
+			</v-dialog>
+		</v-layout>
 		<v-sheet id="router-view" tile>
 			<transition name="scroll-y-reverse-transition">
 				<router-view />
@@ -22,13 +36,19 @@ import { Github } from '@/plugins/github';
 @Component
 export default class App extends Mixins(GlobalMixins) {
 
+	public loading: boolean = false;
+
 	public created() {
 		this.$logger.debug('app', 'App created');
 
-		this.$store.watch(() => this.$store.getters.user, (u: User) => {
+		this.$store.watch(() => this.$store.getters.user, async (u: User) => {
 			this.$git.setUser(u);
+			await this.$git.initRepo(`${u.userName}.github.io`);
 			this.$logger.debug('github', 'Octokit login', this.$git);
 		});
+
+		this.$evt.$off('app:loading');
+		this.$evt.$on('app:loading', (v: boolean) => this.loading = v);
 
 		const user = this.$session.read<User>('userInfo', JSON.parse);
 		if ( user ) {
@@ -45,3 +65,8 @@ export default class App extends Mixins(GlobalMixins) {
 
 }
 </script>
+<style scope>
+.loading-dialog {
+	background-color: rgba(48, 48, 48, 0.5);
+}
+</style>

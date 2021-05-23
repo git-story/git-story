@@ -109,7 +109,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		do {
 			await sleep(1000);
 			content = await this.$git.getContent<MetaData[]>('meta-data.json', 'json', repo);
-		} while( !content );
+		} while ( !content );
 
 		await this.$git.initRepo(repo);
 
@@ -119,7 +119,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		config.title = config.author = this.$store.getters.user.userName;
 
 		await this.$git.rest.repos.updateInformationAboutPagesSite({
-			owner: this.$git.user.userName,
+			owner: this.$store.getters.user.userName,
 			repo,
 			source: {
 				branch: 'master',
@@ -129,14 +129,37 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 
 		await sleep(1000);
 
+		let res: any = await this.$git.rest.actions.listRepoWorkflows({
+			owner: this.$store.getters.userName,
+			repo,
+		});
+
+		const wf = res.data.workflows.find((w: any) => w.name === 'build CI');
+		if ( wf ) {
+			res = await this.$git.rest.actions.listWorkflowRuns({
+				owner: this.$store.getters.userName,
+				repo,
+				workflow_id: wf.id,
+			});
+
+			const runs: any[] = res.data.workflow_runs.filter((w: any) => w.status !== 'completed');
+			for ( const run of runs ) {
+				await this.$git.rest.actions.cancelWorkflowRun({
+					owner: this.$store.getters.userName,
+					repo,
+					run_id: run.id,
+				});
+			}
+		}
+
 		let loop: boolean = true;
 		while ( loop ) {
 			try {
 				this.$git.add('_config.yml', yaml.dump(config));
 				await this.$git.commit('Setting _config.yml');
 				loop = false;
-			} catch(err) {
-				await sleep(1000);
+			} catch {
+				await sleep(5000);
 			}
 			await this.$git.clear();
 		}

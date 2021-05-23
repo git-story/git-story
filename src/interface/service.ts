@@ -42,11 +42,12 @@ export interface TempPost {
 export interface PostConfig {
 	layout?: string;
 	title?: string;
-	date?: Date;
-	updated?: Date;
+	date?: string;
+	updated?: string;
 	comments?: boolean;
 	tags?: string[];
 	categories?: string[];
 	permalink?: string;
 	cover?: string;
+	uploadType: 'github'|'base64'|'imgur';
 }
