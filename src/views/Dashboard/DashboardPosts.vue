@@ -42,6 +42,9 @@ import GlobalMixins from '@/plugins/mixins';
 import { Repository } from '@/interface/github';
 import { MetaData } from '@/interface/service';
 import firebase from 'firebase';
+import yaml from 'js-yaml';
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 @Component({
 	components: {
@@ -55,21 +58,19 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		this.$logger.debug('app', 'DashboardPosts mounted');
 		const repoName = `${this.$store.getters.user.userName}.github.io`;
 		const repo = await this.getBlogRepo(repoName);
+		let content: any = {};
 		if ( !repo ) {
 			await this.$modal({
 				title: this.$t('dashboard.blog.not-found-repo.title'),
 				content: this.$t('dashboard.blog.not-found-repo.content', repoName),
 			}).then(async (close) => {
-				await this.createBlogRepo(repoName);
+				content = await this.initialize(repoName);
 				close();
 			});
+		} else {
+			content = await this.$git.getContent<MetaData[]>('meta-data.json', 'json');
 		}
 
-		let content = await this.$git.getContent<MetaData[]>({
-			owner: this.$store.getters.user.userName,
-			repo: repoName,
-			path: 'meta-data.json',
-		}, 'json');
 
 		if ( !content ) {
 			await this.$confirm({
@@ -84,14 +85,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 					repo: repoName,
 				});
 
-				await this.createBlogRepo(repoName);
-
-				content = await this.$git.getContent<MetaData[]>({
-					owner: this.$store.getters.user.userName,
-					repo: repoName,
-					path: 'meta-data.json',
-				}, 'json');
-
+				content = await this.initialize(repoName);
 				close();
 			}).catch(async (close) => {
 				// TODO: 어떻게 깃헙까지 로그아웃합니까?
@@ -105,8 +99,49 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 			});
 		}
 
+		await this.$git.initRepo(repoName);
 		this.postList = content as MetaData[];
-		console.log(this.postList);
+	}
+
+	public async initialize(repo: string): Promise<MetaData[]> {
+		await this.createBlogRepo(repo);
+		let content: any;
+		do {
+			await sleep(1000);
+			content = await this.$git.getContent<MetaData[]>('meta-data.json', 'json', repo);
+		} while( !content );
+
+		await this.$git.initRepo(repo);
+
+		const config = await this.$git.getContent<any>('_config.yml', 'yaml');
+		config.root = '/';
+		config.url = `https://${this.$store.getters.user.userName}.github.io/`;
+		config.title = config.author = this.$store.getters.user.userName;
+
+		await this.$git.rest.repos.updateInformationAboutPagesSite({
+			owner: this.$git.user.userName,
+			repo,
+			source: {
+				branch: 'master',
+				path: '/' + config.public_dir,
+			},
+		});
+
+		await sleep(1000);
+
+		let loop: boolean = true;
+		while ( loop ) {
+			try {
+				this.$git.add('_config.yml', yaml.dump(config));
+				await this.$git.commit('Setting _config.yml');
+				loop = false;
+			} catch(err) {
+				await sleep(1000);
+			}
+			await this.$git.clear();
+		}
+
+		return content as MetaData[];
 	}
 
 	public async getBlogRepo(name: string): Promise<Repository|void> {

@@ -20,6 +20,9 @@ import {
 	AnyTree,
 } from '@/interface/github';
 import path from 'path';
+import yaml from 'js-yaml';
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export class Github {
 
@@ -34,7 +37,7 @@ export class Github {
 		sha: string,
 		ref: string,
 	};
-	private curTree: Tree<'tree'> = {};
+	public curTree: Tree<'tree'> = {};
 	private refStr: string = '';
 
 	constructor(user?: User) {
@@ -75,14 +78,22 @@ export class Github {
 		return this.repo;
 	}
 
-	public async getContent<T extends object>(args: any, type: 'json'|'string' = 'string'): Promise<void|T> {
+	public async getContent<T extends object>(p: string, type: 'json'|'utf8'|'yaml'|'base64' = 'utf8', repo?: string): Promise<void|T> {
 		let ret: any;
 		try {
-			const res = await this.rest.repos.getContent(args);
+			const res = await this.rest.repos.getContent({
+				owner: this.user.userName,
+				repo: repo || this.repo.name,
+				path: p,
+			});
 			const data = res.data as GitContent;
 			switch ( data.encoding ) {
 				case 'base64':
-					ret = Buffer.from(data.content, 'base64').toString('utf8');
+					if ( type !== 'base64' ) {
+						ret = Buffer.from(data.content, 'base64').toString('utf8');
+					} else {
+						ret = data.content;
+					}
 					break;
 				default:
 					ret = data.content;
@@ -92,9 +103,18 @@ export class Github {
 				case 'json':
 					ret = JSON.parse(ret) as T;
 					break;
+				case 'yaml':
+					ret = yaml.load(ret) as T;
+					break;
+				case 'base64':
+					if ( data.encoding !== 'base64' ) {
+						ret = Buffer.from(ret, 'utf8').toString('base64');
+					}
+					break;
 			}
 		} catch (err) {
 			// empty
+			console.error(err);
 		}
 		return ret;
 	}
@@ -133,7 +153,6 @@ export class Github {
 	}
 
 	public async commit(message: string) {
-		console.log(JSON.stringify(this.curTree, null, '\t'));
 		const build = await this.buildTree(this.curTree);
 		const treeData = this.repoTree;
 		const treeObj = treeData.tree;
@@ -164,6 +183,7 @@ export class Github {
 		});
 
 		const commitSha = data.sha;
+		await sleep(100);
 
 		await this.rest.git.updateRef({
 			owner: this.user.userName,
@@ -171,6 +191,11 @@ export class Github {
 			ref: this.refStr,
 			sha: commitSha,
 		});
+	}
+
+	public async clear() {
+		this.curTree = {};
+		await this.initRepo(this.repo.name);
 	}
 
 	private getReqTreeArr(trees: AnyTree[]) {
@@ -220,6 +245,7 @@ export class Github {
 			} else {
 				throw Error('Unknown tree type');
 			}
+			await sleep(100);
 		}
 
 		return trees;
