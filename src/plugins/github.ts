@@ -152,6 +152,33 @@ export class Github {
 		} as Blob;
 	}
 
+	public async remove(paths: string[], message: string) {
+		const trees: AnyTree[] = [];
+		for ( const p of paths ) {
+			const result = this.repoTree.tree.find((t: any) => t.path === p);
+			console.log(result, p);
+			if ( !result ) {
+				continue;
+			}
+
+			switch ( result.type ) {
+				case 'blob':
+					trees.push(await this.blob(p));
+					break;
+				case 'tree':
+					const regex = new RegExp(`^${p}`);
+					for ( const t of this.repoTree.tree ) {
+						if ( t.type === 'blob' && t.path.match(regex) ) {
+							trees.push(await this.blob(t.path));
+						}
+					}
+					break;
+			}
+		}
+		const newTree = await this.tree(trees, this.repoTree.sha);
+		await this.treeCommit(newTree, message);
+	}
+
 	public async commit(message: string) {
 		const build = await this.buildTree(this.curTree);
 		const treeData = this.repoTree;
@@ -169,6 +196,11 @@ export class Github {
 		}
 
 		const newTree = await this.tree(treeObj);
+		await this.treeCommit(newTree, message);
+	}
+
+	private async treeCommit(newTree: AnyTree, message: string) {
+		const treeData = this.repoTree;
 
 		const { data } = await this.rest.git.createCommit({
 			owner: this.user.userName,
@@ -270,7 +302,7 @@ export class Github {
 				};
 				trees.push(TD);
 			} else if ( cur.type === 'blob' ) {
-				const blob = await this.blob(cur, key /* path */);
+				const blob = await this.blob(key /* path */, cur);
 				trees.push(blob);
 			} else {
 				throw Error('Unknown tree type');
@@ -317,7 +349,7 @@ export class Github {
 		return ret;
 	}
 
-	private async blob(file: Blob, p: string): Promise<Blob> {
+	private async blob(p: string, file: Blob = {}): Promise<Blob> {
 		if ( file.content ) {
 			const { data } =  await this.rest.git.createBlob({
 				owner: this.user.userName,
@@ -341,11 +373,12 @@ export class Github {
 		};
 	}
 
-	private async tree(tree: any[]) {
+	private async tree(tree: any[], base_tree?: string) {
 		const { data } = await this.rest.git.createTree({
 			owner: this.user.userName,
 			repo: this.repo.name,
 			tree,
+			base_tree,
 		});
 		return data;
 	}

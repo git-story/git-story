@@ -19,6 +19,8 @@
 				v-for="(post, idx) in postList"
 				:key="post.href"
 				:post="post"
+				:config="config"
+				@remove="postList.splice(idx, 1);"
 				:class="idx > 0 ? 'mt-6' : ''"/>
 		</div>
 	</div>
@@ -43,6 +45,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 
 	public postList: MetaData[] = [];
 	public skeletonCount: any[] = Array(5);
+	public config: any = {};
 
 	public async mounted() {
 		this.$logger.debug('app', 'DashboardPosts mounted');
@@ -90,6 +93,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		}
 
 		await this.$git.initRepo(repoName);
+		this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
 		this.postList = content as MetaData[];
 	}
 

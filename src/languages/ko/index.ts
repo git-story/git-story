@@ -26,4 +26,5 @@ export default {
 	'confirm': '확인',
 	'yes': '예',
 	'no': '아니요',
+	'cancel': '취소',
 };
