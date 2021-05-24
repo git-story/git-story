@@ -43,10 +43,10 @@ import { Component, Mixins, Prop } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { MetaData } from '@/interface/service';
 
-@Component()
+@Component({})
 export default class DashboardPostItem extends Mixins(GlobalMixins) {
 
-	@Prop(MetaData) public post!: MetaData;
+	@Prop(Object) public post!: MetaData;
 
 	public defaultImage: string = 'https://cdn.pixabay.com/photo/2017/07/25/01/22/cat-2536662_960_720.jpg';
 
