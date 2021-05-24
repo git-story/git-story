@@ -383,12 +383,15 @@ export default class Header extends Mixins(GlobalMixins) {
 				content += md.text;
 			}
 
-			this.$git.add(`${this.config.source_dir}/_posts/${dateStr}_${this.postConfig.title.replace(/\s/g, '_')}.md`, content);
+			const title = this.postConfig.title.replace(/\s/g, '_');
+			const fileName = `${this.config.source_dir}/_posts/${dateStr}_${title}.md`;
+			this.$git.add(fileName, content);
 
 			await this.$git.workflowClear();
 			await this.$git.commit(`POST: ${post.title}`);
 			await this.$git.clear();
 			this.$evt.$emit('app:loading', false);
+			this.$assign('/dashboard');
 		});
 	}
 

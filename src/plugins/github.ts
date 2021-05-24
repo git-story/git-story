@@ -212,7 +212,7 @@ export class Github {
 				workflow_id: wf.id,
 			});
 
-			const runs: any[] = res.data.workflow_runs.filter((w: any) => w.status !== 'completed');
+			const runs: any[] = res.data.workflow_runs.filter((w: any) => w.status === 'in_progress');
 			for ( const run of runs ) {
 				await this.rest.actions.cancelWorkflowRun({
 					owner: this.user.userName,
