@@ -115,7 +115,6 @@ export class Github {
 			}
 		} catch (err) {
 			// empty
-			console.error(err);
 		}
 		return ret;
 	}
@@ -197,6 +196,31 @@ export class Github {
 	public async clear() {
 		await this.initRepo(this.repo.name);
 		this.initTree();
+	}
+
+	public async workflowClear() {
+		let res: any = await this.rest.actions.listRepoWorkflows({
+			owner: this.user.userName,
+			repo: this.repo.name,
+		});
+
+		const wf = res.data.workflows.find((w: any) => w.name === 'build CI');
+		if ( wf ) {
+			res = await this.rest.actions.listWorkflowRuns({
+				owner: this.user.userName,
+				repo: this.repo.name,
+				workflow_id: wf.id,
+			});
+
+			const runs: any[] = res.data.workflow_runs.filter((w: any) => w.status !== 'completed');
+			for ( const run of runs ) {
+				await this.rest.actions.cancelWorkflowRun({
+					owner: this.user.userName,
+					repo: this.repo.name,
+					run_id: run.id,
+				});
+			}
+		}
 	}
 
 	private getReqTreeArr(trees: AnyTree[]) {

@@ -128,29 +128,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		});
 
 		await sleep(1000);
-
-		let res: any = await this.$git.rest.actions.listRepoWorkflows({
-			owner: this.$store.getters.userName,
-			repo,
-		});
-
-		const wf = res.data.workflows.find((w: any) => w.name === 'build CI');
-		if ( wf ) {
-			res = await this.$git.rest.actions.listWorkflowRuns({
-				owner: this.$store.getters.userName,
-				repo,
-				workflow_id: wf.id,
-			});
-
-			const runs: any[] = res.data.workflow_runs.filter((w: any) => w.status !== 'completed');
-			for ( const run of runs ) {
-				await this.$git.rest.actions.cancelWorkflowRun({
-					owner: this.$store.getters.userName,
-					repo,
-					run_id: run.id,
-				});
-			}
-		}
+		await this.$git.workflowClear();
 
 		let loop: boolean = true;
 		while ( loop ) {

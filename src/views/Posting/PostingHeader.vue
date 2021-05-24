@@ -256,8 +256,12 @@ export default class Header extends Mixins(GlobalMixins) {
 		this.tempPosts = this.$local.read<TempPost[]>('temp_posting', JSON.parse) as TempPost[] || [];
 		this.$logger.debug('post', 'Temp post list', this.tempPosts);
 		do {
-			this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
-			await sleep(1000);
+			try {
+				this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
+				await sleep(1000);
+			} catch {
+				// error
+			}
 		} while ( !this.config );
 	}
 
@@ -380,7 +384,10 @@ export default class Header extends Mixins(GlobalMixins) {
 			}
 
 			this.$git.add(`${this.config.source_dir}/_posts/${dateStr}_${this.postConfig.title.replace(/\s/g, '_')}.md`, content);
+
+			await this.$git.workflowClear();
 			await this.$git.commit(`POST: ${post.title}`);
+			await this.$git.clear();
 			this.$evt.$emit('app:loading', false);
 		});
 	}
