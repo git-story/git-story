@@ -7,6 +7,7 @@
 <template>
 	<v-app-bar
 		color="transparent"
+  		style="transform: translateY(24px);"
 		>
 		<v-app-bar-nav-icon />
 		<v-toolbar-title>
@@ -16,7 +17,7 @@
 		</v-toolbar-title>
 
 		<v-spacer />
-		
+
 		<v-btn icon>
 			<v-icon>mdi-magnify</v-icon>
 		</v-btn>
