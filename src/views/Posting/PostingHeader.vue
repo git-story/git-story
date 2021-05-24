@@ -181,6 +181,7 @@ import moment from 'moment';
 import Markdown from '@git-story/md-editor/src/common/markdown/markdown.js';
 import yaml from 'js-yaml';
 import mime from 'mime-types';
+import path from 'path';
 
 // https://stackoverflow.com/questions/8667070/javascript-regular-expression-to-validate-url
 function validateUrl(value) {
@@ -321,11 +322,20 @@ export default class Header extends Mixins(GlobalMixins) {
 				}
 			}
 
+			if ( this.postConfig.date ) {
+				this.postConfig.updated = moment().format('YYYY-MM-DD HH:mm:ss');
+			} else {
+				this.postConfig.date = moment().format('YYYY-MM-DD HH:mm:ss');
+			}
+
+			const dateStr = this.postConfig.date.replace(/[-:\s]/g, '');
+			const imgDir = `/images/${dateStr}`;
+
 			if ( this.postConfig.cover?.trim() ) {
 				if ( this.imgFile && this.imgFile.name === this.postConfig.cover ) {
 					const b64Data = await fileToBase64(this.imgFile);
-					const imgUrl = `/images/${this.imgFile.name}`;
-					this.$git.add(this.config.source_dir + imgUrl, b64Data, 'base64');
+					const imgUrl = path.join(imgDir, this.imgFile.name);
+					this.$git.add(path.join(this.config.source_dir, imgUrl), b64Data, 'base64');
 					this.postConfig.cover = imgUrl;
 				} else {
 					if ( !validateUrl(this.postConfig.cover) ) {
@@ -350,17 +360,10 @@ export default class Header extends Mixins(GlobalMixins) {
 				delete this.postConfig.tags;
 			}
 
-			if ( this.postConfig.date ) {
-				this.postConfig.updated = moment().format('YYYY-MM-DD HH:mm:ss');
-			} else {
-				this.postConfig.date = moment().format('YYYY-MM-DD HH:mm:ss');
-			}
 			let content = '';
 			content += '---\n';
 			content += yaml.dump(this.postConfig);
 			content += '---\n';
-
-			const dateStr = this.postConfig.date.replace(/[-:\s]/g, '');
 
 			const md = new Markdown(post.content);
 			const splMd = md.text.split('\n');
@@ -368,13 +371,12 @@ export default class Header extends Mixins(GlobalMixins) {
 				content += await buildMarkdown(md);
 			} else if ( uploadType === 'github' ) {
 				const imgs = md.images();
-				const imgDir = dateStr;
 				for ( const img of imgs ) {
 					if ( img.url.startsWith('blob:') ) {
 						const b64url = await blobToBase64(img.url);
 						const { data, contentType } = parseB64URL(b64url);
 						const imgName = img.alt.replace(/\s/g, '_');
-						const imagePath = `/images/${imgDir}/${imgName}.${mime.extension(contentType)}`;
+						const imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
 						const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
 						md.replaceLine(img.line, repl);
 						this.$git.add(`${this.config.source_dir}${imagePath}`, data, 'base64');
