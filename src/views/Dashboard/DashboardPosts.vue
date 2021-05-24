@@ -7,50 +7,20 @@
 <template>
 	<div class="mx-6">
 		<div v-if="postList.length === 0">
-
-			<v-card elevation="1" tile>
-				<v-skeleton-loader
-					v-bind="attrs"
-					type="image, article, divider, actions"
-				></v-skeleton-loader>
-			</v-card>
-			<v-card elevation="1" tile class="mt-6">
-				<v-skeleton-loader
-					v-bind="attrs"
-					type="image, article, divider, actions"
-				></v-skeleton-loader>
+			<v-card
+				elevation="1" tile
+				v-for="(empty, idx) in skeletonCount" :key="'skeleton-' + empty + idx"
+				:class="idx > 0 ? 'mt-6' : ''">
+				<v-skeleton-loader type="image, article, divider, actions" />
 			</v-card>
 		</div>
-		<v-card v-else tile elevation="1"
-				v-for="(post, idx) in postList" :key="post.href"
-				:class="idx > 0 ? 'mt-6' : ''">
-			<v-img
-				height="250"
-				:src="post.cover || defaultImage">
-			</v-img>
-
-			<v-card-title>{{ post.title }}</v-card-title>
-			<v-card-text class="pt-0">
-				<v-row align="center" class="ma-0">
-					<div>{{ post.content }}</div>
-				</v-row>
-			</v-card-text>
-
-			<v-divider class="mx-4"></v-divider>
-
-			<v-card-actions>
-				<v-row>
-					<v-col cols="12" align="right" class="pr-6">
-						<v-btn color="red" dark class="mr-4" tile depressed>
-							{{ $t('remove') }}
-						</v-btn>
-						<v-btn color="indigo" dark tile depressed>
-							{{ $t('modify') }}
-						</v-btn>
-					</v-col>
-				</v-row>
-			</v-card-actions>
-		</v-card>
+		<div v-else>
+			<post-item
+				v-for="(post, idx) in postList"
+				:key="post.href"
+				:post="post"
+				:class="idx > 0 ? 'mt-6' : ''"/>
+		</div>
 	</div>
 </template>
 <script lang="ts">
@@ -58,6 +28,7 @@ import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { Repository } from '@/interface/github';
 import { MetaData } from '@/interface/service';
+import PostItem from 'views/Dashboard/DashboardPostItem.vue';
 import firebase from 'firebase';
 import yaml from 'js-yaml';
 
@@ -65,12 +36,13 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 @Component({
 	components: {
+		PostItem,
 	},
 })
 export default class DashboardPosts extends Mixins(GlobalMixins) {
 
 	public postList: MetaData[] = [];
-	public defaultImage: string = 'https://cdn.pixabay.com/photo/2017/07/25/01/22/cat-2536662_960_720.jpg';
+	public skeletonCount: any[] = Array(5);
 
 	public async mounted() {
 		this.$logger.debug('app', 'DashboardPosts mounted');
