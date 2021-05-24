@@ -6,16 +6,33 @@
 -->
 <template>
 	<div class="mx-6">
-		<v-card tile elevation="1"
-				v-for="(post, idx) in postList" :key="post.href">
+		<div v-if="postList.length === 0">
+
+			<v-card elevation="1" tile>
+				<v-skeleton-loader
+					v-bind="attrs"
+					type="image, article, divider, actions"
+				></v-skeleton-loader>
+			</v-card>
+			<v-card elevation="1" tile class="mt-6">
+				<v-skeleton-loader
+					v-bind="attrs"
+					type="image, article, divider, actions"
+				></v-skeleton-loader>
+			</v-card>
+		</div>
+		<v-card v-else tile elevation="1"
+				v-for="(post, idx) in postList" :key="post.href"
+				:class="idx > 0 ? 'mt-6' : ''">
 			<v-img
 				height="250"
-				src="https://cdn.pixabay.com/photo/2017/06/28/10/53/board-2450236_960_720.jpg"></v-img>
+				:src="post.cover || defaultImage">
+			</v-img>
 
 			<v-card-title>{{ post.title }}</v-card-title>
-			<v-card-text>
-				<v-row align="center" class="mx-0">
-					<div></div>
+			<v-card-text class="pt-0">
+				<v-row align="center" class="ma-0">
+					<div>{{ post.content }}</div>
 				</v-row>
 			</v-card-text>
 
@@ -53,6 +70,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export default class DashboardPosts extends Mixins(GlobalMixins) {
 
 	public postList: MetaData[] = [];
+	public defaultImage: string = 'https://cdn.pixabay.com/photo/2017/07/25/01/22/cat-2536662_960_720.jpg';
 
 	public async mounted() {
 		this.$logger.debug('app', 'DashboardPosts mounted');
