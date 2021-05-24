@@ -356,13 +356,15 @@ export default class Header extends Mixins(GlobalMixins) {
 			content += yaml.dump(this.postConfig);
 			content += '---\n';
 
+			const dateStr = this.postConfig.date.replace(/[-:\s]/g, '');
+
 			const md = new Markdown(post.content);
 			const splMd = md.text.split('\n');
 			if ( uploadType === 'base64' ) {
 				content += await buildMarkdown(md);
 			} else if ( uploadType === 'github' ) {
 				const imgs = md.images();
-				const imgDir = this.postConfig.date.replace(/\s/g, '_').replace(/:/g, '');
+				const imgDir = dateStr;
 				for ( const img of imgs ) {
 					if ( img.url.startsWith('blob:') ) {
 						const b64url = await blobToBase64(img.url);
@@ -377,7 +379,7 @@ export default class Header extends Mixins(GlobalMixins) {
 				content += md.text;
 			}
 
-			this.$git.add(`${this.config.source_dir}/_posts/${this.postConfig.title.replace(/\s/g, '_')}.md`, content);
+			this.$git.add(`${this.config.source_dir}/_posts/${dateStr}_${this.postConfig.title.replace(/\s/g, '_')}.md`, content);
 			await this.$git.commit(`POST: ${post.title}`);
 			this.$evt.$emit('app:loading', false);
 		});
