@@ -168,8 +168,9 @@ export class Github {
 				case 'tree':
 					const regex = new RegExp(`^${p}`);
 					for ( const t of this.repoTree.tree ) {
-						if ( t.type === 'blob' && t.path.match(regex) ) {
-							trees.push(await this.blob(t.path));
+						const tp = t.path as string;
+						if ( t.type === 'blob' && tp.match(regex) ) {
+							trees.push(await this.blob(tp));
 						}
 					}
 					break;
@@ -197,32 +198,6 @@ export class Github {
 
 		const newTree = await this.tree(treeObj);
 		await this.treeCommit(newTree, message);
-	}
-
-	private async treeCommit(newTree: AnyTree, message: string) {
-		const treeData = this.repoTree;
-
-		const { data } = await this.rest.git.createCommit({
-			owner: this.user.userName,
-			repo: this.repo.name,
-			message,
-			tree: newTree.sha,
-			author: {
-				name: this.user.userName,
-				email: this.user.email,
-			},
-			parents: [ treeData.sha ],
-		});
-
-		const commitSha = data.sha;
-		await sleep(100);
-
-		await this.rest.git.updateRef({
-			owner: this.user.userName,
-			repo: this.repo.name,
-			ref: this.refStr,
-			sha: commitSha,
-		});
 	}
 
 	public async clear() {
@@ -253,6 +228,32 @@ export class Github {
 				});
 			}
 		}
+	}
+
+	private async treeCommit(newTree: any, message: string) {
+		const treeData = this.repoTree;
+
+		const { data } = await this.rest.git.createCommit({
+			owner: this.user.userName,
+			repo: this.repo.name,
+			message,
+			tree: newTree.sha,
+			author: {
+				name: this.user.userName,
+				email: this.user.email,
+			},
+			parents: [ treeData.sha ],
+		});
+
+		const commitSha = data.sha;
+		await sleep(100);
+
+		await this.rest.git.updateRef({
+			owner: this.user.userName,
+			repo: this.repo.name,
+			ref: this.refStr,
+			sha: commitSha,
+		});
 	}
 
 	private getReqTreeArr(trees: AnyTree[]) {
@@ -373,12 +374,12 @@ export class Github {
 		};
 	}
 
-	private async tree(tree: any[], base_tree?: string) {
+	private async tree(tree: any[], base?: string) {
 		const { data } = await this.rest.git.createTree({
 			owner: this.user.userName,
 			repo: this.repo.name,
 			tree,
-			base_tree,
+			base_tree: base,
 		});
 		return data;
 	}

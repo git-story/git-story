@@ -13,10 +13,11 @@ export interface Service {
 export interface MetaData {
 	title: string;
 	href: string;
+	date: string;
 	updated: string;
 	src: string;
-	categories: any[]; //unknown
-	tags: any[]; //unknown
+	categories: string[];
+	tags: string[];
 }
 
 export interface ImgData {
