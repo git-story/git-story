@@ -264,6 +264,41 @@ export default class Header extends Mixins(GlobalMixins) {
 				// error
 			}
 		} while ( !this.config );
+
+		const href = this.$route.params.href;
+		if ( href ) {
+			let content = await this.$git.getContent<any>(href);
+			const header = content.replace(/---\n((?:.*\n)*)?---\n(?:(?:.*\n?)*)/g, '$1');
+			content = content.replace(/---\n(?:(?:.*\n)*)?---\n((?:.*\n?)*)/g, '$1');
+			this.postConfig = yaml.load(header);
+			this.postConfig.uploadType = 'github';
+			const md = new Markdown(content);
+			const splMd = md.text.split('\n');
+			const imgs = md.images();
+
+			for ( const img of imgs ) {
+				if ( img.url.startsWith('blob:') ) {
+					// empty
+				} else if ( img.url.startsWith('data:') ) {
+					// empty
+				} else {
+					console.log(img);
+					if ( !validateUrl(img.url) ) {
+						img.url = `https://${path.join(this.$git.repo.name, img.url)}`;
+						const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${img.url})`);
+						md.replaceLine(img.line, repl);
+					}
+				}
+			}
+			content = md.text;
+
+			console.log(this.postConfig);
+			console.log(content);
+
+			this.$store.commit('title', this.postConfig.title);
+			this.$store.commit('markdown', content);
+		}
+		this.$store.commit('loading', false);
 	}
 
 	public postSave() {
@@ -299,12 +334,16 @@ export default class Header extends Mixins(GlobalMixins) {
 	}
 
 	public posting() {
-		this.$evt.$emit('app:loading', true);
+		this.$store.commit('loading', true);
+
 		this.$evt.$emit('post:get', async (post: TempPost) => {
+			// workflow clear
+			await this.$git.workflowClear();
 
 			// 최신 정보 갱신
 			await this.$git.clear();
 
+			// 제목 검사
 			if ( post.title.length === 0 ) {
 				try {
 					const close = await this.$confirm({
@@ -322,77 +361,25 @@ export default class Header extends Mixins(GlobalMixins) {
 				}
 			}
 
-			if ( this.postConfig.date ) {
-				this.postConfig.updated = moment().format('YYYY-MM-DD HH:mm:ss');
-			} else {
-				this.postConfig.date = moment().format('YYYY-MM-DD HH:mm:ss');
-			}
-
-			const dateStr = this.postConfig.date.replace(/[-:\s]/g, '');
-			const imgDir = `/images/${dateStr}`;
-
-			if ( this.postConfig.cover?.trim() ) {
-				if ( this.imgFile && this.imgFile.name === this.postConfig.cover ) {
-					const b64Data = await fileToBase64(this.imgFile);
-					const imgUrl = path.join(imgDir, this.imgFile.name);
-					this.$git.add(path.join(this.config.source_dir, imgUrl), b64Data, 'base64');
-					this.postConfig.cover = imgUrl;
-				} else {
-					if ( !validateUrl(this.postConfig.cover) ) {
-						// throw Error
-						this.$modal({
-							type: 'error',
-							title: this.$t('posting.upload-error'),
-							content: this.$t('posting.cover-url-invalid'),
-							textOk: this.$t('confirm'),
-						}).then((close) => close());
-						return;
-					}
-				}
-			}
-
+			// 제목 설정
 			this.postConfig.title = post.title;
 
+			// 태그 설정
 			const tags = this.postConfig.tags as string[];
-			const uploadType = this.postConfig.uploadType;
-			delete this.postConfig.uploadType;
 			if ( tags && tags.length === 0 ) {
 				delete this.postConfig.tags;
 			}
 
-			let content = '';
-			content += '---\n';
-			content += yaml.dump(this.postConfig);
-			content += '---\n';
-
-			const md = new Markdown(post.content);
-			const splMd = md.text.split('\n');
-			if ( uploadType === 'base64' ) {
-				content += await buildMarkdown(md);
-			} else if ( uploadType === 'github' ) {
-				const imgs = md.images();
-				for ( const img of imgs ) {
-					if ( img.url.startsWith('blob:') ) {
-						const b64url = await blobToBase64(img.url);
-						const { data, contentType } = parseB64URL(b64url);
-						const imgName = img.alt.replace(/\s/g, '_');
-						const imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
-						const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
-						md.replaceLine(img.line, repl);
-						this.$git.add(`${this.config.source_dir}${imagePath}`, data, 'base64');
-					}
-				}
-				content += md.text;
+			if ( this.postConfig.date ) {
+				this.postConfig.updated = moment().format('YYYY-MM-DD HH:mm:ss');
+				await this.updatePosting.call(this, post);
+			} else {
+				this.postConfig.date = moment().format('YYYY-MM-DD HH:mm:ss');
+				await this.newPosting.call(this, post);
 			}
 
-			const title = this.postConfig.title.replace(/\s/g, '_');
-			const fileName = `${this.config.source_dir}/_posts/${dateStr}_${title}.md`;
-			this.$git.add(fileName, content);
-
-			await this.$git.workflowClear();
-			await this.$git.commit(`POST: ${post.title}`);
 			await this.$git.clear();
-			this.$evt.$emit('app:loading', false);
+			this.$store.commit('loading', false);
 			this.$assign('/dashboard');
 		});
 	}
@@ -405,6 +392,179 @@ export default class Header extends Mixins(GlobalMixins) {
 	public removeItem(arr: string[], item: string) {
 		const idx = arr.findIndex((s: string) => s === item);
 		arr.splice(idx, 1);
+	}
+
+	private async newPosting(post: TempPost) {
+		const date = this.postConfig.date as string;
+		const dateStr = date.replace(/[-:\s]/g, '');
+		const imgDir = `/images/${dateStr}`;
+		let cover = this.postConfig.cover as string;
+		cover = cover.trim();
+
+		console.log('cover', cover);
+
+		if ( cover ) {
+			if ( this.imgFile && this.imgFile.name === cover ) {
+				const b64Data = await fileToBase64(this.imgFile);
+				const imgUrl = path.join(imgDir, this.imgFile.name);
+				this.$git.add(path.join(this.config.source_dir, imgUrl), b64Data, 'base64');
+				cover = imgUrl;
+			} else {
+				if ( !validateUrl(cover) ) {
+					const imgUrl = path.join(this.config.source_dir, cover);
+					if ( !this.$git.exists(imgUrl) ) {
+						// throw Error
+						this.$modal({
+							type: 'error',
+							title: this.$t('posting.upload-error'),
+							content: this.$t('posting.cover-url-invalid'),
+							textOk: this.$t('confirm'),
+						}).then((close) => close());
+						return;
+					}
+				}
+			}
+		}
+
+		this.postConfig.cover = cover;
+
+		let content = '';
+		content += '---\n';
+		content += yaml.dump(this.postConfig);
+		content += '---\n';
+
+		const uploadType = this.postConfig.uploadType;
+		const md = new Markdown(post.content);
+		const splMd = md.text.split('\n');
+		if ( uploadType === 'base64' ) {
+			content += await buildMarkdown(md);
+		} else if ( uploadType === 'github' ) {
+			const imgs = md.images();
+			for ( const img of imgs ) {
+				if ( img.url.startsWith('blob:') ) {
+					const b64url = await blobToBase64(img.url);
+					const { data, contentType } = parseB64URL(b64url);
+					const imgName = img.alt.replace(/\s/g, '_');
+					const imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
+					const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
+					md.replaceLine(img.line, repl);
+					this.$git.add(`${this.config.source_dir}${imagePath}`, data, 'base64');
+				}
+			}
+			content += md.text;
+		}
+
+		let title = this.postConfig.title as string;
+		title = title.replace(/\s/g, '_');
+
+		const fileName = `${this.config.source_dir}/_posts/${dateStr}_${title}.md`;
+		this.$git.add(fileName, content);
+
+		await this.$git.commit(`POST: ${post.title}`);
+	}
+
+	private async updatePosting(post: TempPost) {
+		const date = this.postConfig.date as string;
+		const dateStr = date.replace(/[-:\s]/g, '');
+		const imgDir = `/images/${dateStr}`;
+		let cover = this.postConfig.cover as string;
+
+		const updateQ: any[] = [];
+
+		if ( cover.trim() ) {
+			if ( this.imgFile && this.imgFile.name === cover ) {
+				// newPosting 함수와 내용이 다르다.
+				const b64Data = await fileToBase64(this.imgFile);
+				const imgUrl = path.join(imgDir, this.imgFile.name);
+				const fullPath = path.join(this.config.source_dir, imgUrl);
+
+				if ( this.$git.exists(fullPath) ) {
+					updateQ.push({
+						path: fullPath,
+						blob: {
+							content: b64Data,
+							encoding: 'base64',
+						},
+					});
+				} else {
+					this.$git.add(fullPath, b64Data, 'base64');
+				}
+				cover = imgUrl;
+			} else {
+				if ( !validateUrl(cover) ) {
+					const imgUrl = path.join(this.config.source_dir, cover);
+					if ( !this.$git.exists(imgUrl) ) {
+						// throw Error
+						this.$modal({
+							type: 'error',
+							title: this.$t('posting.upload-error'),
+							content: this.$t('posting.cover-url-invalid'),
+							textOk: this.$t('confirm'),
+						}).then((close) => close());
+						return;
+					}
+				}
+			}
+		}
+
+		this.postConfig.cover = cover;
+
+		let content = '';
+		content += '---\n';
+		content += yaml.dump(this.postConfig);
+		content += '---\n';
+
+		const uploadType = this.postConfig.uploadType;
+		const md = new Markdown(post.content);
+		const splMd = md.text.split('\n');
+		if ( uploadType === 'base64' ) {
+			content += await buildMarkdown(md);
+		} else if ( uploadType === 'github' ) {
+			const imgs = md.images();
+			for ( const img of imgs ) {
+				if ( img.url.startsWith('blob:') ) {
+					const b64url = await blobToBase64(img.url);
+					const { data, contentType } = parseB64URL(b64url);
+					const imgName = img.alt.replace(/\s/g, '_');
+					const imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
+					const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
+					md.replaceLine(img.line, repl);
+
+					const fullPath = path.join(this.config.source_dir, imagePath);
+
+					if ( this.$git.exists(fullPath) ) {
+						updateQ.push({
+							path: fullPath,
+							blob: {
+								content: data,
+								encoding: 'base64',
+							},
+						});
+					} else {
+						this.$git.add(fullPath, data, 'base64');
+					}
+				}
+			}
+			content += md.text;
+		}
+
+		if ( Object.keys(this.$git.Added).length > 0 ) {
+			await this.$git.commit(`FILE ADD: ${post.title}`);
+			await this.$git.clear();
+			await this.$git.workflowClear();
+		}
+
+		updateQ.push({
+			path: this.$route.params.href,
+			blob: {
+				content,
+				encoding: 'utf-8',
+			},
+		});
+
+		if ( updateQ.length > 0 ) {
+			await this.$git.update(updateQ, `UPDATE: ${post.title}`);
+		}
 	}
 
 }

@@ -56,6 +56,10 @@ export class Github {
 		return this.user;
 	}
 
+	get Added() {
+		return this.curTree;
+	}
+
 	public setUser(user: User) {
 		this.user = user;
 		this.octokit = new Octokit({
@@ -156,7 +160,6 @@ export class Github {
 		const trees: AnyTree[] = [];
 		for ( const p of paths ) {
 			const result = this.repoTree.tree.find((t: any) => t.path === p);
-			console.log(result, p);
 			if ( !result ) {
 				continue;
 			}
@@ -175,6 +178,32 @@ export class Github {
 					}
 					break;
 			}
+		}
+		const newTree = await this.tree(trees, this.repoTree.sha);
+		await this.treeCommit(newTree, message);
+	}
+
+	/*
+	   {
+	   		path: string
+			blob: Blob {
+				content: string
+				encoding: string
+			}
+	   }
+	*/
+	public async update(files: any[], message: string) {
+		const trees: AnyTree[] = [];
+		for ( const file of files ) {
+			const result = this.repoTree.tree.find((t: any) => t.path === file.path);
+			if ( !result ) {
+				continue;
+			}
+
+			const { blob } = file;
+			blob.type = 'blob';
+			blob.mode = '100644';
+			trees.push(await this.blob(file.path, blob));
 		}
 		const newTree = await this.tree(trees, this.repoTree.sha);
 		await this.treeCommit(newTree, message);
@@ -230,6 +259,16 @@ export class Github {
 		}
 	}
 
+	public exists(file: string) {
+		const { tree } = this.repoTree;
+		for ( const t of tree ) {
+			if ( t.path === file ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private async treeCommit(newTree: any, message: string) {
 		const treeData = this.repoTree;
 
@@ -274,6 +313,7 @@ export class Github {
 
 				const reqTree = this.getReqTreeArr(cur.tree as any);
 
+				/*
 				if ( cur.sha ) {
 					const { data } = await this.rest.git.getTree({
 						owner: this.user.userName,
@@ -293,8 +333,9 @@ export class Github {
 						}
 					});
 				}
+				*/
 
-				const treeData = await this.tree(reqTree);
+				const treeData = await this.tree(reqTree, cur.sha as string);
 				const TD: AnyTree = {
 					mode: '040000',
 					type: 'tree',

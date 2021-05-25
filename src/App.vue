@@ -7,7 +7,7 @@
 <template>
 	<v-app>
 		<v-layout row justify-center>
-			<v-dialog v-model="loading" persistent fullscreen content-class="loading-dialog">
+			<v-dialog v-model="$store.getters.loading" persistent fullscreen content-class="loading-dialog">
 				<v-container fill-height>
 					<v-layout row justify-center align-center>
 						<v-progress-circular
@@ -36,8 +36,6 @@ import { Github } from '@/plugins/github';
 @Component
 export default class App extends Mixins(GlobalMixins) {
 
-	public loading: boolean = false;
-
 	public created() {
 		this.$logger.debug('app', 'App created');
 
@@ -46,9 +44,6 @@ export default class App extends Mixins(GlobalMixins) {
 			await this.$git.initRepo(`${u.userName}.github.io`);
 			this.$logger.debug('github', 'Octokit login', this.$git);
 		});
-
-		this.$evt.$off('app:loading');
-		this.$evt.$on('app:loading', (v: boolean) => this.loading = v);
 
 		const user = this.$session.read<User>('userInfo', JSON.parse);
 		if ( user ) {

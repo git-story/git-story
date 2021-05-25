@@ -28,7 +28,7 @@
 							<v-btn color="red" dark class="mr-4" tile depressed @click.stop="remove">
 								{{ $t('remove') }}
 							</v-btn>
-							<v-btn color="indigo" dark tile depressed>
+							<v-btn color="indigo" dark tile depressed @click.stop="modify">
 								{{ $t('modify') }}
 							</v-btn>
 						</v-col>
@@ -92,6 +92,10 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 				throw close;
 			}
 		});
+	}
+
+	public modify() {
+		this.$assign(`/posting/${this.post.src}`);
 	}
 
 }

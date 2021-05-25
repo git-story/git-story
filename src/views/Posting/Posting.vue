@@ -14,14 +14,14 @@
 					<v-col cols="12">
 						<v-row class="ma-0 pt-5 px-5">
 							<v-col cols="12">
-								<input v-model="postTitle" type="text" class="title-input" spellcheck="false" :placeholder="$t('title')">
+								<input v-model="$store.state.title" type="text" class="title-input" spellcheck="false" :placeholder="$t('title')">
 							</v-col>
 						</v-row>
 						<v-divider class="mx-8" />
 						<v-row class="mx-0 pt-4 px-6" style="height: 85%; cursor: text;" @click="editorFocusEnd">
 							<v-col cols="12">
 								<div @click.stop="">
-									<MarkdownEditor ref="editor" v-model="markdown" :settings="mdOptions"/>
+									<MarkdownEditor ref="editor" v-model="$store.state.markdown" :settings="mdOptions"/>
 								</div>
 							</v-col>
 						</v-row>
@@ -56,13 +56,11 @@ declare global {
 })
 export default class Posting extends Mixins(GlobalMixins) {
 
-	public markdown: string = this.$t('content');
 	public mdOptions: Record<string, unknown> = {
 		images: {
 			enabled: true,
 		},
 	};
-	public postTitle: string = '';
 
 	public async compress(url: string): Promise<ImgData> {
 		const res = await fetch(url);
@@ -82,15 +80,18 @@ export default class Posting extends Mixins(GlobalMixins) {
 	}
 
 	public mounted() {
+		this.$store.commit('loading', true);
+		this.$store.commit('markdown', this.$t('content'));
+
 		this.$logger.debug('app', 'Posting mounted');
 		this.$evt.$off('post:temp.save');
 		this.$evt.$on('post:temp.save', async (end: EndFunction) => {
-			const md = new Markdown(this.markdown);
+			const md = new Markdown(this.$store.getters.markdown);
 			const splMd = md.text.split('\n');
 			const editor = this.$refs.editor as any;
 			const imgs = md.images();
 			const post: TempPost = {
-				title: this.postTitle || '',
+				title: this.$store.getters.title,
 				content: '',
 				updated: new Date().toJSON(),
 				imgs: [],
@@ -121,7 +122,7 @@ export default class Posting extends Mixins(GlobalMixins) {
 
 		this.$evt.$off('post:temp.set');
 		this.$evt.$on('post:temp.set', async (post: TempPost) => {
-			this.postTitle = post.title;
+			this.$store.commit('title', post.title);
 			const md = new Markdown(post.content);
 			const editor = this.$refs.editor as any;
 			const splMd = md.text.split('\n');
@@ -131,14 +132,14 @@ export default class Posting extends Mixins(GlobalMixins) {
 				const repl = splMd[img.line].replace(regx, `![${img.name}](${url})`);
 				md.replaceLine(img.line, repl);
 			}
-			this.markdown = md.text;
+			this.$store.getters.markdown = md.text;
 		});
 
 		this.$evt.$off('post:get');
 		this.$evt.$on('post:get', (end: EndFunction) => {
 			const post = {
-				title: this.postTitle,
-				content: this.markdown,
+				title: this.$store.getters.title,
+				content: this.$store.getters.markdown,
 				updated: new Date().toJSON(),
 				imgs: [],
 			};

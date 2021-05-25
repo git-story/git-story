@@ -9,6 +9,9 @@ Vue.use(Vuex);
 interface State {
 	user?: User;
 	service: Service;
+	markdown: string;
+	title: string;
+	loading: boolean;
 }
 
 export default new Vuex.Store({
@@ -18,6 +21,9 @@ export default new Vuex.Store({
 			name: 'git-story',
 			template: 'git-story-template',
 		},
+		markdown: '',
+		title: '',
+		loading: false,
 	},
 	getters: {
 		user(state: State) {
@@ -26,10 +32,28 @@ export default new Vuex.Store({
 		service(state: State) {
 			return state.service;
 		},
+		markdown(state: State) {
+			return state.markdown;
+		},
+		title(state: State) {
+			return state.title;
+		},
+		loading(state: State) {
+			return state.loading;
+		},
 	},
 	mutations: {
 		setUser(state: State, user: User) {
 			state.user = user;
+		},
+		markdown(state: State, md: string) {
+			state.markdown = md;
+		},
+		title(state: State, t: string) {
+			state.title = t;
+		},
+		loading(state: State, v: boolean) {
+			state.loading = v;
 		},
 	},
 	actions: {
