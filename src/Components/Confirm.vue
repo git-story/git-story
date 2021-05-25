@@ -30,9 +30,9 @@
 						<v-btn
 							color="red darken-1"
 	   						class="mr-4"
-							large
-							dark
-		  					:loading="loadingCancel"
+							large dark
+							:loading="loading"
+						  	:disabled="loading"
 							@click="$emit('cancel', $event); $emit('update:open', false);">
 							{{ textCancel }}
 						</v-btn>
@@ -40,7 +40,8 @@
 							color="indigo"
 							large
 							dark
-	   						:loading="loadingOk"
+							:loading="loading"
+						  	:disabled="loading"
 							@click="$emit('ok', $event); $emit('update:open', false);">
 							{{ textOk }}
 						</v-btn>
@@ -78,11 +79,7 @@ export default {
 			type: String,
 			default: 'Cancel',
 		},
-		loadingOk: {
-			type: Boolean,
-			default: false,
-		},
-		loadingCancel: {
+		loading: {
 			type: Boolean,
 			default: false,
 		},

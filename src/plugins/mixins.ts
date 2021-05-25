@@ -109,7 +109,7 @@ export default class Mixin extends VueDecorator {
 				title: 'Modal Title',
 				content: 'Modal Content',
 				textOk: 'Ok',
-				loadingOk: false,
+				loading: false,
 			};
 
 			for ( const [key, val] of Object.entries(options) ) {
@@ -124,9 +124,9 @@ export default class Mixin extends VueDecorator {
 
 			let instance: any = this.mount(Modal, { propsData: defaultOptions });
 			instance.$on('ok', () => {
-				instance.loadingOk = true;
+				instance.loading = true;
 				resolve(() => {
-					instance.loadingOk = false;
+					instance.loading = false;
 					instance.open = false;
 					Vue.nextTick(() => {
 						instance.$el.remove();
@@ -147,8 +147,7 @@ export default class Mixin extends VueDecorator {
 				content: 'Confirm Content',
 				textOk: 'Ok',
 				textCancel: 'Cancel',
-				loadingOk: false,
-				loadingCancel: false,
+				loading: false,
 			};
 
 			for ( const [key, val] of Object.entries(options) ) {
@@ -163,9 +162,9 @@ export default class Mixin extends VueDecorator {
 
 			let instance: any = this.mount(Confirm, { propsData: defaultOptions });
 			instance.$on('ok', () => {
-				instance.loadingOk = true;
+				instance.loading = true;
 				resolve(() => {
-					instance.loadingOk = false;
+					instance.loading = false;
 					instance.open = false;
 					Vue.nextTick(() => {
 						instance.$el.remove();
@@ -174,9 +173,9 @@ export default class Mixin extends VueDecorator {
 				});
 			});
 			instance.$on('cancel', () => {
-				instance.loadingCancel = true;
+				instance.loading = true;
 				reject(() => {
-					instance.loadingCancel = false;
+					instance.loading = false;
 					instance.open = false;
 					Vue.nextTick(() => {
 						instance.$el.remove();

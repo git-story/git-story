@@ -9,3 +9,7 @@
 .w-100 {
 	width: 100%;
 }
+
+.theme--dark.v-btn.v-btn--disabled.v-btn--has-bg {
+	background-color: #737373 !important;
+}
