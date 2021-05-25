@@ -22,6 +22,7 @@
 				:config="config"
 				@remove="postList.splice(idx, 1);"
 				:class="idx > 0 ? 'mt-6' : ''"/>
+			<infinite-loading @infinite="nextPostLoading" />
 		</div>
 	</div>
 </template>
@@ -33,18 +34,23 @@ import { MetaData } from '@/interface/service';
 import PostItem from 'views/Dashboard/DashboardPostItem.vue';
 import firebase from 'firebase';
 import yaml from 'js-yaml';
+import InfiniteLoading from 'vue-infinite-loading';
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 @Component({
 	components: {
 		PostItem,
+		InfiniteLoading,
 	},
 })
 export default class DashboardPosts extends Mixins(GlobalMixins) {
 
 	public postList: MetaData[] = [];
-	public skeletonCount: any[] = Array(5);
+	public metaData: MetaData[] = [];
+	public metaIdx: number = 0;
+	public loadNumPerOneTime: number = 5;
+	public skeletonCount: any[] = Array(this.loadNumPerOneTime);
 	public config: any = {};
 
 	public async mounted() {
@@ -94,7 +100,8 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 
 		await this.$git.initRepo(repoName);
 		this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
-		this.postList = content as MetaData[];
+		this.metaData = content as MetaData[];
+		this.nextPostLoading();
 	}
 
 	public async initialize(repo: string): Promise<MetaData[]> {
@@ -156,6 +163,22 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 			private: false,
 			description: this.$t('github.description'),
 		});
+	}
+
+	public async nextPostLoading($state: any) {
+		console.log('next');
+		for ( let i = 0; i < this.loadNumPerOneTime; i++ ) {
+			if ( this.metaIdx < this.metaData.length ) {
+				this.postList.push(this.metaData[this.metaIdx++]);
+			}
+		}
+		if ( $state ) {
+			if ( this.metaIdx < this.metaData.length ) {
+				$state.loaded();
+			} else {
+				$state.complete();
+			}
+		}
 	}
 
 }
