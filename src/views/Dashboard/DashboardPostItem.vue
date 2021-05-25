@@ -55,6 +55,8 @@ function date2str(date: Date) {
 	return `${yyyy}${MM}${dd}${hh}${mm}${ss}`;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 @Component({})
 export default class DashboardPostItem extends Mixins(GlobalMixins) {
 
@@ -62,6 +64,8 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 	@Prop(Object) public config!: any;
 
 	public defaultImage: string = 'https://cdn.pixabay.com/photo/2017/07/25/01/22/cat-2536662_960_720.jpg';
+
+	private MAX_RETRY_CNT: number = 5;
 
 	public openPost() {
 		window.open(`https://${this.$git.repo.name}/${this.post.href}`);
@@ -76,13 +80,31 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 			textCancel: this.$t('cancel'),
 		}).then(async (close) => {
 			const imgDir = path.join(this.config.source_dir, 'images', date2str(new Date(this.post.date)));
+			await this.$git.workflowClear();
+			let i = 0;
 
-			await this.$git.remove([
-				this.post.src,
-				imgDir,
-			], `REMOVE: ${this.post.title}`);
+			while ( i++ < this.MAX_RETRY_CNT ) {
+				try {
+					await this.$git.remove([
+						this.post.src,
+						imgDir,
+					], `REMOVE: ${this.post.title}`);
+					i = 0;
+					break;
+				} catch {
+					await sleep(1500);
+					await this.$git.clear();
+					await sleep(1500);
+				}
+			}
+
+			if ( i >= this.MAX_RETRY_CNT ) {
+				throw Error('File remove max try fail.');
+			}
 
 			this.$emit('remove');
+
+			await this.$git.clear();
 
 			close();
 		}).catch((close) => {

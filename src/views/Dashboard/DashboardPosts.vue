@@ -166,7 +166,6 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 	}
 
 	public async nextPostLoading($state?: any) {
-		console.log('next');
 		for ( let i = 0; i < this.loadNumPerOneTime; i++ ) {
 			if ( this.metaIdx < this.metaData.length ) {
 				this.postList.push(this.metaData[this.metaIdx++]);

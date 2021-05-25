@@ -60,6 +60,10 @@ export class Github {
 		return this.curTree;
 	}
 
+	get Tree() {
+		return this.repoTree;
+	}
+
 	public setUser(user: User) {
 		this.user = user;
 		this.octokit = new Octokit({
