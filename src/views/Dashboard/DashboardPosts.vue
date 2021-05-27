@@ -5,26 +5,30 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<div class="mx-6">
-		<div v-if="postList.length === 0">
-			<v-card
-				elevation="1" tile
-				v-for="(empty, idx) in skeletonCount" :key="'skeleton-' + empty + idx"
-				:class="idx > 0 ? 'mt-6' : ''">
-				<v-skeleton-loader type="image, article, divider, actions" />
-			</v-card>
-		</div>
-		<div v-else>
-			<post-item
-				v-for="(post, idx) in postList"
-				:key="post.href"
-				:post="post"
-				:config="config"
-				@remove="postList.splice(idx, 1);"
-				:class="idx > 0 ? 'mt-6' : ''"/>
-			<infinite-loading @infinite="nextPostLoading" />
-		</div>
-	</div>
+	<v-row class="ma-0 h-100">
+		<v-col cols="8" class="pa-0">
+			<div v-if="postList.length === 0">
+				<v-card
+					elevation="1" tile
+					v-for="(empty, idx) in skeletonCount" :key="'skeleton-' + empty + idx"
+					:class="idx > 0 ? 'mt-6' : ''">
+					<v-skeleton-loader type="image, article, divider, actions" />
+				</v-card>
+			</div>
+			<div v-else>
+				<post-item
+					v-for="(post, idx) in postList"
+					:key="post.href"
+					:post="post"
+					:config="config"
+					@remove="postList.splice(idx, 1);"
+					:class="idx > 0 ? 'mt-6' : ''"/>
+				<infinite-loading @infinite="nextPostLoading" />
+			</div>
+		</v-col>
+		<v-col cols="4" class="pa-0">
+		</v-col>
+	</v-row>
 </template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';

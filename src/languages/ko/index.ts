@@ -27,4 +27,5 @@ export default {
 	'yes': '예',
 	'no': '아니요',
 	'cancel': '취소',
+	'save': '저장',
 };

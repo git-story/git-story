@@ -33,6 +33,10 @@ const routes: RouteConfig[] = [
 				component: () => import('views/Dashboard/DashboardCategory.vue'),
 			},
 			{
+				path: '/dashboard/config',
+				component: () => import('views/Dashboard/DashboardConfig.vue'),
+			},
+			{
 				path: '/dashboard/theme',
 				component: () => import('views/Dashboard/DashboardTheme.vue'),
 			},

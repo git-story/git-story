@@ -35,6 +35,7 @@
 				<dash-list-item href="/dashboard/template" icon="layers-triple">{{ $t('dashboard.setting.template') }}</dash-list-item>
 				<dash-list-item href="/dashboard/comment" icon="comment-multiple">{{ $t('dashboard.setting.comment') }}</dash-list-item>
 				<dash-list-item href="/dashboard/setting" icon="cog">{{ $t('dashboard.setting.etc') }}</dash-list-item>
+				<dash-list-item href="/dashboard/config" icon="microsoft-visual-studio-code">{{ $t('dashboard.setting.config') }}</dash-list-item>
 			</v-list>
 		</v-card>
 	</div>

@@ -1,4 +1,5 @@
 const path = require('path');
+const MonacoEditorPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
 	"configureWebpack": {
@@ -12,7 +13,12 @@ module.exports = {
 				"views": path.join(__dirname, "src/views"),
 				"@": path.join(__dirname, "src"),
 			}
-		}
+		},
+		"plugins": [
+			new MonacoEditorPlugin({
+				languages: ['json', 'yaml'],
+			}),
+		],
 	},
 	"runtimeCompiler": true,
 	"transpileDependencies": [

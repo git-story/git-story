@@ -20,5 +20,6 @@ export default {
 		template: '템플릿 설정',
 		comment: '댓글 설정',
 		etc: '기타 설정',
+		config: '설정 파일 수정',
 	},
 };
