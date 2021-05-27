@@ -17,7 +17,7 @@
 			</div>
 			<div v-else>
 				<post-item
-					v-for="(post, idx) in postList"
+					v-for="(post, idx) in posts"
 					:key="post.href"
 					:post="post"
 					:config="config"
@@ -27,6 +27,17 @@
 			</div>
 		</v-col>
 		<v-col cols="4" class="pa-0">
+			<v-row class="ma-0">
+				<v-col cols="12" class="py-0">
+					<v-text-field
+		 				class="pt-0"
+	   					:loading="searchLoading"
+	   					color="indigo"
+						v-model="search"
+	  					clearable
+						prepend-icon="mdi-magnify"/>
+				</v-col>
+			</v-row>
 		</v-col>
 	</v-row>
 </template>
@@ -56,6 +67,19 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 	public loadNumPerOneTime: number = 5;
 	public skeletonCount: any[] = Array(this.loadNumPerOneTime);
 	public config: any = {};
+
+	public search: string = '';
+	public searchLoading: boolean = false;
+
+	get posts() {
+		if ( this.search ) {
+			this.searchLoading = true;
+			const result = this.metaData.filter((post: MetaData) => post.title.match(this.search));
+			this.searchLoading = false;
+			return result;
+		}
+		return this.postList;
+	}
 
 	public async mounted() {
 		this.$logger.debug('app', 'DashboardPosts mounted');

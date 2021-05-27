@@ -28,4 +28,5 @@ export default {
 	'no': '아니요',
 	'cancel': '취소',
 	'save': '저장',
+	'search': '검색',
 };
