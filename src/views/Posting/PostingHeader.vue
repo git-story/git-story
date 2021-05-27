@@ -569,8 +569,3 @@ export default class Header extends Mixins(GlobalMixins) {
 
 }
 </script>
-<style scope>
-.custom .v-text-field__details {
-	display: none !important;
-}
-</style>

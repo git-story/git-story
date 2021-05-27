@@ -20,6 +20,8 @@ import local from './plugins/local';
 import logger from './plugins/logger';
 import { Github } from './plugins/github';
 
+import LiquorTree from 'liquor-tree';
+
 Vue.config.productionTip = false;
 
 // Your web app's Firebase configuration
@@ -45,6 +47,7 @@ Vue.prototype.$git = new Github();
 Vue.use(session);
 Vue.use(local);
 Vue.use(logger);
+Vue.use(LiquorTree);
 
 new Vue({
 	router,

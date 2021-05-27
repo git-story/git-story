@@ -13,3 +13,8 @@
 .theme--dark.v-btn.v-btn--disabled.v-btn--has-bg {
 	background-color: #737373 !important;
 }
+
+.custom .v-text-field__details {
+	display: none !important;
+}
+
