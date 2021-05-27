@@ -16,9 +16,18 @@
 				:options="editor.options"/>
 		</v-col>
 		<v-col cols="4">
-			<v-row class="ma-0" style="height: 50%;">
+			<v-row class="ma-0" style="height: 20%;">
+				<v-col cols="12">
+					<h3>{{ $t('dashboard.config.format') }}</h3>
+					<v-divider class="my-2"></v-divider>
+					<v-radio-group v-model="editor.language" row @change="change">
+						<v-radio label="yaml" value="yaml" color="indigo"></v-radio>
+						<v-radio label="json" value="json" color="indigo"></v-radio>
+					</v-radio-group>
+				</v-col>
 			</v-row>
-			<v-row class="ma-0" style="height: 50%;" align="end">
+			<v-row class="ma-0" style="height: 65%;"></v-row>
+			<v-row class="ma-0" style="height: 15%;" align="end">
 				<v-col cols="12" align="right" class="pa-0">
 					<v-btn
 		 				:disabled="$store.getters.loading || !modified"
@@ -39,6 +48,7 @@
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import MonacoEditor from 'vue-monaco';
+import yaml from 'js-yaml';
 
 @Component({
 	components: {
@@ -68,14 +78,62 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 			await this.$git.getContent<any>(this.configFilePath);
 	}
 
+	public change() {
+		switch ( this.editor.language ) {
+			case 'yaml':
+				try {
+					this.editor.code = yaml.dump(JSON.parse(this.editor.code));
+					this.originalCode = yaml.dump(JSON.parse(this.originalCode));
+				} catch {
+					this.$noti({
+						type: 'error',
+						horizontal: 'right',
+						vertical: 'top',
+						content: this.$t('dashboard.config.dump-error'),
+					});
+					this.$nextTick(() => this.editor.language = 'json');
+				}
+				break;
+			case 'json':
+				try {
+					this.editor.code = JSON.stringify(yaml.load(this.editor.code), null, '\t');
+					this.originalCode = JSON.stringify(yaml.load(this.originalCode), null, '\t');
+				} catch {
+					this.$noti({
+						type: 'error',
+						horizontal: 'right',
+						vertical: 'top',
+						content: this.$t('dashboard.config.parse-error'),
+					});
+					this.$nextTick(() => this.editor.language = 'yaml');
+				}
+				break;
+		}
+	}
+
 	public async save() {
 		this.$store.commit('loading', true);
+		let code = this.editor.code;
+		if ( this.editor.language === 'json' ) {
+			try {
+				code = yaml.dump(JSON.parse(code));
+			} catch {
+				this.$noti({
+					type: 'error',
+					horizontal: 'right',
+					vertical: 'top',
+					content: this.$t('dashboard.config.dump-error'),
+				});
+				this.$store.commit('loading', false);
+				return;
+			}
+		}
 		await this.$git.clear();
 		await this.$git.update([
 			{
 				path: this.configFilePath,
 				blob: {
-					content: this.editor.code,
+					content: code,
 					encoding: 'utf-8',
 				},
 			},

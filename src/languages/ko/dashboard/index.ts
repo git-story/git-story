@@ -22,4 +22,9 @@ export default {
 		etc: '기타 설정',
 		config: '설정 파일 수정',
 	},
+	'config': {
+		'format': '편집 포맷',
+		'dump-error': 'JSON 문법이 잘못되어 yaml로 변경할 수 없습니다.',
+		'parse-error': 'yaml문법이 잘못되어 JSON으로 변경할 수 없습니다.',
+	},
 };
