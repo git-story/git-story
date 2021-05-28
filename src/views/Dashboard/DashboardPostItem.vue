@@ -10,6 +10,7 @@
 			<v-card tile :elevation="hover ? 12 : 1" @click="openPost">
 				<v-img
 					height="250"
+	 				lazy-src="https://cdn.pixabay.com/photo/2015/02/22/17/56/loading-645268_640.jpg"
 					:src="post.cover || defaultImage">
 				</v-img>
 

@@ -87,12 +87,13 @@ export class Github {
 		return this.repo;
 	}
 
-	public async getContent<T extends object>(p: string, type: ContentType = 'utf8', repo?: string): Promise<void|T> {
+	public async getContent<T extends object>(p: string, type: ContentType = 'utf8', repo: string = ''): Promise<T> {
 		let ret: any;
 		try {
+			const [ user, name ] = repo.split('/');
 			const res = await this.rest.repos.getContent({
-				owner: this.user.userName,
-				repo: repo || this.repo.name,
+				owner: user || this.user.userName,
+				repo: name || this.repo.name,
 				path: p,
 			});
 			const data = res.data as GitContent;

@@ -58,3 +58,11 @@ export interface DataTree {
 	children: DataTree[];
 }
 
+export interface Theme {
+	name: string;
+	description: string;
+	link: string;
+	preview: string;
+	tags: string[];
+	thumbnail: string;
+}

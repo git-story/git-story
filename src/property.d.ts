@@ -6,6 +6,7 @@ import { Session } from './plugins/session';
 import { Local } from './plugins/local';
 import { Logger } from './plugins/logger';
 import { Github } from './plugins/github';
+import axios from 'axios';
 
 declare module 'vue/types/vue' {
 	interface Vue {
@@ -14,5 +15,6 @@ declare module 'vue/types/vue' {
 		$logger: Logger;
 		$git: Github;
 		$evt: Vue;
+		$axios: axios;
 	}
 }
