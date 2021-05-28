@@ -24,4 +24,5 @@ export default {
 		base64: 'Base64로 포스팅에 포함',
 		imgur: 'imgur에 업로드',
 	},
+	'category': '카테고리',
 };

@@ -52,3 +52,9 @@ export interface PostConfig {
 	cover?: string;
 	uploadType: 'github'|'base64'|'imgur';
 }
+
+export interface DataTree {
+	text: string;
+	children: DataTree[];
+}
+

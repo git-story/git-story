@@ -75,11 +75,7 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
-
-interface DataTree {
-	text: string;
-	children: DataTree[];
-}
+import { DataTree } from '@/interface/service';
 
 @Component({
 	components: {

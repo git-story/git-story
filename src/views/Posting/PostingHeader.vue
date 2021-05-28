@@ -114,6 +114,26 @@
 					</v-col>
 				</v-row>
 				<!-- E: Select Cover Image -->
+				<!-- S: Category -->
+				<v-row class="ma-0 px-3" align="center">
+					<v-col cols="3">
+						<h5>{{ $t('posting.category') }}</h5>
+					</v-col>
+					<v-col cols="9">
+						<v-select
+		  					v-if="categoryRenderer"
+		  					v-model="category"
+		 					:items="categories"
+		 					item-text="text"
+		 					return-object
+		 					menu-props="auto"
+							:label="$t('posting.category')"
+							color="indigo darken-3"
+							dense>
+						</v-select>
+					</v-col>
+				</v-row>
+				<!-- E: Category -->
 				<!-- S: Tag -->
 				<v-row class="ma-0 px-3" align="center">
 					<v-col cols="3">
@@ -176,6 +196,7 @@ import {
 	TempPost,
 	TempPostImage,
 	PostConfig,
+	DataTree,
 } from '@/interface/service';
 import moment from 'moment';
 import Markdown from '@git-story/md-editor/src/common/markdown/markdown.js';
@@ -234,6 +255,28 @@ async function buildMarkdown(md: Markdown) {
 	return md.text;
 }
 
+function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
+	let ret: any[] = [];
+	for ( const item of arr ) {
+		let str = '';
+		if ( dep > 0 ) {
+			str += '　'.repeat(dep - 1);
+			str += '↳ ';
+		}
+		str += item.text;
+		ret.push({
+			text: str,
+			value: item.text,
+			dep: parent,
+		});
+		if ( Array.isArray(item.children) && item.children.length > 0 ) {
+			const sub = dump(item.children, dep + 1, [...parent, item.text]);
+			ret = ret.concat(sub);
+		}
+	}
+	return ret;
+}
+
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 @Component({
@@ -253,17 +296,38 @@ export default class Header extends Mixins(GlobalMixins) {
 	public imgFile!: File;
 	public config!: any; // _config.yml
 
+	public categories: any[] = [];
+	public category: any = {};
+	public categoryRenderer: boolean = false;
+
+	public categoryRerender() {
+		this.categoryRenderer = false;
+		this.$nextTick(() => {
+			this.categoryRenderer = true;
+		});
+	}
+
 	public async mounted() {
 		this.tempPosts = this.$local.read<TempPost[]>('temp_posting', JSON.parse) as TempPost[] || [];
 		this.$logger.debug('post', 'Temp post list', this.tempPosts);
+		this.postConfig = {
+			cover: '',
+			tags: [],
+			uploadType: 'github',
+		};
 		do {
 			try {
 				this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
-				await sleep(1000);
 			} catch {
 				// error
+				await sleep(1000);
 			}
 		} while ( !this.config );
+		const tmp = await this.$git.getContent<DataTree[]>('categories.json', 'json') as DataTree[];
+		this.categories = dump(tmp);
+		this.category = this.categories[0];
+		this.categoryRerender();
+		this.$logger.debug('post', 'Category list', this.categories);
 
 		const href = this.$route.params.href;
 		if ( href ) {
@@ -282,7 +346,6 @@ export default class Header extends Mixins(GlobalMixins) {
 				} else if ( img.url.startsWith('data:') ) {
 					// empty
 				} else {
-					console.log(img);
 					if ( !validateUrl(img.url) ) {
 						img.url = `https://${path.join(this.$git.repo.name, img.url)}`;
 						const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${img.url})`);
@@ -291,9 +354,6 @@ export default class Header extends Mixins(GlobalMixins) {
 				}
 			}
 			content = md.text;
-
-			console.log(this.postConfig);
-			console.log(content);
 
 			this.$store.commit('title', this.postConfig.title);
 			this.$store.commit('markdown', content);
@@ -337,12 +397,6 @@ export default class Header extends Mixins(GlobalMixins) {
 		this.$store.commit('loading', true);
 
 		this.$evt.$emit('post:get', async (post: TempPost) => {
-			// workflow clear
-			await this.$git.workflowClear();
-
-			// 최신 정보 갱신
-			await this.$git.clear();
-
 			// 제목 검사
 			if ( post.title.length === 0 ) {
 				try {
@@ -353,13 +407,20 @@ export default class Header extends Mixins(GlobalMixins) {
 						textOk: this.$t('yes'),
 						textCancel: this.$t('no'),
 					});
-					close();
 					post.title = `${this.$t('posting.untitle')}_${moment().format('YYYY-MM-DD')}`;
+					close();
 				} catch (close) {
 					close();
+					this.$store.commit('loading', false);
 					return;
 				}
 			}
+
+			// workflow clear
+			await this.$git.workflowClear();
+
+			// 최신 정보 갱신
+			await this.$git.clear();
 
 			// 제목 설정
 			this.postConfig.title = post.title;
@@ -368,6 +429,11 @@ export default class Header extends Mixins(GlobalMixins) {
 			const tags = this.postConfig.tags as string[];
 			if ( tags && tags.length === 0 ) {
 				delete this.postConfig.tags;
+			}
+
+			// 카테고리 설정
+			if ( this.category && this.category.text ) {
+				this.postConfig.categories = [...this.category.dep, this.category.value];
 			}
 
 			if ( this.postConfig.date ) {
@@ -401,8 +467,6 @@ export default class Header extends Mixins(GlobalMixins) {
 		let cover = this.postConfig.cover as string;
 		cover = cover.trim();
 
-		console.log('cover', cover);
-
 		if ( cover ) {
 			if ( this.imgFile && this.imgFile.name === cover ) {
 				const b64Data = await fileToBase64(this.imgFile);
@@ -420,6 +484,7 @@ export default class Header extends Mixins(GlobalMixins) {
 							content: this.$t('posting.cover-url-invalid'),
 							textOk: this.$t('confirm'),
 						}).then((close) => close());
+						this.$store.commit('loading', false);
 						return;
 					}
 				}
@@ -501,6 +566,7 @@ export default class Header extends Mixins(GlobalMixins) {
 							content: this.$t('posting.cover-url-invalid'),
 							textOk: this.$t('confirm'),
 						}).then((close) => close());
+						this.$store.commit('loading', false);
 						return;
 					}
 				}
