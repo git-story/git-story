@@ -9,7 +9,19 @@
 -->
 <template>
 	<div>
-		<h1>Hello Theme</h1>
+		<v-row class="ma-0" align="center">
+			<h1>{{ $t('dashboard.setting.theme') }}</h1>
+			<v-spacer></v-spacer>
+			<v-text-field
+				v-model="search"
+				:label="$t('dashboard.theme.search')"
+				@keydown="inputEvent"
+				class="custom"
+				color="indigo"
+				append-icon="mdi-magnify">
+			</v-text-field>
+		</v-row>
+		<v-divider class="my-2"></v-divider>
 		<v-row>
 			<v-col
 	   			xs="12"
@@ -20,7 +32,7 @@
 				:key="theme.name + idx">
 				<theme-item :theme="theme"/>
 			</v-col>
-			<infinite-loading @infinite="nextPostLoading" />
+			<infinite-loading @infinite="nextThemeLoading" />
 		</v-row>
 	</div>
 </template>
@@ -42,36 +54,73 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 	public themes: Theme[] = [];
 	public allThemes: Theme[] = [];
 	public themeIdx: number = 0;
+	public search: string = '';
 	public readonly repo: string = 'hexojs/site';
 	public readonly loadNumPerOneTime: number = 20;
+
+	get themeNames() {
+		return this.allThemes.map((theme: Theme) => theme.name);
+	}
 
 	public async mounted() {
 		this.$logger.debug('app', 'DashboardTheme mounted');
 		this.allThemes = await this.$git.getContent<Theme[]>('source/_data/themes.yml', 'yaml', this.repo);
-		await this.nextPostLoading();
+		await this.nextThemeLoading();
+	}
+
+	public inputEvent(evt: KeyboardEvent) {
+		if ( evt.keyCode === 13 ) {
+			// enter
+			console.log('do search', this.search);
+			this.searchEvent();
+		}
+	}
+
+	public async searchEvent() {
+		const ret: Theme[] = [];
+		if ( !this.search ) {
+			this.themeIdx = 0;
+			this.themes = [];
+			this.nextThemeLoading();
+		}
+		for ( const theme of this.allThemes ) {
+			const regex = new RegExp(this.search, 'i');
+			if ( theme.name.match(regex) ) {
+				if ( !theme.thumbnail ) {
+					await this.themeThumbnail(theme);
+				}
+				ret.push(theme);
+			}
+		}
+		this.themes = ret;
 	}
 
 	public genThumbnailUrl(name: string) {
 		return `https://raw.githubusercontent.com/${this.repo}/master/source/themes/screenshots/${name}.png`;
 	}
 
-	public async nextPostLoading($state?: any) {
+	public async themeThumbnail(theme: Theme) {
+		try {
+			const thumbnail = this.genThumbnailUrl(theme.name);
+			await this.$axios.get(thumbnail);
+			theme.thumbnail = thumbnail;
+		} catch {
+			theme.thumbnail = this.genThumbnailUrl(theme.name.toLowerCase());
+		}
+		return theme;
+	}
+
+	public async nextThemeLoading($state?: any) {
 		for ( let i = 0; i < this.loadNumPerOneTime; i++ ) {
 			if ( this.themeIdx < this.allThemes.length ) {
 				const theme = this.allThemes[this.themeIdx++];
-				try {
-					const thumbnail = this.genThumbnailUrl(theme.name);
-					await this.$axios.get(thumbnail);
-					theme.thumbnail = thumbnail;
-				} catch {
-					theme.thumbnail = this.genThumbnailUrl(theme.name.toLowerCase());
-					console.log('404 error', theme.thumbnail);
+				if ( !theme.thumbnail ) {
+					await this.themeThumbnail(theme);
 				}
 				this.themes.push(theme);
 			}
 		}
 		if ( $state ) {
-			console.log(this.themeIdx, this.allThemes.length);
 			if ( this.themeIdx < this.allThemes.length ) {
 				$state.loaded();
 			} else {
