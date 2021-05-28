@@ -12,7 +12,17 @@
 					:src="theme.thumbnail">
 				</v-img>
 
-				<v-card-title>{{ theme.name }}</v-card-title>
+				<v-card-title>
+					<span>{{ theme.name }}</span>
+					<v-spacer></v-spacer>
+					<v-btn
+						small tile outlined
+		 				:disabled="theme.used"
+						color="cyan darken-2"
+						@click.stop="useTheme">
+						{{ theme.used ? $t('dashboard.theme.used') : $t('dashboard.theme.use') }}
+					</v-btn>
+				</v-card-title>
 				<v-card-text class="pt-0">
 					<div style="height: 50px;">{{ theme.description }}</div>
 				</v-card-text>
@@ -35,14 +45,19 @@
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { Theme } from '@/interface/service';
+import * as submodule from 'git-submodule-js';
 
-@Component({})
+@Component
 export default class DashboardThemeItem extends Mixins(GlobalMixins) {
 
 	@Prop(Object) public theme!: Theme;
 
 	public openTheme() {
 		window.open(this.theme.preview || this.theme.link);
+	}
+
+	public async useTheme() {
+		/* empty */
 	}
 
 }

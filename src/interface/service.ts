@@ -65,4 +65,5 @@ export interface Theme {
 	preview: string;
 	tags: string[];
 	thumbnail: string;
+	used: boolean;
 }

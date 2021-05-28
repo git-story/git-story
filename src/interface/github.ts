@@ -5,8 +5,8 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
  */
 
-export type BlobEncoding = 'utf-8'|'base64';
-export type AnyTree = Blob|Tree<'blob'>|Tree<'tree'>;
+export type BlobEncoding = 'utf-8'|'base64'|'link';
+export type AnyTree = Blob|Tree<'tree'>|Tree<'commit'>;
 export type ContentType = 'json'|'utf8'|'yaml'|'base64';
 
 export interface Tree<T> {

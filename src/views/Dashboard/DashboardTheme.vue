@@ -57,6 +57,7 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 	public search: string = '';
 	public readonly repo: string = 'hexojs/site';
 	public readonly loadNumPerOneTime: number = 20;
+	public config: any = {};
 
 	get themeNames() {
 		return this.allThemes.map((theme: Theme) => theme.name);
@@ -64,6 +65,7 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 
 	public async mounted() {
 		this.$logger.debug('app', 'DashboardTheme mounted');
+		this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
 		this.allThemes = await this.$git.getContent<Theme[]>('source/_data/themes.yml', 'yaml', this.repo);
 		await this.nextThemeLoading();
 	}
@@ -88,6 +90,11 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 			if ( theme.name.match(regex) ) {
 				if ( !theme.thumbnail ) {
 					await this.themeThumbnail(theme);
+				}
+				if ( theme.name === this.config.theme ) {
+					theme.used = true;
+				} else {
+					theme.used = false;
 				}
 				ret.push(theme);
 			}
@@ -116,6 +123,11 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 				const theme = this.allThemes[this.themeIdx++];
 				if ( !theme.thumbnail ) {
 					await this.themeThumbnail(theme);
+				}
+				if ( theme.name === this.config.theme ) {
+					theme.used = true;
+				} else {
+					theme.used = false;
 				}
 				this.themes.push(theme);
 			}

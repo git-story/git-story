@@ -31,7 +31,7 @@ export class Github {
 
 	private octokit!: Octokit;
 	private commitList: Blob[] = [];
-	private user!: User;
+	private user!: any;
 
 	private repoTree!: {
 		tree: AnyTree[],
@@ -41,7 +41,7 @@ export class Github {
 	private curTree: Tree<'tree'> = {};
 	private refStr: string = '';
 
-	constructor(user?: User) {
+	constructor(user?: any) {
 		if ( user ) {
 			this.setUser(user);
 		}
@@ -64,16 +64,10 @@ export class Github {
 		return this.repoTree;
 	}
 
-	public setUser(user: User) {
+	public setUser(user: any) {
 		this.user = user;
 		this.octokit = new Octokit({
 			auth: user.accessToken,
-			log: {
-				debug: (...args: any[]) => logger.debug('github', ...args),
-				info:  (...args: any[]) => logger.info('github', ...args),
-				warn:  (...args: any[]) => logger.warn('github', ...args),
-				error: (...args: any[]) => logger.error('github', ...args),
-			},
 		});
 	}
 
@@ -154,11 +148,17 @@ export class Github {
 		}
 
 		dep[file] = {
-			type: 'blob',
-			mode: '100644',
 			content: data,
 			encoding,
 		} as Blob;
+
+		if ( encoding === 'link' ) {
+			dep[file].type = 'commit';
+			dep[file].mode = '160000';
+		} else {
+			dep[file].type = 'blob';
+			dep[file].mode = '100644';
+		}
 	}
 
 	public async remove(paths: string[], message: string) {
@@ -274,6 +274,44 @@ export class Github {
 		return false;
 	}
 
+	public async getTreeByRef(repo: string = '', ref?: string, recursive: boolean = false): Promise<any> {
+		const ret: TreeRef = { success: false };
+		if ( !ref ) {
+			ref = `heads/${this.repo.default_branch}`;
+		}
+		this.refStr = ref;
+
+		const [ user, name ] = repo.split('/');
+		console.log(user, name);
+		let res: any = await this.rest.git.getRef({
+			owner: user || this.user.userName,
+			repo: name || this.repo.name,
+			ref,
+		});
+
+		const obj = res.data.object;
+		if ( obj.type === 'commit' ) {
+			res = await this.rest.git.getCommit({
+				owner: user || this.user.userName,
+				repo: name || this.repo.name,
+				commit_sha: obj.sha,
+			});
+
+			res = await this.rest.git.getTree({
+				owner: user || this.user.userName,
+				repo: name || this.repo.name,
+				tree_sha: res.data.sha,
+				recursive: recursive.toString(),
+			});
+
+			ret.tree = res.data.tree as AnyTree[];
+			ret.sha = res.data.sha;
+			ret.ref = obj.sha;
+			ret.success = true;
+		}
+		return ret;
+	}
+
 	private async treeCommit(newTree: any, message: string) {
 		const treeData = this.repoTree;
 
@@ -312,7 +350,7 @@ export class Github {
 		const trees: AnyTree[] = [];
 
 		for ( const [ key, tree ] of entries ) {
-			const cur = dep[key] as AnyTree;
+			const cur = dep[key] as any;
 			if ( cur.type === 'tree' ) {
 				cur.tree = await this.buildTree(cur) as any;
 
@@ -351,6 +389,12 @@ export class Github {
 			} else if ( cur.type === 'blob' ) {
 				const blob = await this.blob(key /* path */, cur);
 				trees.push(blob);
+			} else if ( cur.type === 'commit' ) {
+				cur.path = key;
+				cur.sha = cur.content;
+				delete cur.content;
+				delete cur.encoding;
+				trees.push(cur);
 			} else {
 				throw Error('Unknown tree type');
 			}
@@ -358,42 +402,6 @@ export class Github {
 		}
 
 		return trees;
-	}
-
-	private async getTreeByRef(ref?: string, recursive: boolean = false): Promise<any> {
-		const ret: TreeRef = { success: false };
-		if ( !ref ) {
-			ref = `heads/${this.repo.default_branch}`;
-		}
-		this.refStr = ref;
-
-		let res: any = await this.rest.git.getRef({
-			owner: this.user.userName,
-			repo: this.repo.name,
-			ref,
-		});
-
-		const obj = res.data.object;
-		if ( obj.type === 'commit' ) {
-			res = await this.rest.git.getCommit({
-				owner: this.user.userName,
-				repo: this.repo.name,
-				commit_sha: obj.sha,
-			});
-
-			res = await this.rest.git.getTree({
-				owner: this.user.userName,
-				repo: this.repo.name,
-				tree_sha: res.data.sha,
-				recursive: recursive.toString(),
-			});
-
-			ret.tree = res.data.tree as AnyTree[];
-			ret.sha = res.data.sha;
-			ret.ref = obj.sha;
-			ret.success = true;
-		}
-		return ret;
 	}
 
 	private async blob(p: string, file: Blob = {}): Promise<Blob> {
