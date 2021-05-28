@@ -27,4 +27,10 @@ export default {
 		'dump-error': 'JSON 문법이 잘못되어 yaml로 변경할 수 없습니다.',
 		'parse-error': 'yaml문법이 잘못되어 JSON으로 변경할 수 없습니다.',
 	},
+	'category': {
+		'title': '카테고리 관리',
+		'new': '새 카테고리',
+		'remove': '카테고리 삭제',
+		'remove-check': '카테고리를 삭제해도 기존에 추가된 글은 삭제되지 않습니다.<br>삭제하시겠습니까?',
+	},
 };
