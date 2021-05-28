@@ -14,8 +14,8 @@ export interface ComponentOption {
 
 export interface NotiOption extends ComponentOption {
 	timeout?: number;
-	horizontal?: string;
-	vertical?: string;
+	horizontal?: 'left'|'center'|'right';
+	vertical?: 'top'|'middle'|'bottom';
 }
 
 export interface ModalOption extends ComponentOption {

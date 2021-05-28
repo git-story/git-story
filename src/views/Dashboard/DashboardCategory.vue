@@ -16,7 +16,12 @@
 					:options="treeOptions"
 					ref="tree">
 					<div slot-scope="{ node }" class="d-flex" style="align-items: center;">
-						<v-text-field color="indigo darken-3" class="pt-0 custom" v-model="node.text" @click.stop="() => {}" />
+						<v-text-field
+							color="indigo darken-3"
+							class="pt-0 custom"
+							v-model="node.text"
+	   						@input="refresh"
+							@click.stop="() => {}" />
 						&nbsp;
 						<v-btn
 		  					depressed
@@ -135,9 +140,38 @@ export default class DashboardCategory extends Mixins(GlobalMixins) {
 		return ret;
 	}
 
+	public checkDuplication(data: any[], arr: string[] = []) {
+		for ( const item of data ) {
+			const i = arr.find((a) => a === item.text);
+			if ( i ) {
+				return false;
+			}
+			arr.push(item.text);
+			if ( Array.isArray(item.children) && item.children.length > 0 ) {
+				const ret = this.checkDuplication(item.children, arr);
+				if ( ret === false ) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	public async save() {
 		this.$store.commit('loading', true);
 		this.refresh();
+
+		if ( !this.checkDuplication(this.data) ) {
+			this.$noti({
+				content: this.$t('dashboard.category.duplicated'),
+				horizontal: 'right',
+				vertical: 'top',
+				type: 'error',
+			});
+			this.$store.commit('loading', false);
+			return;
+		}
+
 		this.originalData = this.data;
 		await this.$git.clear();
 		await this.$git.update([
