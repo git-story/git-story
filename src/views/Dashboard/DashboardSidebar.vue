@@ -5,7 +5,7 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<div>
+	<div class="col-3" style="padding-right: 20px; position: fixed;">
 		<v-btn
 	 		tile dark
 	  		large block
