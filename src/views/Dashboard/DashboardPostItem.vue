@@ -86,10 +86,9 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 
 			while ( i++ < this.MAX_RETRY_CNT ) {
 				try {
-					await this.$git.remove([
-						this.post.src,
-						imgDir,
-					], `REMOVE: ${this.post.title}`);
+					await this.$git.remove(this.post.src);
+					await this.$git.remove(imgDir);
+					await this.$git.commit(`REMOVE: ${this.post.title}`);
 					i = 0;
 					break;
 				} catch {

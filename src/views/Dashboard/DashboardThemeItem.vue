@@ -45,7 +45,6 @@
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { Theme } from '@/interface/service';
-import * as submodule from 'git-submodule-js';
 
 @Component
 export default class DashboardThemeItem extends Mixins(GlobalMixins) {
@@ -58,6 +57,7 @@ export default class DashboardThemeItem extends Mixins(GlobalMixins) {
 
 	public async useTheme() {
 		/* empty */
+		this.$emit('changeit', this.theme);
 	}
 
 }

@@ -30,7 +30,7 @@
 	   			xl="3"
 		  		v-for="(theme, idx) in themes"
 				:key="theme.name + idx">
-				<theme-item :theme="theme"/>
+				<theme-item :theme="theme" @changeit="themeChange"/>
 			</v-col>
 			<infinite-loading @infinite="nextThemeLoading" />
 		</v-row>
@@ -42,6 +42,10 @@ import GlobalMixins from '@/plugins/mixins';
 import { Theme } from '@/interface/service';
 import ThemeItem from './DashboardThemeItem.vue';
 import InfiniteLoading from 'vue-infinite-loading';
+import { Submodule, serialize } from 'git-submodule-js';
+import yaml from 'js-yaml';
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 @Component({
 	components: {
@@ -58,6 +62,7 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 	public readonly repo: string = 'hexojs/site';
 	public readonly loadNumPerOneTime: number = 20;
 	public config: any = {};
+	public modules: Submodule = {};
 
 	get themeNames() {
 		return this.allThemes.map((theme: Theme) => theme.name);
@@ -65,15 +70,25 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 
 	public async mounted() {
 		this.$logger.debug('app', 'DashboardTheme mounted');
-		this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
 		this.allThemes = await this.$git.getContent<Theme[]>('source/_data/themes.yml', 'yaml', this.repo);
+		while ( true ) {
+			this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
+			if ( this.config ) {
+				break;
+			}
+			await sleep(1000);
+		}
+		await this.$git.clear();
+		this.modules = await this.$git.getContent<Submodule>('.gitmodules', 'submodule');
+		console.log('config', this.config);
+		console.log('allThemes', this.allThemes);
+		console.log('modules', this.modules);
 		await this.nextThemeLoading();
 	}
 
 	public inputEvent(evt: KeyboardEvent) {
 		if ( evt.keyCode === 13 ) {
 			// enter
-			console.log('do search', this.search);
 			this.searchEvent();
 		}
 	}
@@ -139,6 +154,54 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 				$state.complete();
 			}
 		}
+	}
+
+	public async themeChange(theme: Theme) {
+		const entries = Object.entries(this.modules);
+		const themePath = `themes/${theme.name}`;
+		let addFlag: boolean = true;
+
+		for ( const [ key, value ] of entries ) {
+			if ( key.toLowerCase() === theme.name.toLowerCase() ) {
+				addFlag = false;
+				break;
+			}
+		}
+
+		const updateQ: any[] = [];
+
+		if ( addFlag ) {
+			this.modules[theme.name] = {
+				path: themePath,
+				url: theme.link,
+			};
+			updateQ.push([
+				'.gitmodules',
+				serialize(this.modules),
+				'utf-8',
+			]);
+
+			const repoName = theme.link.replace('https://github.com/', '');
+			await this.$git.clear();
+			const ref = await this.$git.getTreeByRef(repoName);
+			this.$git.add(themePath, ref.sha, 'link');
+		}
+
+		this.config.theme = theme.name;
+		updateQ.push([
+			'_config.yml',
+			yaml.dump(this.config),
+			'utf-8',
+		]);
+
+		await this.$git.workflowClear();
+
+		await this.$git.done();
+		for ( const Q of updateQ ) {
+			await this.$git.update(Q[0], Q[1], Q[2]);
+		}
+		await this.$git.commit(`ADD THEME ${theme.name}`);
+
 	}
 
 }

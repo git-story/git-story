@@ -22,6 +22,7 @@ import {
 } from '@/interface/github';
 import path from 'path';
 import yaml from 'js-yaml';
+import * as submodule from 'git-submodule-js';
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -40,6 +41,7 @@ export class Github {
 	};
 	private curTree: Tree<'tree'> = {};
 	private refStr: string = '';
+	private newTree!: any;
 
 	constructor(user?: any) {
 		if ( user ) {
@@ -115,9 +117,13 @@ export class Github {
 						ret = Buffer.from(ret, 'utf8').toString('base64');
 					}
 					break;
+				case 'submodule':
+					ret = submodule.deserialize(ret) as T;
+					break;
 			}
 		} catch (err) {
 			// empty
+			console.error(err);
 		}
 		return ret;
 	}
@@ -161,60 +167,53 @@ export class Github {
 		}
 	}
 
-	public async remove(paths: string[], message: string) {
-		const trees: AnyTree[] = [];
-		for ( const p of paths ) {
-			const result = this.repoTree.tree.find((t: any) => t.path === p);
-			if ( !result ) {
-				continue;
-			}
+	public async remove(file: string) {
+		const tree: any = this.repoTree.tree as any;
+		const idx = tree.findIndex((t: any) => t.path === file);
+		if ( idx === -1 ) {
+			return;
+		}
 
-			switch ( result.type ) {
-				case 'blob':
-					trees.push(await this.blob(p));
-					break;
-				case 'tree':
-					const regex = new RegExp(`^${p}`);
-					for ( const t of this.repoTree.tree ) {
-						const tp = t.path as string;
-						if ( t.type === 'blob' && tp.match(regex) ) {
-							trees.push(await this.blob(tp));
+		const result = tree[idx];
+		switch ( result.type ) {
+			case 'blob':
+				tree[idx] = await this.blob(file);
+				break;
+			case 'tree':
+				const regex = new RegExp(`^${file}/`);
+				const tmpTree: any[] = [];
+				for ( const t of tree ) {
+					const tp = t.path as string;
+					if ( tp === file || tp.match(regex) ) {
+						if ( t.type === 'blob' ) {
+							tmpTree.push(await this.blob(tp));
 						}
+					} else {
+						tmpTree.push(t);
 					}
-					break;
-			}
+				}
+				this.repoTree.tree = tmpTree;
+				break;
 		}
-		const newTree = await this.tree(trees, this.repoTree.sha);
-		await this.treeCommit(newTree, message);
 	}
 
-	/*
-	   {
-	   		path: string
-			blob: Blob {
-				content: string
-				encoding: string
-			}
-	   }
-	*/
-	public async update(files: any[], message: string) {
-		const trees: AnyTree[] = [];
-		for ( const file of files ) {
-			const result = this.repoTree.tree.find((t: any) => t.path === file.path);
-			if ( !result ) {
-				continue;
-			}
-
-			const { blob } = file;
-			blob.type = 'blob';
-			blob.mode = '100644';
-			trees.push(await this.blob(file.path, blob));
+	public async update(file: string, data: string, encoding: BlobEncoding = 'utf-8') {
+		const tree: any = this.repoTree.tree as any;
+		const idx = tree.findIndex((t: any) => t.path === file);
+		if ( idx === -1 ) {
+			return;
 		}
-		const newTree = await this.tree(trees, this.repoTree.sha);
-		await this.treeCommit(newTree, message);
+
+		const blob: Blob = {
+			content: data,
+			encoding,
+			type: 'blob',
+			mode: '100644',
+		};
+		tree[idx] = await this.blob(file, blob);
 	}
 
-	public async commit(message: string) {
+	public async done() {
 		const build = await this.buildTree(this.curTree);
 		const treeData = this.repoTree;
 		const treeObj = treeData.tree;
@@ -229,8 +228,10 @@ export class Github {
 				treeObj[idx] = b;
 			}
 		}
+	}
 
-		const newTree = await this.tree(treeObj);
+	public async commit(message: string) {
+		const newTree = await this.tree(this.repoTree.tree, this.repoTree.sha);
 		await this.treeCommit(newTree, message);
 	}
 
@@ -282,7 +283,6 @@ export class Github {
 		this.refStr = ref;
 
 		const [ user, name ] = repo.split('/');
-		console.log(user, name);
 		let res: any = await this.rest.git.getRef({
 			owner: user || this.user.userName,
 			repo: name || this.repo.name,

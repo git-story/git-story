@@ -524,6 +524,7 @@ export default class Header extends Mixins(GlobalMixins) {
 
 		const fileName = `${this.config.source_dir}/_posts/${dateStr}_${title}.md`;
 		this.$git.add(fileName, content);
+		await this.$git.done();
 
 		await this.$git.commit(`POST: ${post.title}`);
 	}
@@ -544,13 +545,11 @@ export default class Header extends Mixins(GlobalMixins) {
 				const fullPath = path.join(this.config.source_dir, imgUrl);
 
 				if ( this.$git.exists(fullPath) ) {
-					updateQ.push({
-						path: fullPath,
-						blob: {
-							content: b64Data,
-							encoding: 'base64',
-						},
-					});
+					updateQ.push([
+						fullPath,
+						b64Data,
+						'base64',
+					]);
 				} else {
 					this.$git.add(fullPath, b64Data, 'base64');
 				}
@@ -599,13 +598,11 @@ export default class Header extends Mixins(GlobalMixins) {
 					const fullPath = path.join(this.config.source_dir, imagePath);
 
 					if ( this.$git.exists(fullPath) ) {
-						updateQ.push({
-							path: fullPath,
-							blob: {
-								content: data,
-								encoding: 'base64',
-							},
-						});
+						updateQ.push([
+							fullPath,
+							data,
+							'base64',
+						]);
 					} else {
 						this.$git.add(fullPath, data, 'base64');
 					}
@@ -614,23 +611,18 @@ export default class Header extends Mixins(GlobalMixins) {
 			content += md.text;
 		}
 
-		if ( Object.keys(this.$git.Added).length > 0 ) {
-			await this.$git.commit(`FILE ADD: ${post.title}`);
-			await this.$git.clear();
-			await this.$git.workflowClear();
-		}
+		updateQ.push([
+			this.$route.params.href,
+			content,
+			'utf-8',
+		]);
 
-		updateQ.push({
-			path: this.$route.params.href,
-			blob: {
-				content,
-				encoding: 'utf-8',
-			},
-		});
-
-		if ( updateQ.length > 0 ) {
-			await this.$git.update(updateQ, `UPDATE: ${post.title}`);
+		await this.$git.done();
+		for ( const Q of updateQ ) {
+			await this.$git.update(Q[0], Q[1], Q[2]);
 		}
+		await this.$git.commit(`FILE ADD: ${post.title}`);
+		await this.$git.clear();
 	}
 
 }

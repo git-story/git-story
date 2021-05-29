@@ -163,6 +163,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		while ( loop ) {
 			try {
 				this.$git.add('_config.yml', yaml.dump(config));
+				await this.$git.done();
 				await this.$git.commit('Setting _config.yml');
 				loop = false;
 			} catch {

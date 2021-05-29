@@ -174,15 +174,8 @@ export default class DashboardCategory extends Mixins(GlobalMixins) {
 
 		this.originalData = this.data;
 		await this.$git.clear();
-		await this.$git.update([
-			{
-				path: this.configFile,
-				blob: {
-					content: JSON.stringify(this.data, null, '\t'),
-					encoding: 'utf-8',
-				},
-			},
-		], `UPDATE: ${this.configFile}`);
+		await this.$git.update(this.configFile, JSON.stringify(this.data, null, '\t'));
+		await this.$git.commit(`UPDATE: ${this.configFile}`);
 		this.$store.commit('loading', false);
 	}
 

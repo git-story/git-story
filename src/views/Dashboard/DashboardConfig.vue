@@ -129,15 +129,8 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 			}
 		}
 		await this.$git.clear();
-		await this.$git.update([
-			{
-				path: this.configFilePath,
-				blob: {
-					content: code,
-					encoding: 'utf-8',
-				},
-			},
-		], `UPDATE: ${this.configFilePath}`);
+		await this.$git.update(this.configFilePath, code);
+		await this.$git.commit(`UPDATE: ${this.configFilePath}`);
 		this.originalCode = this.editor.code;
 		this.$store.commit('loading', false);
 	}
