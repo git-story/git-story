@@ -14,7 +14,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "firebase": "^7.24.0",
-    "git-submodule-js": "^1.0.3",
+    "git-submodule-js": "^1.0.4",
     "js-yaml": "^3.14.0",
     "liquor-tree": "^0.2.70",
     "mime-types": "^2.1.30",
