@@ -275,14 +275,29 @@ export class Github {
 		return false;
 	}
 
-	public async getTreeByRef(repo: string = '', ref?: string, recursive: boolean = false): Promise<any> {
+	public async getTreeByRef(repo: string = '', refrence?: string, recursive: boolean = false): Promise<any> {
+		const [ user, name ] = repo.split('/');
 		const ret: TreeRef = { success: false };
+
+		let ref = refrence as string;
+		let default_branch = this.repo.default_branch;
 		if ( !ref ) {
-			ref = `heads/${this.repo.default_branch}`;
+			ref = `heads/${default_branch}`;
 		}
 		this.refStr = ref;
 
-		const [ user, name ] = repo.split('/');
+		if ( user && name ) {
+			const { data } = await this.rest.repos.get({
+				owner: user,
+				repo: name,
+			});
+			default_branch = data.default_branch;
+		}
+
+		if ( !refrence ) {
+			ref = `heads/${default_branch}`;
+		}
+
 		let res: any = await this.rest.git.getRef({
 			owner: user || this.user.userName,
 			repo: name || this.repo.name,

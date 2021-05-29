@@ -157,9 +157,12 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 	}
 
 	public async themeChange(theme: Theme) {
+		this.$store.commit('loading', true);
 		const entries = Object.entries(this.modules);
 		const themePath = `themes/${theme.name}`;
 		let addFlag: boolean = true;
+
+		await this.$git.clear();
 
 		for ( const [ key, value ] of entries ) {
 			if ( key.toLowerCase() === theme.name.toLowerCase() ) {
@@ -202,6 +205,22 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 		}
 		await this.$git.commit(`ADD THEME ${theme.name}`);
 
+		for ( let i = 0; i < this.themes.length; i++ ) {
+			const t = this.themes[i];
+
+			if ( t.used ) {
+				t.used = false;
+				this.allThemes[i].used = false;
+			}
+
+			if ( theme.name === t.name ) {
+				t.used = true;
+				this.allThemes[i].used = true;
+			}
+
+		}
+
+		this.$store.commit('loading', false);
 	}
 
 }
