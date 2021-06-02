@@ -94,98 +94,10 @@
 					{{ $t('posting.posting') }}
 				</v-btn>
 			</template>
-
-			<v-card tile elevation="1" width="500px">
-				<!-- S: Select Cover Image -->
-				<v-row class="ma-0 px-3 pt-3" align="center">
-					<v-col cols="3">
-						<h5>{{ $t('posting.cover') }}</h5>
-					</v-col>
-					<v-col cols="7">
-						<v-text-field v-model="postConfig.cover" />
-					</v-col>
-					<v-col cols="2">
-						<v-file-input
-		  					accept="image/*"
-		  					class="pa-0"
-							prepend-icon="mdi-image"
-							hide-input
-							@change="selectCover"/>
-					</v-col>
-				</v-row>
-				<!-- E: Select Cover Image -->
-				<!-- S: Category -->
-				<v-row class="ma-0 px-3" align="center">
-					<v-col cols="3">
-						<h5>{{ $t('posting.category') }}</h5>
-					</v-col>
-					<v-col cols="9">
-						<v-select
-		  					v-if="categoryRenderer"
-		  					v-model="category"
-		 					:items="categories"
-		 					item-text="text"
-		 					return-object
-		 					menu-props="auto"
-							:label="$t('posting.category')"
-							color="indigo darken-3"
-							dense>
-						</v-select>
-					</v-col>
-				</v-row>
-				<!-- E: Category -->
-				<!-- S: Tag -->
-				<v-row class="ma-0 px-3" align="center">
-					<v-col cols="3">
-						<h5>{{ $t('posting.tag') }}</h5>
-					</v-col>
-					<v-col cols="9">
-						<v-combobox
-		  					v-model="postConfig.tags"
-		 					class="custom"
-							:label="$t('posting.tag-label')"
-		 					color="indigo darken-3"
-		 					chips clearable
-		 					multiple dense>
-							<template v-slot:selection="{ attrs, item, select, selected }">
-								<v-chip
-									small
-									v-bind="attrs"
-									:input-value="selected"
-		 							close
-									@click:close="removeItem(postConfig.tags, item)">
-									{{ item }}
-								</v-chip>
-							</template>
-						</v-combobox>
-					</v-col>
-				</v-row>
-				<!-- E: Tag -->
-				<v-row class="ma-0 px-3">
-					<v-col cols="3">
-						<h5>{{ $t('posting.image-upload.type') }}</h5>
-					</v-col>
-					<v-col cols="9">
-						<v-radio-group
-		  					v-model="postConfig.uploadType"
-							row>
-							<v-radio label="Github" value="github" color="indigo"></v-radio>
-							<!-- <v-radio label="Base64" value="base64" color="indigo"></v-radio> -->
-							<!-- <v-radio label="Imgur" value="imgur"></v-radio> -->
-						</v-radio-group>
-					</v-col>
-				</v-row>
-				<!-- S: Upload Button -->
-				<v-row class="ma-0 px-3 pb-3">
-					<v-col cols="12">
-						<v-btn
-							block dark
-							color="indigo darken-1"
-							@click="posting">{{ $t('posting.upload') }}</v-btn>
-					</v-col>
-				</v-row>
-				<!-- E: Upload Button -->
-			</v-card>
+			<upload-menu
+				:value="postConfig"
+				@cover="selectCover"
+				@upload="posting"/>
 		</v-menu>
 	</v-app-bar>
 </template>
@@ -196,13 +108,13 @@ import {
 	TempPost,
 	TempPostImage,
 	PostConfig,
-	DataTree,
 } from '@/interface/service';
 import moment from 'moment';
 import Markdown from '@git-story/md-editor/src/common/markdown/markdown.js';
 import yaml from 'js-yaml';
 import mime from 'mime-types';
 import path from 'path';
+import UploadMenu from './UploadMenu.vue';
 
 // https://stackoverflow.com/questions/8667070/javascript-regular-expression-to-validate-url
 function validateUrl(value) {
@@ -255,32 +167,11 @@ async function buildMarkdown(md: Markdown) {
 	return md.text;
 }
 
-function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
-	let ret: any[] = [];
-	for ( const item of arr ) {
-		let str = '';
-		if ( dep > 0 ) {
-			str += '　'.repeat(dep - 1);
-			str += '↳ ';
-		}
-		str += item.text;
-		ret.push({
-			text: str,
-			value: item.text,
-			dep: parent,
-		});
-		if ( Array.isArray(item.children) && item.children.length > 0 ) {
-			const sub = dump(item.children, dep + 1, [...parent, item.text]);
-			ret = ret.concat(sub);
-		}
-	}
-	return ret;
-}
-
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 @Component({
 	components: {
+		UploadMenu,
 	},
 })
 export default class Header extends Mixins(GlobalMixins) {
@@ -296,17 +187,6 @@ export default class Header extends Mixins(GlobalMixins) {
 	public imgFile!: File;
 	public config!: any; // _config.yml
 
-	public categories: any[] = [];
-	public category: any = {};
-	public categoryRenderer: boolean = false;
-
-	public categoryRerender() {
-		this.categoryRenderer = false;
-		this.$nextTick(() => {
-			this.categoryRenderer = true;
-		});
-	}
-
 	public async mounted() {
 		this.tempPosts = this.$local.read<TempPost[]>('temp_posting', JSON.parse) as TempPost[] || [];
 		this.$logger.debug('post', 'Temp post list', this.tempPosts);
@@ -316,18 +196,9 @@ export default class Header extends Mixins(GlobalMixins) {
 			uploadType: 'github',
 		};
 		do {
-			try {
-				this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
-			} catch {
-				// error
-				await sleep(1000);
-			}
+			this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
+			await sleep(1000);
 		} while ( !this.config );
-		const tmp = await this.$git.getContent<DataTree[]>('categories.json', 'json') as DataTree[];
-		this.categories = dump(tmp);
-		this.category = this.categories[0];
-		this.categoryRerender();
-		this.$logger.debug('post', 'Category list', this.categories);
 
 		const href = this.$route.params.href;
 		if ( href ) {
@@ -393,78 +264,46 @@ export default class Header extends Mixins(GlobalMixins) {
 		this.$evt.$emit('post:temp.set', this.tempPosts[idx]);
 	}
 
-	public posting() {
-		this.$store.commit('loading', true);
+	public async posting(post: TempPost) {
 
-		this.$evt.$emit('post:get', async (post: TempPost) => {
-			// 제목 검사
-			if ( post.title.length === 0 ) {
-				try {
-					const close = await this.$confirm({
-						type: 'warning',
-						title: this.$t('posting.warning-untitle'),
-						content: this.$t('posting.keep-upload'),
-						textOk: this.$t('yes'),
-						textCancel: this.$t('no'),
-					});
-					post.title = `${this.$t('posting.untitle')}_${moment().format('YYYY-MM-DD')}`;
-					close();
-				} catch (close) {
-					close();
-					this.$store.commit('loading', false);
-					return;
-				}
-			}
+		// 제목 설정
+		this.postConfig.title = post.title;
 
-			// workflow clear
-			await this.$git.workflowClear();
+		// 태그 설정
+		const tags = this.postConfig.tags as string[];
+		if ( tags && tags.length === 0 ) {
+			delete this.postConfig.tags;
+		}
 
-			// 최신 정보 갱신
-			await this.$git.clear();
+		// 카테고리 설정
+		if ( this.category && this.category.text ) {
+			this.postConfig.categories = [...this.category.dep, this.category.value];
+		}
 
-			// 제목 설정
-			this.postConfig.title = post.title;
+		if ( this.postConfig.date ) {
+			this.postConfig.updated = moment().format('YYYY-MM-DD HH:mm:ss');
+			await this.updatePosting.call(this, post);
+		} else {
+			this.postConfig.date = moment().format('YYYY-MM-DD HH:mm:ss');
+			await this.newPosting.call(this, post);
+		}
 
-			// 태그 설정
-			const tags = this.postConfig.tags as string[];
-			if ( tags && tags.length === 0 ) {
-				delete this.postConfig.tags;
-			}
+		// 임시 저장 삭제
+		const idx = this.tempPosts.findIndex((p: TempPost) => p.title === post.title);
+		if ( idx > -1 ) {
+			this.tempPosts.splice(idx, 1);
+			this.$local.write('temp_posting', this.tempPosts);
+		}
 
-			// 카테고리 설정
-			if ( this.category && this.category.text ) {
-				this.postConfig.categories = [...this.category.dep, this.category.value];
-			}
+		await this.$git.clear();
+		this.$store.commit('loading', false);
+		this.$assign('/dashboard');
 
-			if ( this.postConfig.date ) {
-				this.postConfig.updated = moment().format('YYYY-MM-DD HH:mm:ss');
-				await this.updatePosting.call(this, post);
-			} else {
-				this.postConfig.date = moment().format('YYYY-MM-DD HH:mm:ss');
-				await this.newPosting.call(this, post);
-			}
-
-			// 임시 저장 삭제
-			const idx = this.tempPosts.findIndex((p: TempPost) => p.title === post.title);
-			if ( idx > -1 ) {
-				this.tempPosts.splice(idx, 1);
-				this.$local.write('temp_posting', this.tempPosts);
-			}
-
-			await this.$git.clear();
-			this.$store.commit('loading', false);
-			this.$assign('/dashboard');
-		});
 	}
 
 	public selectCover(file: File) {
 		this.imgFile = file;
 		this.postConfig.cover = this.imgFile.name;
-	}
-
-	public removeItem(arr: string[], item: string) {
-		const idx = arr.findIndex((s: string) => s === item);
-		arr.splice(idx, 1);
 	}
 
 	private async newPosting(post: TempPost) {
