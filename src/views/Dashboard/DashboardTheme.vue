@@ -153,8 +153,33 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 		const entries = Object.entries(this.modules);
 		const themePath = `themes/${theme.name}`;
 		let addFlag: boolean = true;
+		const updateQ: any[] = [];
 
 		await this.$git.clear();
+
+		const themeConfig = await this.$git.getContent<any>(`${theme.name.toLowerCase()}.yml`, 'yaml', this.repo);
+		if ( themeConfig ) {
+			if ( themeConfig.config ) {
+				const cfgs = Object.entries(themeConfig.config);
+				for ( const [key, cfg] of cfgs ) {
+					this.config[key] = cfg;
+				}
+			}
+
+			if ( themeConfig.plugins ) {
+				const pack = await this.$git.getContent<any>('package.json', 'json');
+				for ( const plugin of themeConfig.plugins ) {
+					if ( !pack.dependencies[plugin] ) {
+						pack.dependencies[plugin] = 'latest';
+					}
+				}
+				updateQ.push([
+					'package.json',
+					JSON.stringify(pack, null, '\t'),
+					'utf-8',
+				]);
+			}
+		}
 
 		for ( const [ key, value ] of entries ) {
 			if ( key.toLowerCase() === theme.name.toLowerCase() ) {
@@ -162,8 +187,6 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 				break;
 			}
 		}
-
-		const updateQ: any[] = [];
 
 		if ( addFlag ) {
 			this.modules[theme.name] = {
