@@ -100,7 +100,8 @@
 <script lang="ts">
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
-import { DataTree } from '@/interface/service';
+import { DataTree, TempPost } from '@/interface/service';
+import moment from 'moment';
 
 function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
 	let ret: any[] = [];
@@ -184,7 +185,7 @@ export default class UploadMenu extends Mixins(GlobalMixins) {
 			// 최신 정보 갱신
 			await this.$git.clear();
 
-			this.$emit('upload', post);
+			this.$emit('upload', post, this.category);
 
 		});
 	}

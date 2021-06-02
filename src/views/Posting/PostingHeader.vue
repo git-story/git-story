@@ -264,7 +264,7 @@ export default class Header extends Mixins(GlobalMixins) {
 		this.$evt.$emit('post:temp.set', this.tempPosts[idx]);
 	}
 
-	public async posting(post: TempPost) {
+	public async posting(post: TempPost, category: any) {
 
 		// 제목 설정
 		this.postConfig.title = post.title;
@@ -276,8 +276,8 @@ export default class Header extends Mixins(GlobalMixins) {
 		}
 
 		// 카테고리 설정
-		if ( this.category && this.category.text ) {
-			this.postConfig.categories = [...this.category.dep, this.category.value];
+		if ( category && category.text ) {
+			this.postConfig.categories = [...category.dep, category.value];
 		}
 
 		if ( this.postConfig.date ) {
