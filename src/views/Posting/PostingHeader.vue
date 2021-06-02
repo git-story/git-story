@@ -97,7 +97,8 @@
 			<upload-menu
 				:value="postConfig"
 				@cover="selectCover"
-				@upload="posting"/>
+				@upload="posting"
+				@update="postConfig = $event"/>
 		</v-menu>
 	</v-app-bar>
 </template>

@@ -6,85 +6,118 @@
 -->
 <template>
 	<v-card tile elevation="1" width="500px">
-		<!-- S: Select Cover Image -->
 		<v-row class="ma-0 px-3 pt-3" align="center">
-			<v-col cols="3">
-				<h5>{{ $t('posting.cover') }}</h5>
-			</v-col>
-			<v-col cols="7">
-				<v-text-field v-model="value.cover" />
-			</v-col>
-			<v-col cols="2">
-				<v-file-input
-					accept="image/*"
-					class="pa-0"
-					prepend-icon="mdi-image"
-					hide-input
-					@change="$emit('cover', $event)"/>
-			</v-col>
-		</v-row>
-		<!-- E: Select Cover Image -->
-		<!-- S: Category -->
-		<v-row class="ma-0 px-3" align="center">
-			<v-col cols="3">
-				<h5>{{ $t('posting.category') }}</h5>
-			</v-col>
-			<v-col cols="9">
-				<v-select
-					v-if="categoryRenderer"
-					v-model="category"
-					:items="categories"
-					item-text="text"
-					return-object
-					menu-props="auto"
-					:label="$t('posting.category')"
-					color="indigo darken-3"
-					dense>
-				</v-select>
-			</v-col>
-		</v-row>
-		<!-- E: Category -->
-		<!-- S: Tag -->
-		<v-row class="ma-0 px-3" align="center">
-			<v-col cols="3">
-				<h5>{{ $t('posting.tag') }}</h5>
-			</v-col>
-			<v-col cols="9">
-				<v-combobox
-					v-model="value.tags"
-					class="custom"
-					:label="$t('posting.tag-label')"
-					color="indigo darken-3"
-					chips clearable
-					multiple dense>
-					<template v-slot:selection="{ attrs, item, select, selected }">
-						<v-chip
-							small
-							v-bind="attrs"
-							:input-value="selected"
-							close
-							@click:close="removeItem(value.tags, item)">
-							{{ item }}
-						</v-chip>
-					</template>
-				</v-combobox>
-			</v-col>
-		</v-row>
-		<!-- E: Tag -->
-		<v-row class="ma-0 px-3">
-			<v-col cols="3">
-				<h5>{{ $t('posting.image-upload.type') }}</h5>
-			</v-col>
-			<v-col cols="9">
+			<v-col cols="12" class="pb-0">
 				<v-radio-group
-					v-model="value.uploadType"
-					row>
-					<v-radio label="Github" value="github" color="indigo"></v-radio>
-					<!-- <v-radio label="Base64" value="base64" color="indigo"></v-radio> -->
-					<!-- <v-radio label="Imgur" value="imgur"></v-radio> -->
+					v-model="editMode"
+	 				class="custom ma-0"
+	  				@change="editModeChange"
+	 				row>
+					<v-radio
+		 				label="Basic"
+	   					value="basic"
+						color="indigo"></v-radio>
+					<v-radio
+		 				label="Editor"
+	   					value="editor"
+						color="indigo"></v-radio>
 				</v-radio-group>
 			</v-col>
 		</v-row>
+		<div v-if="editMode === 'editor'">
+			<v-row class="ma-0 px-3" align="center" style="min-height: 300px;">
+				<v-col cols="12">
+					<monaco-editor
+						ref="code-editor"
+	  					style="width: 100%; height: 300px; border: solid black 1px;"
+						v-model="editor.code"
+						:language="editor.language"
+						:theme="editor.theme"
+						:options="editor.options"/>
+				</v-col>
+			</v-row>
+		</div>
+		<div v-else>
+			<!-- S: Select Cover Image -->
+			<v-row class="ma-0 px-3" align="center">
+				<v-col cols="3">
+					<h5>{{ $t('posting.cover') }}</h5>
+				</v-col>
+				<v-col cols="7">
+					<v-text-field v-model="value.cover" />
+				</v-col>
+				<v-col cols="2">
+					<v-file-input
+						accept="image/*"
+						class="pa-0"
+						prepend-icon="mdi-image"
+						hide-input
+						@change="$emit('cover', $event)"/>
+				</v-col>
+			</v-row>
+			<!-- E: Select Cover Image -->
+			<!-- S: Category -->
+			<v-row class="ma-0 px-3" align="center">
+				<v-col cols="3">
+					<h5>{{ $t('posting.category') }}</h5>
+				</v-col>
+				<v-col cols="9">
+					<v-select
+						v-if="categoryRenderer"
+						v-model="category"
+						:items="categories"
+						item-text="text"
+						return-object
+						menu-props="auto"
+						:label="$t('posting.category')"
+						color="indigo darken-3"
+						dense>
+					</v-select>
+				</v-col>
+			</v-row>
+			<!-- E: Category -->
+			<!-- S: Tag -->
+			<v-row class="ma-0 px-3" align="center">
+				<v-col cols="3">
+					<h5>{{ $t('posting.tag') }}</h5>
+				</v-col>
+				<v-col cols="9">
+					<v-combobox
+						v-model="value.tags"
+						class="custom"
+						:label="$t('posting.tag-label')"
+						color="indigo darken-3"
+						chips clearable
+						multiple dense>
+						<template v-slot:selection="{ attrs, item, select, selected }">
+							<v-chip
+								small
+								v-bind="attrs"
+								:input-value="selected"
+								close
+								@click:close="removeItem(value.tags, item)">
+								{{ item }}
+							</v-chip>
+						</template>
+					</v-combobox>
+				</v-col>
+			</v-row>
+			<!-- E: Tag -->
+			<v-row class="ma-0 px-3">
+				<v-col cols="3">
+					<h5>{{ $t('posting.image-upload.type') }}</h5>
+				</v-col>
+				<v-col cols="9">
+					<v-radio-group
+						v-model="value.uploadType"
+						row>
+						<v-radio label="Github" value="github" color="indigo"></v-radio>
+						<!-- <v-radio label="Base64" value="base64" color="indigo"></v-radio> -->
+						<!-- <v-radio label="Imgur" value="imgur"></v-radio> -->
+					</v-radio-group>
+				</v-col>
+			</v-row>
+		</div>
 		<!-- S: Upload Button -->
 		<v-row class="ma-0 px-3 pb-3">
 			<v-col cols="12">
@@ -102,6 +135,8 @@ import { Component, Mixins, Prop } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { DataTree, TempPost } from '@/interface/service';
 import moment from 'moment';
+import MonacoEditor from 'vue-monaco';
+import yaml from 'js-yaml';
 
 function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
 	let ret: any[] = [];
@@ -126,7 +161,11 @@ function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
 }
 
 
-@Component
+@Component({
+	components: {
+		MonacoEditor,
+	},
+})
 export default class UploadMenu extends Mixins(GlobalMixins) {
 
 	@Prop(Object) public value!: any;
@@ -134,6 +173,16 @@ export default class UploadMenu extends Mixins(GlobalMixins) {
 	public categories: any[] = [];
 	public category: any = {};
 	public categoryRenderer: boolean = false;
+	public editMode: string = 'basic';
+
+	public editor: any = {
+		options: {
+			automaticLayout: true,
+		},
+		language: 'yaml',
+		code: '',
+		theme: 'vs',
+	};
 
 	public async mounted() {
 		this.$logger.debug('app', 'UploadMenu Mounted');
@@ -142,6 +191,14 @@ export default class UploadMenu extends Mixins(GlobalMixins) {
 		this.category = this.categories[0];
 		this.categoryRerender();
 		this.$logger.debug('post', 'Category list', this.categories);
+	}
+
+	public editModeChange() {
+		if ( this.editMode === 'editor' ) {
+			this.editor.code = yaml.dump(this.value);
+		} else {
+			this.$emit('update', yaml.load(this.editor.code));
+		}
 	}
 
 	public categoryRerender() {
