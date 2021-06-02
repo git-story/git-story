@@ -444,6 +444,13 @@ export default class Header extends Mixins(GlobalMixins) {
 				await this.newPosting.call(this, post);
 			}
 
+			// 임시 저장 삭제
+			const idx = this.tempPosts.findIndex((p: TempPost) => p.title === post.title);
+			if ( idx > -1 ) {
+				this.tempPosts.splice(idx, 1);
+				this.$local.write('temp_posting', this.tempPosts);
+			}
+
 			await this.$git.clear();
 			this.$store.commit('loading', false);
 			this.$assign('/dashboard');
