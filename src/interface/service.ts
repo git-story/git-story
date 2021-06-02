@@ -63,7 +63,6 @@ export interface Theme {
 	description: string;
 	link: string;
 	preview: string;
-	tags: string[];
 	thumbnail: string;
 	used: boolean;
 }

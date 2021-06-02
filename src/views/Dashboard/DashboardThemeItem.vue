@@ -9,12 +9,23 @@
 		<template v-slot:default="{ hover }">
 			<v-card tile :elevation="hover ? 12 : 1" @click="openTheme">
 				<v-img
-					:src="theme.thumbnail">
+					max-width="800"
+	 				max-height="500"
+	  				aspect-ratio="1.5"
+					:src="theme.thumbnail"
+					contain>
 				</v-img>
 
 				<v-card-title>
 					<span>{{ theme.name }}</span>
 					<v-spacer></v-spacer>
+					<v-btn
+		 				small icon
+		 				color="black"
+						class="mr-1"
+						@click.stop="openGithub">
+						<v-icon>mdi-github</v-icon>
+					</v-btn>
 					<v-btn
 						small tile outlined
 		 				:disabled="theme.used"
@@ -25,17 +36,6 @@
 				</v-card-title>
 				<v-card-text class="pt-0">
 					<div style="height: 50px;">{{ theme.description }}</div>
-				</v-card-text>
-
-				<v-divider class="mx-4"></v-divider>
-
-				<v-card-text style="height: 140px;">
-					<v-chip
-						v-for="chip in theme.tags"
-						:key="theme.name + chip"
-						class="mt-1 ml-1">
-						{{ chip }}
-					</v-chip>
 				</v-card-text>
 			</v-card>
 		</template>
@@ -52,7 +52,11 @@ export default class DashboardThemeItem extends Mixins(GlobalMixins) {
 	@Prop(Object) public theme!: Theme;
 
 	public openTheme() {
-		window.open(this.theme.preview || this.theme.link);
+		window.open(this.theme.preview);
+	}
+
+	public openGithub() {
+		window.open(this.theme.link);
 	}
 
 	public async useTheme() {

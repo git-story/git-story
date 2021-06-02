@@ -22,7 +22,7 @@
 			</v-text-field>
 		</v-row>
 		<v-divider class="my-2"></v-divider>
-		<v-row>
+		<v-row v-if="renderer">
 			<v-col
 	   			xs="12"
 	   			ms="6"
@@ -32,7 +32,11 @@
 				:key="theme.name + idx">
 				<theme-item :theme="theme" @changeit="themeChange"/>
 			</v-col>
-			<infinite-loading @infinite="nextThemeLoading" />
+			<infinite-loading @infinite="nextThemeLoading">
+				<template v-slot:no-results>
+					<span></span>
+				</template>
+			</infinite-loading>
 		</v-row>
 	</div>
 </template>
@@ -59,18 +63,27 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 	public allThemes: Theme[] = [];
 	public themeIdx: number = 0;
 	public search: string = '';
-	public readonly repo: string = 'hexojs/site';
+	public readonly repo: string = 'git-story/hexo-themes';
 	public readonly loadNumPerOneTime: number = 20;
 	public config: any = {};
 	public modules: Submodule = {};
+	public renderer: boolean = true;
 
 	get themeNames() {
 		return this.allThemes.map((theme: Theme) => theme.name);
 	}
 
+	public rerender() {
+		this.renderer = false;
+		this.$git.clear();
+		this.$nextTick(() => {
+			this.renderer = true;
+		});
+	}
+
 	public async mounted() {
 		this.$logger.debug('app', 'DashboardTheme mounted');
-		this.allThemes = await this.$git.getContent<Theme[]>('source/_data/themes.yml', 'yaml', this.repo);
+		this.allThemes = await this.$git.getContent<Theme[]>('index.yml', 'yaml', this.repo);
 		while ( true ) {
 			this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
 			if ( this.config ) {
@@ -80,9 +93,9 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 		}
 		await this.$git.clear();
 		this.modules = await this.$git.getContent<Submodule>('.gitmodules', 'submodule');
-		console.log('config', this.config);
-		console.log('allThemes', this.allThemes);
-		console.log('modules', this.modules);
+		this.$logger.debug('theme', 'config', this.config);
+		this.$logger.debug('theme', 'allThemes', this.allThemes);
+		this.$logger.debug('theme', 'modules', this.modules);
 		await this.nextThemeLoading();
 	}
 
@@ -103,9 +116,6 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 		for ( const theme of this.allThemes ) {
 			const regex = new RegExp(this.search, 'i');
 			if ( theme.name.match(regex) ) {
-				if ( !theme.thumbnail ) {
-					await this.themeThumbnail(theme);
-				}
 				if ( theme.name === this.config.theme ) {
 					theme.used = true;
 				} else {
@@ -117,28 +127,10 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 		this.themes = ret;
 	}
 
-	public genThumbnailUrl(name: string) {
-		return `https://raw.githubusercontent.com/${this.repo}/master/source/themes/screenshots/${name}.png`;
-	}
-
-	public async themeThumbnail(theme: Theme) {
-		try {
-			const thumbnail = this.genThumbnailUrl(theme.name);
-			await this.$axios.get(thumbnail);
-			theme.thumbnail = thumbnail;
-		} catch {
-			theme.thumbnail = this.genThumbnailUrl(theme.name.toLowerCase());
-		}
-		return theme;
-	}
-
 	public async nextThemeLoading($state?: any) {
 		for ( let i = 0; i < this.loadNumPerOneTime; i++ ) {
 			if ( this.themeIdx < this.allThemes.length ) {
 				const theme = this.allThemes[this.themeIdx++];
-				if ( !theme.thumbnail ) {
-					await this.themeThumbnail(theme);
-				}
 				if ( theme.name === this.config.theme ) {
 					theme.used = true;
 				} else {
@@ -219,6 +211,8 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 			}
 
 		}
+
+		this.rerender();
 
 		this.$store.commit('loading', false);
 	}
