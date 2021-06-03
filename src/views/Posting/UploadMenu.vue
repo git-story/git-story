@@ -160,6 +160,7 @@ function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
 	return ret;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 @Component({
 	components: {
@@ -242,6 +243,10 @@ export default class UploadMenu extends Mixins(GlobalMixins) {
 			// 최신 정보 갱신
 			await this.$git.clear();
 
+			if ( this.editMode === 'editor' ) {
+				this.$emit('update', yaml.load(this.editor.code));
+				await sleep(10);
+			}
 			this.$emit('upload', post, this.category);
 
 		});
