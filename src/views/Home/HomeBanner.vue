@@ -73,6 +73,7 @@ export default class HomeBanner extends Mixins(GlobalMixins) {
 		provider.addScope('delete_repo');
 		provider.addScope('workflow');
 
+		await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 		firebase
 			.auth()
 			.signInWithPopup(provider)
