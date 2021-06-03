@@ -56,8 +56,6 @@ function date2str(date: Date) {
 	return `${yyyy}${MM}${dd}${hh}${mm}${ss}`;
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 @Component({})
 export default class DashboardPostItem extends Mixins(GlobalMixins) {
 
@@ -92,9 +90,9 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 					i = 0;
 					break;
 				} catch {
-					await sleep(1500);
+					await this.$sleep(1500);
 					await this.$git.clear();
-					await sleep(1500);
+					await this.$sleep(1500);
 				}
 			}
 

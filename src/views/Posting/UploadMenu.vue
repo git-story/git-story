@@ -160,8 +160,6 @@ function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
 	return ret;
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 @Component({
 	components: {
 		MonacoEditor,
@@ -245,7 +243,7 @@ export default class UploadMenu extends Mixins(GlobalMixins) {
 
 			if ( this.editMode === 'editor' ) {
 				this.$emit('update', yaml.load(this.editor.code));
-				await sleep(10);
+				await this.$sleep(10);
 			}
 			this.$emit('upload', post, this.category);
 

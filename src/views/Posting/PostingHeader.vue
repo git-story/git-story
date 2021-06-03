@@ -168,8 +168,6 @@ async function buildMarkdown(md: Markdown) {
 	return md.text;
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 @Component({
 	components: {
 		UploadMenu,
@@ -198,7 +196,7 @@ export default class Header extends Mixins(GlobalMixins) {
 		};
 		do {
 			this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
-			await sleep(1000);
+			await this.$sleep(1000);
 		} while ( !this.config );
 
 		const href = this.$route.params.href;

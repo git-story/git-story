@@ -49,8 +49,6 @@ import InfiniteLoading from 'vue-infinite-loading';
 import { Submodule, serialize } from 'git-submodule-js';
 import yaml from 'js-yaml';
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 @Component({
 	components: {
 		ThemeItem,
@@ -89,7 +87,7 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 			if ( this.config ) {
 				break;
 			}
-			await sleep(1000);
+			await this.$sleep(1000);
 		}
 		await this.$git.clear();
 		this.modules = await this.$git.getContent<Submodule>('.gitmodules', 'submodule');

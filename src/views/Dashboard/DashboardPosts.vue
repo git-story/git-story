@@ -51,8 +51,6 @@ import firebase from 'firebase';
 import yaml from 'js-yaml';
 import InfiniteLoading from 'vue-infinite-loading';
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 @Component({
 	components: {
 		PostItem,
@@ -136,7 +134,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		await this.createBlogRepo(repo);
 		let content: any;
 		do {
-			await sleep(1000);
+			await this.$sleep(1000);
 			content = await this.$git.getContent<MetaData[]>('meta-data.json', 'json', repo);
 		} while ( !content );
 
@@ -156,7 +154,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 			},
 		});
 
-		await sleep(1000);
+		await this.$sleep(1000);
 		await this.$git.workflowClear();
 
 		let loop: boolean = true;
@@ -167,7 +165,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 				await this.$git.commit('Setting _config.yml');
 				loop = false;
 			} catch {
-				await sleep(5000);
+				await this.$sleep(5000);
 			}
 			await this.$git.clear();
 		}
