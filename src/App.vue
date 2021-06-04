@@ -33,7 +33,18 @@ import GlobalMixins from '@/plugins/mixins';
 import { User } from '@/interface/user';
 import { Github } from '@/plugins/github';
 
-@Component
+@Component({
+	watch: {
+		$route(to, from) {
+			this.$logger.info('route', `Change route ${from.path} to ${to.path}.`);
+			if ( to.params.lang ) {
+				if ( this.$vuetify.lang.current !== to.params.lang ) {
+					this.$vuetify.lang.current = to.params.lang;
+				}
+			}
+		},
+	},
+})
 export default class App extends Mixins(GlobalMixins) {
 
 	public created() {

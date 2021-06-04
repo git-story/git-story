@@ -4,57 +4,51 @@ import VueRouter, { RouteConfig } from 'vue-router';
 Vue.use(VueRouter);
 
 const routes: RouteConfig[] = [
+	/*
 	{
-		path: '/',
-		component: () => import('views/Home/Home.vue'),
-	},
-	{
-		path: '/register',
+		path: 'register',
 		component: () => import('views/Register/Register.vue'),
 	},
+	*/
 	{
-		path: '/dashboard',
-		redirect: '/dashboard/posts',
-	},
-	{
-		path: '/posting/:href(.*)',
+		path: 'posting/:href(.*)',
 		component: () => import('views/Posting/Posting.vue'),
 	},
 	{
-		path: '/dashboard/:selected(.*)',
+		path: 'dashboard',
 		component: () => import('views/Dashboard/Dashboard.vue'),
 		children: [
 			{
-				path: '/dashboard/posts',
+				path: 'posts',
 				component: () => import('views/Dashboard/DashboardPosts.vue'),
 			},
 			{
-				path: '/dashboard/category',
+				path: 'category',
 				component: () => import('views/Dashboard/DashboardCategory.vue'),
 			},
 			{
-				path: '/dashboard/config',
+				path: 'config',
 				component: () => import('views/Dashboard/DashboardConfig.vue'),
 			},
 			{
-				path: '/dashboard/theme',
+				path: 'theme',
 				component: () => import('views/Dashboard/DashboardTheme.vue'),
 			},
 			{
-				path: '/dashboard/template',
+				path: 'template',
 				component: () => import('views/Dashboard/DashboardTemplate.vue'),
 			},
 			{
-				path: '/dashboard/comment',
+				path: 'comment',
 				component: () => import('views/Dashboard/DashboardComment.vue'),
 			},
 			{
-				path: '/dashboard/setting',
+				path: 'setting',
 				component: () => import('views/Dashboard/DashboardSetting.vue'),
 			},
 			{
 				path: '',
-				redirect: '/dashboard/posts',
+				redirect: 'posts',
 			},
 		],
 	},
@@ -63,7 +57,25 @@ const routes: RouteConfig[] = [
 const router = new VueRouter({
 	mode: 'history',
 	base: process.env.BASE_URL,
-	routes,
+	routes: [
+		{
+			path: '/:lang',
+			component: {
+				template: '<router-view></router-view>',
+			},
+			children: [
+				...routes,
+				{
+					path: '',
+					component: () => import('views/Home/Home.vue'),
+				},
+			],
+		},
+		{
+			path: '',
+			redirect: '/' + navigator.language.split('-')[0],
+		},
+	],
 });
 
 export default router;

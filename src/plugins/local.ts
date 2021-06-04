@@ -1,7 +1,7 @@
 
 type LocalReturnType = string|undefined|Record<string, unknown>|null;
 
-const localRead = <T extends object>(key: string, convert?: (s: string) => T): T|LocalReturnType => {
+const localRead = <T extends any>(key: string, convert?: (s: string) => T): T|LocalReturnType => {
 	if ( typeof window.localStorage !== 'undefined' ) {
 		let ret: T|LocalReturnType = window.localStorage.getItem(`GS_${key}`);
 

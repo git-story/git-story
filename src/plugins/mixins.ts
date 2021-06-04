@@ -5,6 +5,7 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
  */
 
+import path from 'path';
 import Vue from 'vue';
 import { Component, Vue as VueDecorator } from 'vue-property-decorator';
 import Vuetify from '@/plugins/vuetify';
@@ -55,6 +56,10 @@ export default class Mixin extends VueDecorator {
 	}
 
 	public $assign(url: string, newTab: boolean = false) {
+		if ( !url.match(/^https?:\/\//) ) {
+			url = path.join('/', this.$vuetify.lang.current, url);
+		}
+
 		if ( newTab ) {
 			window.open(url);
 			return;
