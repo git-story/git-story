@@ -37,6 +37,15 @@ import { Github } from '@/plugins/github';
 	watch: {
 		$route(to, from) {
 			this.$logger.info('route', `Change route ${from.path} to ${to.path}.`);
+
+			if ( !this.$store.getters.user ) {
+				if ( to.path.replace(/^\/../, '') ) {
+					const t = this as any;
+					t.$assign('/');
+					return;
+				}
+			}
+
 			if ( to.params.lang ) {
 				if ( this.$vuetify.lang.current !== to.params.lang ) {
 					this.$vuetify.lang.current = to.params.lang;
@@ -62,7 +71,7 @@ export default class App extends Mixins(GlobalMixins) {
 			this.$store.commit('setUser', user);
 			window.addEventListener('load', () => {
 				this.$logger.info('router', 'Now router', this.$route);
-				if ( this.$route.path === '/' ) {
+				if ( this.$route.path.match(/^\/../) ) {
 					this.$assign('/dashboard');
 				}
 			});
