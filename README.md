@@ -25,23 +25,23 @@ GIT-STORY 는 그런 작업들을 전부 없애주고, 하나의 블로그 플�
 프로젝트를 다운로드 후 yarn을 이용하여 종속된 모듈을 설치하세요.
 
 ```bash
-git clone https://github.com/mobbing/git-story.git
+https://github.com/git-story/git-story.git
 cd git-story
-yarn
+npm install
 ```
 
 ### 프로젝트 실행
 
 다음 명령어를 사용하여 개발을 위한 컴파일, Hot-reload 를 사용할 수 있습니다.
 ```bash
-yarn serve
+npm run serve
 ```
 
 ### 프로젝트 빌드
 
 다음 명령어를 사용하여 배포를 위한 빌드를 진행하세요.
 ```bash
-yarn build
+npm run build
 ```
 
 ### 개발 규칙
