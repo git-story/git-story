@@ -27,7 +27,7 @@
 			</div>
 		</v-col>
 		<v-col cols="4" class="pa-0">
-			<v-row class="ma-0">
+			<v-row class="ma-0" style="position: fixed;">
 				<v-col cols="12" class="py-0">
 					<v-text-field
 		 				class="pt-0"
