@@ -181,7 +181,7 @@ export default class Header extends Mixins(GlobalMixins) {
 	public postConfig: PostConfig = {
 		cover: '',
 		tags: [],
-		uploadType: 'github',
+		uploadType: 'jsdelivr',
 	};
 	public imgFile!: File;
 	public config!: any; // _config.yml
@@ -192,7 +192,7 @@ export default class Header extends Mixins(GlobalMixins) {
 		this.postConfig = {
 			cover: '',
 			tags: [],
-			uploadType: 'github',
+			uploadType: 'jsdelivr',
 		};
 		do {
 			this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
@@ -205,7 +205,7 @@ export default class Header extends Mixins(GlobalMixins) {
 			const header = content.replace(/---\n((?:.*\n)*)?---\n(?:(?:.*\n?)*)/g, '$1');
 			content = content.replace(/---\n(?:(?:.*\n)*)?---\n((?:.*\n?)*)/g, '$1');
 			this.postConfig = yaml.load(header);
-			this.postConfig.uploadType = 'github';
+			this.postConfig.uploadType = 'jsdelivr';
 			const md = new Markdown(content);
 			const splMd = md.text.split('\n');
 			const imgs = md.images();
@@ -348,17 +348,22 @@ export default class Header extends Mixins(GlobalMixins) {
 		const splMd = md.text.split('\n');
 		if ( uploadType === 'base64' ) {
 			content += await buildMarkdown(md);
-		} else if ( uploadType === 'github' ) {
+		} else if ( uploadType === 'github' || uploadType === 'jsdelivr' ) {
 			const imgs = md.images();
 			for ( const img of imgs ) {
 				if ( img.url.startsWith('blob:') ) {
 					const b64url = await blobToBase64(img.url);
 					const { data, contentType } = parseB64URL(b64url);
 					const imgName = img.alt.replace(/\s/g, '_');
-					const imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
+					let imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
+					this.$git.add(`${this.config.source_dir}${imagePath}`, data, 'base64');
+
+					if ( uploadType === 'jsdelivr' ) {
+						imagePath = `https://cdn.jsdelivr.net/gh/${this.$git.repo.full_name}/${this.config.public_dir}${imagePath}`;
+					}
+
 					const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
 					md.replaceLine(img.line, repl);
-					this.$git.add(`${this.config.source_dir}${imagePath}`, data, 'base64');
 				}
 			}
 			content += md.text;
@@ -429,16 +434,14 @@ export default class Header extends Mixins(GlobalMixins) {
 		const splMd = md.text.split('\n');
 		if ( uploadType === 'base64' ) {
 			content += await buildMarkdown(md);
-		} else if ( uploadType === 'github' ) {
+		} else if ( uploadType === 'github' || uploadType === 'jsdelivr' ) {
 			const imgs = md.images();
 			for ( const img of imgs ) {
 				if ( img.url.startsWith('blob:') ) {
 					const b64url = await blobToBase64(img.url);
 					const { data, contentType } = parseB64URL(b64url);
 					const imgName = img.alt.replace(/\s/g, '_');
-					const imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
-					const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
-					md.replaceLine(img.line, repl);
+					let imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
 
 					const fullPath = path.join(this.config.source_dir, imagePath);
 
@@ -451,6 +454,13 @@ export default class Header extends Mixins(GlobalMixins) {
 					} else {
 						this.$git.add(fullPath, data, 'base64');
 					}
+
+					if ( uploadType === 'jsdelivr' ) {
+						imagePath = `https://cdn.jsdelivr.net/gh/${this.$git.repo.full_name}/${this.config.public_dir}${imagePath}`;
+					}
+
+					const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
+					md.replaceLine(img.line, repl);
 				}
 			}
 			content += md.text;

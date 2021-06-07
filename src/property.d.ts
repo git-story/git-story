@@ -7,6 +7,7 @@ import { Local } from './plugins/local';
 import { Logger } from './plugins/logger';
 import { Github } from './plugins/github';
 import { AxiosStatic } from 'axios';
+import { Firebase } from './plugins/firebase';
 
 declare module 'vue/types/vue' {
 	interface Vue {
@@ -16,5 +17,6 @@ declare module 'vue/types/vue' {
 		$git: Github;
 		$evt: Vue;
 		$axios: AxiosStatic;
+		$firebase: Firebase;
 	}
 }

@@ -112,6 +112,7 @@
 						v-model="value.uploadType"
 						row>
 						<v-radio label="Github" value="github" color="indigo"></v-radio>
+						<v-radio label="Jsdelivr" value="jsdelivr" color="indigo"></v-radio>
 						<!-- <v-radio label="Base64" value="base64" color="indigo"></v-radio> -->
 						<!-- <v-radio label="Imgur" value="imgur"></v-radio> -->
 					</v-radio-group>
