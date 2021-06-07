@@ -11,6 +11,7 @@ import { UserVuetifyPreset } from 'vuetify';
 import local from './local';
 
 import ko from '@/languages/ko/';
+import en from '@/languages/en/';
 
 Vue.use(Vuetify);
 
@@ -21,7 +22,7 @@ if ( !lang ) {
 
 export default new Vuetify({
 	lang: {
-		locales: { ko },
+		locales: { ko, en },
 		current: lang,
 	},
 } as UserVuetifyPreset);

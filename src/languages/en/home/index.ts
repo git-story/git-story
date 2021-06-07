@@ -33,4 +33,3 @@ export default {
 		btn: 'Prepare a story',
 	},
 };
- 
