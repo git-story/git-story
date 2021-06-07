@@ -18,6 +18,7 @@ import axios from 'axios';
 import session from './plugins/session';
 import local from './plugins/local';
 import logger from './plugins/logger';
+import { Firebase } from './plugins/firebase';
 import { Github } from './plugins/github';
 
 import LiquorTree from 'liquor-tree';
@@ -39,10 +40,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
-Vue.prototype.$firebase = firebase;
 Vue.prototype.$axios = axios;
 Vue.prototype.$evt = new Vue();
 Vue.prototype.$git = new Github();
+Vue.prototype.$firebase = new Firebase(firebase, 'http://localhost:5001/api-git-story/us-central1');
 
 Vue.use(session);
 Vue.use(local);

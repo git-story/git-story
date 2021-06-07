@@ -22,16 +22,7 @@ export default class DashboardSetting extends Mixins(GlobalMixins) {
 
 	public async mounted() {
 		this.$logger.debug('app', 'DashboardSetting mounted');
-		let user: any;
-
-		do {
-			user = firebase.auth().currentUser;
-			await this.$sleep(500);
-		} while ( !user );
-
-		const userInfo = user.toJSON();
-
-		window.open('https://api.imgur.com/oauth2/authorize?client_id=f70a15b9bcfe4cc&response_type=token&state='+userInfo.uid, '_blank');
+		await this.$firebase.init();
 	}
 
 }
