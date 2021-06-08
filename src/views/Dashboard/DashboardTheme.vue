@@ -151,7 +151,6 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 		const entries = Object.entries(this.modules);
 		const themePath = `themes/${theme.name}`;
 		let addFlag: boolean = true;
-		const updateQ: any[] = [];
 
 		await this.$git.clear();
 
@@ -171,11 +170,7 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 						pack.dependencies[plugin] = 'latest';
 					}
 				}
-				updateQ.push([
-					'package.json',
-					JSON.stringify(pack, null, '\t'),
-					'utf-8',
-				]);
+				this.$git.update('package.json', JSON.stringify(pack, null, '\t'));
 			}
 		}
 
@@ -191,11 +186,7 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 				path: themePath,
 				url: theme.link,
 			};
-			updateQ.push([
-				'.gitmodules',
-				serialize(this.modules),
-				'utf-8',
-			]);
+			this.$git.update('.gitmodules', serialize(this.modules));
 
 			const repoName = theme.link.replace('https://github.com/', '');
 			await this.$git.clear();
@@ -204,18 +195,9 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 		}
 
 		this.config.theme = theme.name;
-		updateQ.push([
-			'_config.yml',
-			yaml.dump(this.config),
-			'utf-8',
-		]);
+		this.$git.update('_config.yml', yaml.dump(this.config));
 
 		await this.$git.workflowClear();
-
-		await this.$git.done();
-		for ( const Q of updateQ ) {
-			await this.$git.update(Q[0], Q[1], Q[2]);
-		}
 		await this.$git.commit(`ADD THEME ${theme.name}`);
 
 		for ( let i = 0; i < this.themes.length; i++ ) {

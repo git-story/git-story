@@ -42,6 +42,7 @@ export class Github {
 	private curTree: Tree<'tree'> = {};
 	private refStr: string = '';
 	private newTree!: any;
+	private Q: any = {};
 
 	constructor(user?: any) {
 		if ( user ) {
@@ -64,6 +65,10 @@ export class Github {
 
 	get Tree() {
 		return this.repoTree;
+	}
+
+	get isAdded() {
+		return Object.keys(this.curTree.tree as any).length > 0;
 	}
 
 	public setUser(user: any) {
@@ -177,22 +182,19 @@ export class Github {
 		const result = tree[idx];
 		switch ( result.type ) {
 			case 'blob':
-				tree[idx] = await this.blob(file);
+				this.Q[idx.toString()] = await this.blob(file);
 				break;
 			case 'tree':
 				const regex = new RegExp(`^${file}/`);
-				const tmpTree: any[] = [];
-				for ( const t of tree ) {
+				for ( let i = 0; i < tree.length; i++ ) {
+					const t = tree[i];
 					const tp = t.path as string;
 					if ( tp === file || tp.match(regex) ) {
 						if ( t.type === 'blob' ) {
-							tmpTree.push(await this.blob(tp));
+							this.Q[i.toString()] = await this.blob(tp);
 						}
-					} else {
-						tmpTree.push(t);
 					}
 				}
-				this.repoTree.tree = tmpTree;
 				break;
 		}
 	}
@@ -210,29 +212,55 @@ export class Github {
 			type: 'blob',
 			mode: '100644',
 		};
-		tree[idx] = await this.blob(file, blob);
-	}
-
-	public async done() {
-		const build = await this.buildTree(this.curTree);
-		const treeData = this.repoTree;
-		const treeObj = treeData.tree;
-
-		for ( const b of build ) {
-			const idx = treeObj.findIndex((tree: AnyTree) => tree.path === b.path);
-			if ( idx === -1 ) {
-				// new file
-				treeObj.push(b);
-			} else {
-				// update file
-				treeObj[idx] = b;
-			}
-		}
+		this.Q[idx.toString()] = await this.blob(file, blob);
 	}
 
 	public async commit(message: string) {
+		const treeData = this.repoTree;
+		const treeObj = treeData.tree as any;
+
+		if ( this.isAdded ) {
+			const build = await this.buildTree(this.curTree);
+
+			for ( const b of build ) {
+				const idx = treeObj.findIndex((tree: AnyTree) => tree.path === b.path);
+				if ( idx === -1 ) {
+					// new file
+					treeObj.push(b);
+				} else {
+					// update file
+					treeObj[idx] = b;
+				}
+			}
+		}
+
+		for ( const [idx, val] of Object.entries(this.Q) ) {
+			treeObj[Number(idx)] = val;
+		}
+		this.Q = [];
+
 		const newTree = await this.tree(this.repoTree.tree, this.repoTree.sha);
-		await this.treeCommit(newTree, message);
+		const { data } = await this.rest.git.createCommit({
+			owner: this.user.userName,
+			repo: this.repo.name,
+			message,
+			tree: newTree.sha,
+			author: {
+				name: this.user.userName,
+				email: this.user.email,
+			},
+			parents: [ treeData.sha ],
+		});
+
+		const commitSha = data.sha;
+		await sleep(100);
+
+		await this.rest.git.updateRef({
+			owner: this.user.userName,
+			repo: this.repo.name,
+			ref: this.refStr,
+			sha: commitSha,
+		});
 	}
 
 	public async clear() {
@@ -325,32 +353,6 @@ export class Github {
 			ret.success = true;
 		}
 		return ret;
-	}
-
-	private async treeCommit(newTree: any, message: string) {
-		const treeData = this.repoTree;
-
-		const { data } = await this.rest.git.createCommit({
-			owner: this.user.userName,
-			repo: this.repo.name,
-			message,
-			tree: newTree.sha,
-			author: {
-				name: this.user.userName,
-				email: this.user.email,
-			},
-			parents: [ treeData.sha ],
-		});
-
-		const commitSha = data.sha;
-		await sleep(100);
-
-		await this.rest.git.updateRef({
-			owner: this.user.userName,
-			repo: this.repo.name,
-			ref: this.refStr,
-			sha: commitSha,
-		});
 	}
 
 	private getReqTreeArr(trees: AnyTree[]) {
@@ -459,6 +461,7 @@ export class Github {
 			mode: '160000',
 			tree: {},
 		};
+		this.Q = [];
 	}
 
 }

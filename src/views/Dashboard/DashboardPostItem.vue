@@ -89,7 +89,8 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 					await this.$git.commit(`REMOVE: ${this.post.title}`);
 					i = 0;
 					break;
-				} catch {
+				} catch (err) {
+					this.$logger.warn('github', err);
 					await this.$sleep(1500);
 					await this.$git.clear();
 					await this.$sleep(1500);
