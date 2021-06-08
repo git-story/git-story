@@ -341,9 +341,6 @@ export default class Header extends Mixins(GlobalMixins) {
 		this.postConfig.cover = cover;
 
 		let content = '';
-		content += '---\n';
-		content += yaml.dump(this.postConfig);
-		content += '---\n';
 
 		const uploadType = this.postConfig.uploadType;
 		const md = new Markdown(post.content);
@@ -352,7 +349,8 @@ export default class Header extends Mixins(GlobalMixins) {
 			content += await buildMarkdown(md);
 		} else if ( uploadType === 'github' || uploadType === 'jsdelivr' ) {
 			const imgs = md.images();
-			for ( const img of imgs ) {
+			for ( let i = 0; i < imgs.length; i++ ) {
+				const img = imgs[i];
 				if ( img.url.startsWith('blob:') ) {
 					const b64url = await blobToBase64(img.url);
 					const { data, contentType } = parseB64URL(b64url);
@@ -366,10 +364,25 @@ export default class Header extends Mixins(GlobalMixins) {
 
 					const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
 					md.replaceLine(img.line, repl);
+					imgs[i].url = imagePath;
 				}
 			}
+
+			// Set cover if don't have cover
+			if ( !this.postConfig.cover ) {
+				if ( imgs.length > 0 ) {
+					this.postConfig.cover = imgs[0].url;
+				}
+			}
+
 			content += md.text;
 		}
+
+		content =
+			'---\n' +
+			yaml.dump(this.postConfig) +
+			'---\n' +
+			content;
 
 		let title = this.postConfig.title as string;
 		title = title.replace(/\s/g, '_');
@@ -422,9 +435,6 @@ export default class Header extends Mixins(GlobalMixins) {
 		this.postConfig.cover = cover;
 
 		let content = '';
-		content += '---\n';
-		content += yaml.dump(this.postConfig);
-		content += '---\n';
 
 		const uploadType = this.postConfig.uploadType;
 		const md = new Markdown(post.content);
@@ -433,7 +443,8 @@ export default class Header extends Mixins(GlobalMixins) {
 			content += await buildMarkdown(md);
 		} else if ( uploadType === 'github' || uploadType === 'jsdelivr' ) {
 			const imgs = md.images();
-			for ( const img of imgs ) {
+			for ( let i = 0; i < imgs.length; i++ ) {
+				const img = imgs[i];
 				if ( img.url.startsWith('blob:') ) {
 					const b64url = await blobToBase64(img.url);
 					const { data, contentType } = parseB64URL(b64url);
@@ -454,10 +465,25 @@ export default class Header extends Mixins(GlobalMixins) {
 
 					const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
 					md.replaceLine(img.line, repl);
+					imgs[i].url = imagePath;
 				}
 			}
+
+			// Set cover if don't have cover
+			if ( !this.postConfig.cover ) {
+				if ( imgs.length > 0 ) {
+					this.postConfig.cover = imgs[0].url;
+				}
+			}
+
 			content += md.text;
 		}
+
+		content =
+			'---\n' +
+			yaml.dump(this.postConfig) +
+			'---\n' +
+			content;
 
 		this.$logger.debug('posting', 'Update content to ', this.$route.params.href, content);
 		this.$git.update(this.$route.params.href, content);
