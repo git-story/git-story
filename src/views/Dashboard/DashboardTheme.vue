@@ -22,13 +22,13 @@
 			</v-text-field>
 		</v-row>
 		<v-divider class="my-2"></v-divider>
-		<v-row v-if="renderer">
+		<v-row v-if="renderer && themes.length > 0">
 			<v-col
-	   			xs="12"
-	   			ms="6"
-	   			lg="4"
-	   			xl="3"
-		  		v-for="(theme, idx) in themes"
+				xs="12"
+				ms="6"
+				lg="4"
+				xl="3"
+				v-for="(theme, idx) in themes"
 				:key="theme.name + idx">
 				<theme-item :theme="theme" @changeit="themeChange"/>
 			</v-col>
@@ -37,6 +37,23 @@
 					<span></span>
 				</template>
 			</infinite-loading>
+		</v-row>
+		<v-row v-else>
+			<v-col
+				xs="12"
+				ms="6"
+				lg="4"
+				xl="3"
+				v-for="(empty, idx) in skeleton"
+				:key="'skeleton' + idx">
+				<v-skeleton-loader
+					v-bind="{
+						boilerplate: true,
+						elevation: 2,
+					}"
+					type="image, divider, table-heading, list-item-two-line">
+				</v-skeleton-loader>
+			</v-col>
 		</v-row>
 	</div>
 </template>
@@ -66,6 +83,9 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 	public config: any = {};
 	public modules: Submodule = {};
 	public renderer: boolean = true;
+
+	public skeletonLength: number = 12;
+	public skeleton: any[] = new Array(this.skeletonLength);
 
 	get themeNames() {
 		return this.allThemes.map((theme: Theme) => theme.name);
