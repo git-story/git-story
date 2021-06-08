@@ -150,7 +150,6 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 		this.$store.commit('loading', true);
 		const entries = Object.entries(this.modules);
 		const themePath = `themes/${theme.name}`;
-		let addFlag: boolean = true;
 
 		await this.$git.clear();
 
@@ -174,31 +173,21 @@ export default class DashboardTheme extends Mixins(GlobalMixins) {
 			}
 		}
 
-		for ( const [ key, value ] of entries ) {
-			if ( key.toLowerCase() === theme.name.toLowerCase() ) {
-				addFlag = false;
-				break;
-			}
-		}
+		this.modules[theme.name] = {
+			path: themePath,
+			url: theme.link,
+		};
+		this.$git.update('.gitmodules', serialize(this.modules));
 
-		if ( addFlag ) {
-			this.modules[theme.name] = {
-				path: themePath,
-				url: theme.link,
-			};
-			this.$git.update('.gitmodules', serialize(this.modules));
-
-			const repoName = theme.link.replace('https://github.com/', '');
-			await this.$git.clear();
-			const ref = await this.$git.getTreeByRef(repoName);
-			this.$git.add(themePath, ref.sha, 'link');
-		}
+		const repoName = theme.link.replace('https://github.com/', '');
+		const ref = await this.$git.getTreeByRef(repoName);
+		this.$git.add(themePath, ref.sha, 'link');
 
 		this.config.theme = theme.name;
 		this.$git.update('_config.yml', yaml.dump(this.config));
 
 		await this.$git.workflowClear();
-		await this.$git.commit(`ADD THEME ${theme.name}`);
+		await this.$git.commit(`CHANGE THEME ${theme.name}`);
 
 		for ( let i = 0; i < this.themes.length; i++ ) {
 			const t = this.themes[i];
