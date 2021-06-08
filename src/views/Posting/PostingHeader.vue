@@ -194,6 +194,8 @@ export default class Header extends Mixins(GlobalMixins) {
 			tags: [],
 			uploadType: 'jsdelivr',
 		};
+		this.$store.commit('title', '');
+		this.$store.commit('markdown', '');
 		do {
 			this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
 			await this.$sleep(1000);
