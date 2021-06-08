@@ -457,10 +457,11 @@ export default class Header extends Mixins(GlobalMixins) {
 			content += md.text;
 		}
 
-		this.$git.update(this.$route.params.href, content, 'utf-8');
+		this.$logger.debug('posting', 'Update content to ', this.$route.params.href, content);
+		this.$git.update(this.$route.params.href, content);
 
 		await this.$git.workflowClear();
-		await this.$git.commit(`FILE ADD: ${post.title}`);
+		await this.$git.commit(`UPDATE POST: ${this.$route.params.href}`);
 		await this.$git.clear();
 	}
 

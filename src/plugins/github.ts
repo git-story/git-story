@@ -41,8 +41,6 @@ export class Github {
 	};
 	private curTree: Tree<'tree'> = {};
 	private refStr: string = '';
-	private newTree!: any;
-	private Q: any = {};
 
 	constructor(user?: any) {
 		if ( user ) {
@@ -75,6 +73,12 @@ export class Github {
 		this.user = user;
 		this.octokit = new Octokit({
 			auth: user.accessToken,
+			log: {
+				debug: logger.debug,
+				info: logger.info,
+				warn: logger.warn,
+				error: logger.error,
+			},
 		});
 	}
 
@@ -134,45 +138,23 @@ export class Github {
 	}
 
 	public add(file: string, data: string, encoding: BlobEncoding = 'utf-8') {
-		let dep = this.curTree.tree as AnyTree;
-
-		let stack: string[] = [];
-		if ( path.dirname(file) !== '.' ) {
-			stack = path.dirname(file).split('/');
-		}
-		file = path.basename(file);
-		let cur = '';
-		for ( const p of stack ) {
-			cur = path.join(cur, p);
-			if ( !dep[p] ) {
-				dep[p] = {
-					type: 'tree',
-					mode: '160000',
-					tree: {},
-				};
-				const org = this.repoTree.tree.find((d: AnyTree) => d.path === cur);
-				if ( org ) {
-					dep[p].sha = org.sha;
-				}
-			}
-			dep = dep[p].tree as AnyTree;
-		}
-
-		dep[file] = {
+		const blob: AnyTree = {
 			content: data,
 			encoding,
-		} as Blob;
+		};
 
 		if ( encoding === 'link' ) {
-			dep[file].type = 'commit';
-			dep[file].mode = '160000';
+			(blob as Tree<'commit'>).type = 'commit';
+			blob.mode = '160000';
 		} else {
-			dep[file].type = 'blob';
-			dep[file].mode = '100644';
+			blob.type = 'blob';
+			blob.mode = '100644';
 		}
+
+		this.dispatch(file, blob);
 	}
 
-	public async remove(file: string) {
+	public remove(file: string) {
 		const tree: any = this.repoTree.tree as any;
 		const idx = tree.findIndex((t: any) => t.path === file);
 		if ( idx === -1 ) {
@@ -182,16 +164,19 @@ export class Github {
 		const result = tree[idx];
 		switch ( result.type ) {
 			case 'blob':
-				this.Q[idx.toString()] = await this.blob(file);
+				this.dispatch(file, {
+					type: 'blob',
+				});
 				break;
 			case 'tree':
 				const regex = new RegExp(`^${file}/`);
-				for ( let i = 0; i < tree.length; i++ ) {
-					const t = tree[i];
+				for ( const t of tree ) {
 					const tp = t.path as string;
 					if ( tp === file || tp.match(regex) ) {
 						if ( t.type === 'blob' ) {
-							this.Q[i.toString()] = await this.blob(tp);
+							this.dispatch(file, {
+								type: 'blob',
+							});
 						}
 					}
 				}
@@ -199,7 +184,7 @@ export class Github {
 		}
 	}
 
-	public async update(file: string, data: string, encoding: BlobEncoding = 'utf-8') {
+	public update(file: string, data: string, encoding: BlobEncoding = 'utf-8') {
 		const tree: any = this.repoTree.tree as any;
 		const idx = tree.findIndex((t: any) => t.path === file);
 		if ( idx === -1 ) {
@@ -212,34 +197,35 @@ export class Github {
 			type: 'blob',
 			mode: '100644',
 		};
-		this.Q[idx.toString()] = await this.blob(file, blob);
+
+		this.dispatch(file, blob);
 	}
 
 	public async commit(message: string) {
 		const treeData = this.repoTree;
 		const treeObj = treeData.tree as any;
 
-		if ( this.isAdded ) {
-			const build = await this.buildTree(this.curTree);
+		if ( !this.isAdded ) {
+			// Don't need new commit because not change anything.
+			return;
+		}
 
-			for ( const b of build ) {
-				const idx = treeObj.findIndex((tree: AnyTree) => tree.path === b.path);
-				if ( idx === -1 ) {
-					// new file
-					treeObj.push(b);
-				} else {
-					// update file
-					treeObj[idx] = b;
+		// overwrite don't modify file in root directory(tree)
+		const build = await this.buildTree(this.curTree);
+		if ( build ) {
+			const rootTree = await this.rest.git.getTree({
+				owner: this.user.userName,
+				repo: this.repo.name,
+				tree_sha: treeData.sha,
+			});
+			rootTree.data.tree.forEach((tr: any) => {
+				if ( !build.find((v: any) => v.path === tr.path) ) {
+					build.push(tr);
 				}
-			}
+			});
 		}
 
-		for ( const [idx, val] of Object.entries(this.Q) ) {
-			treeObj[Number(idx)] = val;
-		}
-		this.Q = [];
-
-		const newTree = await this.tree(this.repoTree.tree, this.repoTree.sha);
+		const newTree = await this.tree(build);
 		const { data } = await this.rest.git.createCommit({
 			owner: this.user.userName,
 			repo: this.repo.name,
@@ -360,7 +346,7 @@ export class Github {
 			.filter((tree: AnyTree) => !!tree.sha);
 	}
 
-	private async buildTree(t: AnyTree): Promise<AnyTree[]> {
+	private async buildTree(t: AnyTree, dirname: string = ''): Promise<AnyTree[]> {
 		const entries = Object.entries(t.tree as any);
 		const dep = t.tree as AnyTree;
 
@@ -368,12 +354,13 @@ export class Github {
 
 		for ( const [ key, tree ] of entries ) {
 			const cur = dep[key] as any;
+			const fullPath = path.join(dirname, key);
+
 			if ( cur.type === 'tree' ) {
-				cur.tree = await this.buildTree(cur) as any;
+				cur.tree = await this.buildTree(cur, path.join(dirname, key)) as any;
 
-				const reqTree = this.getReqTreeArr(cur.tree as any);
+				let reqTree: any = cur.tree as any;
 
-				/*
 				if ( cur.sha ) {
 					const { data } = await this.rest.git.getTree({
 						owner: this.user.userName,
@@ -393,9 +380,11 @@ export class Github {
 						}
 					});
 				}
-				*/
 
-				const treeData = await this.tree(reqTree, cur.sha as string);
+				reqTree = this.getReqTreeArr(reqTree);
+
+				const treeData = await this.tree(reqTree);
+
 				const TD: AnyTree = {
 					mode: '040000',
 					type: 'tree',
@@ -405,6 +394,13 @@ export class Github {
 				trees.push(TD);
 			} else if ( cur.type === 'blob' ) {
 				const blob = await this.blob(key /* path */, cur);
+				if ( blob.sha === null ) {
+					// remove file at original tree
+					const item = this.find(fullPath);
+					if ( item ) {
+						item.sha = null;
+					}
+				}
 				trees.push(blob);
 			} else if ( cur.type === 'commit' ) {
 				cur.path = key;
@@ -461,8 +457,42 @@ export class Github {
 			mode: '160000',
 			tree: {},
 		};
-		this.Q = [];
+	}
+
+	private dispatch(file: string, blob: Blob = {}) {
+		let dep = this.curTree.tree as AnyTree;
+
+		let stack: string[] = [];
+		if ( path.dirname(file) !== '.' ) {
+			stack = path.dirname(file).split('/');
+		}
+		file = path.basename(file);
+
+		// tree dig
+		let cur = '';
+		for ( const p of stack ) {
+			cur = path.join(cur, p);
+			if ( !dep[p] ) {
+				dep[p] = {
+					type: 'tree',
+					mode: '160000',
+					tree: {},
+				};
+
+				// When exists directory(tree).
+				const org = this.repoTree.tree.find((d: AnyTree) => d.path === cur);
+				if ( org ) {
+					dep[p].sha = org.sha;
+				}
+			}
+			dep = dep[p].tree as AnyTree;
+		}
+
+		dep[file] = blob;
+	}
+
+	private find(p: string) {
+		return this.repoTree.tree.find((t: any) => t.path === p);
 	}
 
 }
-
