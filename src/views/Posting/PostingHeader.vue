@@ -349,6 +349,7 @@ export default class Header extends Mixins(GlobalMixins) {
 			content += await buildMarkdown(md);
 		} else if ( uploadType === 'github' || uploadType === 'jsdelivr' ) {
 			const imgs = md.images();
+			/* tslint:disable-next-line */
 			for ( let i = 0; i < imgs.length; i++ ) {
 				const img = imgs[i];
 				if ( img.url.startsWith('blob:') ) {
@@ -443,6 +444,7 @@ export default class Header extends Mixins(GlobalMixins) {
 			content += await buildMarkdown(md);
 		} else if ( uploadType === 'github' || uploadType === 'jsdelivr' ) {
 			const imgs = md.images();
+			/* tslint:disable-next-line */
 			for ( let i = 0; i < imgs.length; i++ ) {
 				const img = imgs[i];
 				if ( img.url.startsWith('blob:') ) {
