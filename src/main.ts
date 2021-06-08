@@ -19,7 +19,7 @@ import session from './plugins/session';
 import local from './plugins/local';
 import logger from './plugins/logger';
 import { Firebase } from './plugins/firebase';
-import { Github } from './plugins/github';
+import { Github } from '@git-story/github-plugin';
 
 import LiquorTree from 'liquor-tree';
 
