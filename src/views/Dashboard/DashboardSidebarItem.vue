@@ -30,7 +30,8 @@ export default class DashboardSidebar extends Mixins(GlobalMixins) {
 	@Prop(String) public href!: string;
 
 	get SelectedClass() {
-		if ( this.$route.path === this.href ) {
+		const regex = new RegExp('/..' + this.href);
+		if ( this.$route.path.match(regex) ) {
 			return 'indigo lighten-5';
 		}
 		return '';
