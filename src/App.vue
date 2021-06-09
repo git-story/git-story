@@ -31,7 +31,7 @@
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { User } from '@/interface/user';
-import { Github } from '@git-story/github-plugin';
+import { Github } from '@/plugins/github';
 
 @Component({
 	watch: {

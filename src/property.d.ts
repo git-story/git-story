@@ -5,7 +5,7 @@ import Vue from 'vue';
 import { Session } from './plugins/session';
 import { Local } from './plugins/local';
 import { Logger } from './plugins/logger';
-import { Github } from '@git-story/github-plugin';
+import { Github } from './plugins/github';
 import { AxiosStatic } from 'axios';
 import { Firebase } from './plugins/firebase';
 

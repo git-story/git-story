@@ -8,10 +8,10 @@ module.exports = {
 		},
 		"resolve": {
 			"alias": {
-				"assets": path.join(__dirname, "src/assets"),
-				"types": path.join(__dirname, "src/types"),
-				"views": path.join(__dirname, "src/views"),
-				"@": path.join(__dirname, "src"),
+				"assets": path.resolve(__dirname, "src/assets"),
+				"types": path.resolve(__dirname, "src/types"),
+				"views": path.resolve(__dirname, "src/views"),
+				"@": path.resolve(__dirname, "src"),
 			}
 		},
 		"plugins": [
