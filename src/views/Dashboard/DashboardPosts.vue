@@ -57,7 +57,7 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
-import { Repository } from '@git-story/github-plugin';
+import { Repository } from '@/interface/github';
 import { MetaData } from '@/interface/service';
 import PostItem from 'views/Dashboard/DashboardPostItem.vue';
 import firebase from 'firebase';
