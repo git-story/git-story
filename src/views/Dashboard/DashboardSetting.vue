@@ -9,7 +9,7 @@
 		<h1>{{ $t('dashboard.etc.title') }}</h1>
 		<v-divider class="my-4"></v-divider>
 
-		<v-container>
+		<v-container class="px-0">
 			<v-row align="center">
 				<v-col cols="6">
 					<h2>robots.txt</h2>
