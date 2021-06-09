@@ -198,4 +198,16 @@ export default class Mixin extends VueDecorator {
 		});
 	}
 
+	public async $getConfig(): Promise<Record<string, any>> {
+		let config: any;
+		while ( true ) {
+			config = await this.$git.getContent<any>('_config.yml', 'yaml');
+			if ( config ) {
+				break;
+			}
+			await this.$sleep(1000);
+		}
+		return config;
+	}
+
 }

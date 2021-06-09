@@ -39,4 +39,8 @@ export default {
 		use: '테마 사용하기',
 		used: '사용중인 테마',
 	},
+	'etc': {
+		'title': '기타 설정',
+		'robots-save-error': 'robots.txt를 저장하는 도중에 문제가 생겼습니다.',
+	},
 };
