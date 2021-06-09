@@ -7,7 +7,7 @@
 <template>
 	<v-row class="ma-0 h-100">
 		<v-col cols="8" class="pa-0">
-			<div v-if="postList.length === 0">
+			<div v-if="loading === false">
 				<v-card
 					elevation="1" tile
 					v-for="(empty, idx) in skeletonCount" :key="'skeleton-' + empty + idx"
@@ -15,16 +15,29 @@
 					<v-skeleton-loader type="image, article, divider, actions" />
 				</v-card>
 			</div>
-			<div v-else>
+			<div v-else-if="posts.length > 0">
 				<post-item
 					v-for="(post, idx) in posts"
 					:key="post.href"
 					:post="post"
 					:config="config"
-					@remove="postList.splice(idx, 1);"
+					@remove="remove(post)"
 					:class="idx > 0 ? 'mt-6' : ''"/>
 				<infinite-loading @infinite="nextPostLoading" />
 			</div>
+			<v-row
+				align="center"
+				style="height: 100%;"
+				class="ma-0">
+				<v-col cols="12" align="center">
+					<v-img
+		 				max-width="200px"
+	   					max-height="200px"
+					 	:src="imgs.empty"></v-img>
+					<v-divider class="my-4" style="width: 200px;"></v-divider>
+					<p>{{ $t('dashboard.blog.empty') }}</p>
+				</v-col>
+			</v-row>
 		</v-col>
 		<v-col cols="4" class="pa-0">
 			<v-row class="ma-0" style="position: fixed;">
@@ -50,6 +63,7 @@ import PostItem from 'views/Dashboard/DashboardPostItem.vue';
 import firebase from 'firebase';
 import yaml from 'js-yaml';
 import InfiniteLoading from 'vue-infinite-loading';
+import { Imgs } from 'types/index';
 
 @Component({
 	components: {
@@ -68,6 +82,11 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 
 	public search: string = '';
 	public searchLoading: boolean = false;
+	public loading: boolean = false;
+
+	private imgs: Imgs = {
+		empty: require('assets/dashboard/empty.png'),
+	};
 
 	get posts() {
 		if ( this.search ) {
@@ -128,6 +147,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
 		this.metaData = content as MetaData[];
 		this.nextPostLoading();
+		this.loading = true;
 	}
 
 	public async initialize(repo: string): Promise<MetaData[]> {
@@ -203,6 +223,18 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 			} else {
 				$state.complete();
 			}
+		}
+	}
+
+	public remove(post: MetaData) {
+		const pidx = this.postList.findIndex((p: MetaData) => post.title === p.title);
+		if ( pidx > -1 ) {
+			this.postList.splice(pidx, 1);
+		}
+
+		const mdix = this.metaData.findIndex((m: MetaData) => post.title === m.title);
+		if ( midx > -1 ) {
+			this.metaData.splice(midx, 1);
 		}
 	}
 
