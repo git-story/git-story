@@ -232,7 +232,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 			this.postList.splice(pidx, 1);
 		}
 
-		const mdix = this.metaData.findIndex((m: MetaData) => post.title === m.title);
+		const midx = this.metaData.findIndex((m: MetaData) => post.title === m.title);
 		if ( midx > -1 ) {
 			this.metaData.splice(midx, 1);
 		}
