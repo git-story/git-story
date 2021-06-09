@@ -12,9 +12,9 @@
 
 GIT-STORY 는 그런 작업들을 전부 없애주고, 하나의 블로그 플랫폼처럼 동작하는 서비스입니다.
 
-기본적으로 제공하는 예쁜 템플릿을 가지고 블로그를 관리해 보세요.
+Hexo 커뮤니티가 만든 수많은 테마 중 하나를 선택하세요.
 
-인터넷만 된다면 핸드폰으로, PC로 글을 작성해서 커밋하세요.
+인터넷만 된다면 브라우저로 접속해서 글을 작성하세요.
 
 플러그인으로 더욱 강력한 블로그의 기능을 쉽게 추가할 수도 있습니다.
 
@@ -44,13 +44,61 @@ npm run serve
 npm run build
 ```
 
-### 개발 규칙
 
-#### 파일명
+## 개발 규칙
+
+### 파일명
 
 Vue 파일은 `PascalCase` 로 생성.
 이외 파일은 `kebab-case` 로 생성.
 폴더의 경우, vue 파일이 존재하기 위한 경우엔 `PascalCase`, 이외의 경우는 `kebab-case`로 생성
+
+### 변수, 함수명
+
+클래스의 경우 `PascalCase` 로 작성.
+이외 전부 `camelCase`로 작성.
+
+### 클래스 사이의 공백
+
+클래스 작성시 프로퍼티 그룹, 메소드, 컨스트럭쳐 간 공백이 필요합니다.
+
+```typescript
+class A {
+// 공백
+  public property1: number = 1;
+  public property2: number = 2;
+// 공백
+  private property3: number = 3;
+// 공백
+  constructor() {
+  }
+// 공백
+  public method1() {
+  }
+// 공백
+  private method2() {
+  }
+// 공백
+}
+```
+
+### 파일 생성
+
+렌더링되는 모든 페이지는 `views` 폴더에 작성합니다.
+각 폴더는 모두 `router`에 해당하는 경로이며 경로  폴더 안에는 vue 파일이 작성됩니다.
+
+모듈은 모두 `plugins` 폴더에 작성합니다.
+
+인터페이스, 타입 선언은 모두 `interface` 폴더에 작성합니다.
+
+이미지 등 필요한 미디어는 `asset` 폴더에 작성합니다.
+
+
+## 마크다운 에디터
+
+Git-Story에서 사용하는 마크다운 에디터는 다음 레포지토리에서 볼 수 있습니다.
+
+https://github.com/git-story/md-editor
 
 ## 라이센스
 
