@@ -24,9 +24,17 @@
 	 				:meta-data="metaData"
 					@remove="remove(post)"
 					:class="idx > 0 ? 'mt-6' : ''"/>
-				<infinite-loading @infinite="nextPostLoading" />
+				<infinite-loading @infinite="nextPostLoading">
+					<template v-slot:no-results>
+						<span></span>
+					</template>
+					<template v-slot:no-more>
+						<span></span>
+					</template>
+				</infinite-loading>
 			</div>
 			<v-row
+	   			v-else
 				align="center"
 				style="height: 100%;"
 				class="ma-0">
@@ -41,7 +49,7 @@
 			</v-row>
 		</v-col>
 		<v-col cols="4" class="pa-0">
-			<v-row class="ma-0" style="position: fixed;">
+			<v-row class="ma-0" style="position: fixed; width: 25%;">
 				<v-col cols="12" class="py-0">
 					<v-text-field
 		 				class="pt-0"

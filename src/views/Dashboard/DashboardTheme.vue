@@ -36,6 +36,9 @@
 				<template v-slot:no-results>
 					<span></span>
 				</template>
+				<template v-slot:no-more>
+					<span></span>
+				</template>
 			</infinite-loading>
 		</v-row>
 		<v-row v-else>
