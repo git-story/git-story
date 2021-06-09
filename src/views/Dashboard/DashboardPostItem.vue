@@ -61,10 +61,13 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 
 	@Prop(Object) public post!: MetaData;
 	@Prop(Object) public config!: any;
+	@Prop(Array) public metaData!: MetaData[];
 
 	public defaultImage: string = 'https://cdn.pixabay.com/photo/2017/07/25/01/22/cat-2536662_960_720.jpg';
 
-	private MAX_RETRY_CNT: number = 5;
+	// issue https://github.com/prose/prose/issues/148
+	// Referring to the issue, repeat for at least 30 seconds.
+	private MAX_RETRY_CNT: number = 11;
 
 	public openPost() {
 		window.open(`https://${this.$git.repo.name}/${this.post.href}`);
@@ -79,11 +82,16 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 			textCancel: this.$t('cancel'),
 		}).then(async (close) => {
 			const imgDir = path.join(this.config.source_dir, 'images', date2str(new Date(this.post.date)));
-			await this.$git.workflowClear();
 			let i = 0;
+
+			const midx = this.metaData.findIndex((m: MetaData) => this.post.title === m.title);
+			if ( midx > -1 ) {
+				this.metaData.splice(midx, 1);
+			}
 
 			while ( i++ < this.MAX_RETRY_CNT ) {
 				try {
+					await this.$git.update('meta-data.json', JSON.stringify(this.metaData, null, '\t'));
 					await this.$git.remove(this.post.src);
 					await this.$git.remove(imgDir);
 					await this.$git.commit(`REMOVE: ${this.post.title}`);
@@ -92,6 +100,7 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 				} catch (err) {
 					this.$logger.warn('github', err);
 					await this.$sleep(1500);
+					await this.$git.workflowClear();
 					await this.$git.clear();
 					await this.$sleep(1500);
 				}

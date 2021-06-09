@@ -264,13 +264,18 @@ export class Github {
 				workflow_id: wf.id,
 			});
 
-			const runs: any[] = res.data.workflow_runs.filter((w: any) => w.status === 'in_progress');
+			const checkStatus: string[] = [ 'queued', 'in_progress' ];
+			const runs: any[] = res.data.workflow_runs.filter((w: any) => checkStatus.includes(w.status));
 			for ( const run of runs ) {
-				await this.rest.actions.cancelWorkflowRun({
-					owner: this.user.userName,
-					repo: this.repo.name,
-					run_id: run.id,
-				});
+				try {
+					await this.rest.actions.cancelWorkflowRun({
+						owner: this.user.userName,
+						repo: this.repo.name,
+						run_id: run.id,
+					});
+				} catch (err) {
+					logger.error('github', 'workflow stop fail', run, err);
+				}
 			}
 		}
 	}

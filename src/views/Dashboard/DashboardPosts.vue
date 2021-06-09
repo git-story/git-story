@@ -21,6 +21,7 @@
 					:key="post.href"
 					:post="post"
 					:config="config"
+	 				:meta-data="metaData"
 					@remove="remove(post)"
 					:class="idx > 0 ? 'mt-6' : ''"/>
 				<infinite-loading @infinite="nextPostLoading" />
