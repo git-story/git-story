@@ -12,6 +12,7 @@ interface State {
 	markdown: string;
 	title: string;
 	loading: boolean;
+	loadmsg: string;
 }
 
 export default new Vuex.Store({
@@ -24,6 +25,7 @@ export default new Vuex.Store({
 		markdown: '',
 		title: '',
 		loading: false,
+		loadmsg: '',
 	},
 	getters: {
 		user(state: State) {
@@ -41,6 +43,9 @@ export default new Vuex.Store({
 		loading(state: State) {
 			return state.loading;
 		},
+		loadmsg(state: State) {
+			return state.loadmsg;
+		},
 	},
 	mutations: {
 		setUser(state: State, user: User) {
@@ -54,6 +59,9 @@ export default new Vuex.Store({
 		},
 		loading(state: State, v: boolean) {
 			state.loading = v;
+		},
+		loadmsg(state: State, msg: string) {
+			state.loadmsg = msg;
 		},
 	},
 	actions: {

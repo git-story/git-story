@@ -10,12 +10,15 @@
 			<v-dialog v-model="$store.getters.loading" persistent fullscreen content-class="loading-dialog">
 				<v-container fill-height>
 					<v-layout row justify-center align-center>
-						<v-progress-circular
-		  					indeterminate
-		  					:size="70"
-		  					:width="7"
-							color="indigo">
-						</v-progress-circular>
+						<div align="center">
+							<v-progress-circular
+								indeterminate
+								:size="70"
+								:width="7"
+								color="indigo">
+							</v-progress-circular>
+							<p class="mt-6 text-body white--text" style="font-size: 1.5rem;" v-html="$store.getters.loadmsg"></p>
+						</div>
 					</v-layout>
 				</v-container>
 			</v-dialog>
@@ -58,6 +61,12 @@ export default class App extends Mixins(GlobalMixins) {
 
 	public created() {
 		this.$logger.debug('app', 'App created');
+		this.$git.progress((event: string, ...args: any[]) => {
+			this.$store.commit(
+				'loadmsg',
+				this.$t(`github.progress.${event}`, ...args)
+			);
+		});
 
 		this.$store.watch(() => this.$store.getters.user, async (u: User) => {
 			this.$git.setUser(u);

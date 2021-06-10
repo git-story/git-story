@@ -35,12 +35,13 @@ export class Github {
 	private curTree: Tree<'tree'> = {};
 	private refStr: string = '';
 	private newTree!: any;
-	private Q: any = [];
+	private pcb: (...args: any[]) => void;
 
 	constructor(user?: any) {
 		if ( user ) {
 			this.setUser(user);
 		}
+		this.pcb = () => { /* empty */ };
 		this.initTree();
 	}
 
@@ -77,7 +78,12 @@ export class Github {
 		});
 	}
 
+	public progress(cb: (...args: any[]) => void) {
+		this.pcb = cb;
+	}
+
 	public async initRepo(repo: string) {
+		this.pcb('init');
 		const { data } = await this.rest.repos.get({
 			owner: this.user.userName,
 			repo,
@@ -146,6 +152,7 @@ export class Github {
 			blob.mode = '100644';
 		}
 
+		this.pcb('add', file);
 		this.dispatch(file, blob);
 	}
 
@@ -177,6 +184,7 @@ export class Github {
 				}
 				break;
 		}
+		this.pcb('remove', file);
 	}
 
 	public update(file: string, data: string, encoding: BlobEncoding = 'utf-8') {
@@ -193,6 +201,7 @@ export class Github {
 			mode: '100644',
 		};
 
+		this.pcb('update', file);
 		this.dispatch(file, blob);
 	}
 
@@ -206,6 +215,7 @@ export class Github {
 		}
 
 		// overwrite don't modify file in root directory(tree)
+		this.pcb('treebuild');
 		const build = await this.buildTree(this.curTree);
 		if ( build ) {
 			const rootTree = await this.rest.git.getTree({
@@ -220,6 +230,7 @@ export class Github {
 			});
 		}
 
+		this.pcb('commit');
 		const newTree = await this.tree(build);
 		const { data } = await this.rest.git.createCommit({
 			owner: this.user.userName,
@@ -233,6 +244,7 @@ export class Github {
 			parents: [ treeData.sha ],
 		});
 
+		this.pcb('updateref');
 		const commitSha = data.sha;
 		await sleep(100);
 
@@ -242,7 +254,6 @@ export class Github {
 			ref: this.refStr,
 			sha: commitSha,
 		});
-		this.Q = [];
 	}
 
 	public async clear() {
@@ -251,6 +262,7 @@ export class Github {
 	}
 
 	public async workflowClear() {
+		this.pcb('workflowlist');
 		let res: any = await this.rest.actions.listRepoWorkflows({
 			owner: this.user.userName,
 			repo: this.repo.name,
@@ -258,6 +270,7 @@ export class Github {
 
 		const wf = res.data.workflows.find((w: any) => w.name === 'build CI');
 		if ( wf ) {
+			this.pcb('workflowruns', wf.id);
 			res = await this.rest.actions.listWorkflowRuns({
 				owner: this.user.userName,
 				repo: this.repo.name,
@@ -268,6 +281,7 @@ export class Github {
 			const runs: any[] = res.data.workflow_runs.filter((w: any) => checkStatus.includes(w.status));
 			for ( const run of runs ) {
 				try {
+					this.pcb('workflowcancel', run.id);
 					await this.rest.actions.cancelWorkflowRun({
 						owner: this.user.userName,
 						repo: this.repo.name,
@@ -294,6 +308,7 @@ export class Github {
 		const [ user, name ] = repo.split('/');
 		const ret: TreeRef = { success: false };
 
+		this.pcb('defaultbranch');
 		let ref = refrence as string;
 		let default_branch = this.repo.default_branch;
 		if ( !ref ) {
@@ -313,6 +328,7 @@ export class Github {
 			ref = `heads/${default_branch}`;
 		}
 
+		this.pcb('getref', ref);
 		let res: any = await this.rest.git.getRef({
 			owner: user || this.user.userName,
 			repo: name || this.repo.name,
@@ -327,6 +343,7 @@ export class Github {
 				commit_sha: obj.sha,
 			});
 
+			this.pcb('gettree', res.data.sha);
 			res = await this.rest.git.getTree({
 				owner: user || this.user.userName,
 				repo: name || this.repo.name,
@@ -420,6 +437,7 @@ export class Github {
 
 	private async blob(p: string, file: Blob = {}): Promise<Blob> {
 		if ( file.content ) {
+			this.pcb('createblob', p);
 			const { data } =  await this.rest.git.createBlob({
 				owner: this.user.userName,
 				repo: this.repo.name,
@@ -433,6 +451,7 @@ export class Github {
 			return file;
 		}
 
+		this.pcb('removeblob', p);
 		// remove file
 		return {
 			path: p,
@@ -443,6 +462,7 @@ export class Github {
 	}
 
 	private async tree(tree: any[], base?: string) {
+		this.pcb('createtree');
 		const { data } = await this.rest.git.createTree({
 			owner: this.user.userName,
 			repo: this.repo.name,
@@ -458,7 +478,6 @@ export class Github {
 			mode: '160000',
 			tree: {},
 		};
-		this.Q = [];
 	}
 
 	private dispatch(file: string, blob: Blob = {}) {
