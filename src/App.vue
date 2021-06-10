@@ -62,10 +62,8 @@ export default class App extends Mixins(GlobalMixins) {
 	public created() {
 		this.$logger.debug('app', 'App created');
 		this.$git.progress((event: string, ...args: any[]) => {
-			this.$store.commit(
-				'loadmsg',
-				this.$t(`github.progress.${event}`, ...args)
-			);
+			this.$store.commit('loadmsg',
+				this.$t(`github.progress.${event}`, ...args));
 		});
 
 		this.$store.watch(() => this.$store.getters.user, async (u: User) => {
