@@ -13,7 +13,8 @@
 				v-model="editor.code"
 				:language="editor.language"
 				:theme="editor.theme"
-				:options="editor.options"/>
+				:options="editor.options"
+				@editorDidMount="editorDidMount"/>
 		</v-col>
 		<v-col cols="4">
 			<v-row class="ma-0" style="height: 20%;">
@@ -26,7 +27,13 @@
 					</v-radio-group>
 				</v-col>
 			</v-row>
-			<v-row class="ma-0" style="height: 65%;"></v-row>
+			<v-row class="ma-0" style="height: 65%;">
+				<v-col cols="12">
+					<h3>{{ $t('dashboard.config.desc-title') }}</h3>
+					<v-divider class="my-2"></v-divider>
+					<p v-html="description"></p>
+				</v-col>
+			</v-row>
 			<v-row class="ma-0" style="height: 15%;" align="end">
 				<v-col cols="12" align="right" class="pa-0">
 					<v-btn
@@ -66,6 +73,7 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 	};
 	public originalCode: string = '';
 	public readonly configFilePath: string = '_config.yml';
+	public description: string = '';
 
 	get modified() {
 		return this.originalCode !== this.editor.code;
@@ -133,6 +141,34 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 		await this.$git.commit(`UPDATE: ${this.configFilePath}`);
 		this.originalCode = this.editor.code;
 		this.$store.commit('loading', false);
+	}
+
+	public editorDidMount(editor: any) {
+		editor.onDidChangeCursorPosition(({ position }) => {
+			const parse = this.parsePath(this.editor.code.split('\n'), position.lineNumber - 1);
+			const key = parse.reverse().join('>');
+			this.description = this.$tf(`dashboard.config.desc.${key}`, '');
+		});
+	}
+
+	private parsePath(code: string[], line: number, p: string[] = [], dep: string = '') {
+		const parse = code[line].match(/(\s*)?(\w*)?:/);
+
+		if ( parse ) {
+			const empty = parse[1];
+			const key = parse[2];
+
+			if ( empty !== dep ) {
+				p.push(key);
+				dep = empty;
+
+				if ( !empty ) {
+					return p;
+				}
+			}
+		}
+
+		return this.parsePath(code, line - 1, p, dep);
 	}
 
 }

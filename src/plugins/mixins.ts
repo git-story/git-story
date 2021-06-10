@@ -39,7 +39,19 @@ export default class Mixin extends VueDecorator {
 			const regx = new RegExp(`\\$${idx}`, 'g');
 			str = str.replace(regx, arg);
 		});
+
+		str = str.replace(/{{\s*([\w.]*)?\s*}}/g,
+						  (org, arg1) => tmp.$vuetify.lang.t('$vuetify.' + arg1));
 		return str;
+	}
+
+	public $tf(key: string, def: string, ...args: string[]) {
+		const tmp: any = this;
+		let result = tmp.$t(key, ...args);
+		if ( result === '$vuetify.' + key ) {
+			result = def;
+		}
+		return result;
 	}
 
 	public mount(component: any, options: any = {}, selector?: (string | HTMLElement)) {
