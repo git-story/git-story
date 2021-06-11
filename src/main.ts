@@ -21,6 +21,8 @@ import logger from './plugins/logger';
 import { Firebase } from './plugins/firebase';
 import { Github } from './plugins/github';
 
+import ThemeToggleBtn from './Components/ThemeToggleBtn.vue';
+
 import LiquorTree from 'liquor-tree';
 
 Vue.config.productionTip = false;
@@ -49,6 +51,8 @@ Vue.use(session);
 Vue.use(local);
 Vue.use(logger);
 Vue.use(LiquorTree);
+
+Vue.component('theme-toggle-btn', ThemeToggleBtn);
 
 new Vue({
 	router,

@@ -19,9 +19,7 @@
 
 		<v-spacer />
 
-		<v-btn text color="grey lighten-5">
-			asdfasdf
-		</v-btn>
+		<theme-toggle-btn />
 
 		<!--
 		<v-btn icon>
