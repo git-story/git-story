@@ -24,6 +24,7 @@ import { Github } from './plugins/github';
 import ThemeToggleBtn from './Components/ThemeToggleBtn.vue';
 
 import LiquorTree from 'liquor-tree';
+import MonacoEditor from 'vue-monaco';
 
 Vue.config.productionTip = false;
 
@@ -53,6 +54,7 @@ Vue.use(logger);
 Vue.use(LiquorTree);
 
 Vue.component('theme-toggle-btn', ThemeToggleBtn);
+Vue.component('monaco-editor', MonacoEditor);
 
 new Vue({
 	router,

@@ -54,12 +54,10 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
-import MonacoEditor from 'vue-monaco';
 import yaml from 'js-yaml';
 
 @Component({
 	components: {
-		MonacoEditor,
 	},
 })
 export default class DashboardConfig extends Mixins(GlobalMixins) {

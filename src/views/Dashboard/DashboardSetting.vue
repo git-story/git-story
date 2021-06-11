@@ -41,12 +41,10 @@
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import firebase from 'firebase';
-import MonacoEditor from 'vue-monaco';
 import yaml from 'js-yaml';
 
 @Component({
 	components: {
-		MonacoEditor,
 	},
 })
 export default class DashboardSetting extends Mixins(GlobalMixins) {

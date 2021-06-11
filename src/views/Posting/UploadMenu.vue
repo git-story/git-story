@@ -136,7 +136,6 @@ import { Component, Mixins, Prop } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { DataTree, TempPost } from '@/interface/service';
 import moment from 'moment';
-import MonacoEditor from 'vue-monaco';
 import yaml from 'js-yaml';
 
 function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
@@ -163,7 +162,6 @@ function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
 
 @Component({
 	components: {
-		MonacoEditor,
 	},
 })
 export default class UploadMenu extends Mixins(GlobalMixins) {
