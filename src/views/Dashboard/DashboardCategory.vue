@@ -14,6 +14,8 @@
 					v-if="treeRenderer"
 					:data="data"
 					:options="treeOptions"
+	 				style="overflow: hidden;"
+	 				@node:dragging:finish="refresh"
 					ref="tree">
 					<div slot-scope="{ node }" class="d-flex" style="align-items: center;">
 						<v-text-field
