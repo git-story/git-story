@@ -5,7 +5,7 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<v-btn icon color="grey lighten-5" @click.stop="toggleTheme">
+	<v-btn icon :color="btnColor || 'grey lighten-5'" @click.stop="toggleTheme">
 		<v-icon>
 			{{
 				theme ?
@@ -16,11 +16,13 @@
 	</v-btn>
 </template>
 <script lang="ts">
-import { Component, Mixins } from 'vue-property-decorator';
+import { Component, Mixins, Prop } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 
 @Component
 export default class ThemeToggleBtn extends Mixins(GlobalMixins) {
+
+	@Prop(String) public btnColor!: string;
 
 	get theme() {
 		return this.$vuetify.theme.dark;

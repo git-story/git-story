@@ -6,7 +6,8 @@
 -->
 <template>
 	<v-main class="vh-100">
-		<v-row class="ma-0 white" style="min-height: 100vh;">
+		<dashboard-header />
+		<v-row class="white" style="min-height: calc(100vh - 64px); margin-top: 64px;">
 			<v-col cols="3">
 				<dashboard-sidebar />
 			</v-col>
@@ -21,10 +22,12 @@ import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { Imgs } from 'types/index';
 import DashboardSidebar from './DashboardSidebar.vue';
+import DashboardHeader from './DashboardHeader.vue';
 
 @Component({
 	components: {
 		DashboardSidebar,
+		DashboardHeader,
 	},
 })
 export default class Dashboard extends Mixins(GlobalMixins) {

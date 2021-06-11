@@ -5,7 +5,7 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<v-row class="ma-0" style="height: calc(100vh - 50px);">
+	<v-row class="ma-0" style="height: calc(100vh - 93px);">
 		<v-col cols="8">
 			<monaco-editor
 				ref="code-editor"
@@ -16,7 +16,7 @@
 				:options="editor.options"
 				@editorDidMount="editorDidMount"/>
 		</v-col>
-		<v-col cols="4">
+		<v-col cols="4" class="h-100">
 			<v-row class="ma-0" style="height: 20%;">
 				<v-col cols="12">
 					<h3>{{ $t('dashboard.config.format') }}</h3>
@@ -77,11 +77,18 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 		return this.originalCode !== this.editor.code;
 	}
 
-	public async created() {
-		this.$logger.debug('app', 'DashboardConfig created');
-		this.originalCode =
-			this.editor.code =
-			await this.$git.getContent<any>(this.configFilePath);
+	public async mounted() {
+		this.$logger.debug('app', 'DashboardConfig mounted');
+		while ( true ) {
+			this.originalCode =
+				this.editor.code =
+				await this.$git.getContent<any>(this.configFilePath) || '';
+			if ( this.originalCode ) {
+				break;
+			}
+
+			await this.$sleep(500);
+		}
 	}
 
 	public change() {
