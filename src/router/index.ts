@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
+import { locales } from '@/plugins/vuetify';
 
 Vue.use(VueRouter);
 
@@ -54,6 +55,11 @@ const routes: RouteConfig[] = [
 	},
 ];
 
+const getDefaultLang = (loc) => {
+	const supports = Object.keys(locales);
+	return supports.find((s) => s === loc) || supports[0];
+};
+
 const router = new VueRouter({
 	mode: 'history',
 	base: process.env.BASE_URL,
@@ -73,7 +79,7 @@ const router = new VueRouter({
 		},
 		{
 			path: '',
-			redirect: '/' + navigator.language.split('-')[0],
+			redirect: '/' + getDefaultLang(navigator.language.split('-')[0]),
 		},
 	],
 });

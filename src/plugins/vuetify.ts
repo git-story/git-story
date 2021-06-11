@@ -21,11 +21,14 @@ if ( !lang ) {
 	lang = navigator.language.split('-')[0];
 }
 
-console.log(colors);
+export const locales = {
+	en,
+	ko,
+};
 
 export default new Vuetify({
 	lang: {
-		locales: { ko, en },
+		locales,
 		current: lang,
 	},
 	theme: {
