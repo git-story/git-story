@@ -56,7 +56,7 @@ export default class DashboardSetting extends Mixins(GlobalMixins) {
 		},
 		language: 'yaml',
 		code: '',
-		theme: 'vs',
+		theme: this.$vuetify.theme.dark ? 'vs-dark' : 'vs',
 	};
 	public config: any = {};
 

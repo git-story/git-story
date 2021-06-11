@@ -12,10 +12,10 @@
 			<v-col cols="0" sm="10" md="8" align="center" class="px-12">
 				<v-row align="center">
 					<v-col cols="12" md="7" align="left" style="height: unset;">
-						<h1 class="display-1 indigo--text text--lighten-4 font-weight-bold">
+						<h1 class="display-1 blue--text text--lighten-4 font-weight-bold">
 							{{ $t('home.login.baner') }}
 						</h1>
-						<p class="mt-12 white--text" style="word-break: keep-all;" v-html="$t('home.login.desc')"></p>
+						<p class="mt-12 grey--text text--lighten-5" style="word-break: keep-all;" v-html="$t('home.login.desc')"></p>
 					</v-col>
 					<v-col cols="12" md="5" align="right" style="height: unset;" align-self="end">
 						<v-btn
@@ -23,7 +23,7 @@
 							tile
 							x-large
 							@click="githubLogin"
-							color="indigo lighten-4">
+							color="blue lighten-2">
 							{{ $t('home.login.sign-in') }}
 						</v-btn>
 					</v-col>

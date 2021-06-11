@@ -9,18 +9,25 @@
 		color="transparent"
   		style="transform: translateY(24px);"
 		>
-		<v-app-bar-nav-icon />
+		<v-app-bar-nav-icon class="d-sm-none"/>
+
 		<v-toolbar-title>
-			<router-link style="text-decoration: none" class="white--text" to="/">
+			<router-link style="text-decoration: none" class="grey--text text--lighten-5" to="/">
 				GIT STORY
 			</router-link>
 		</v-toolbar-title>
 
 		<v-spacer />
 
+		<v-btn text color="grey lighten-5">
+			asdfasdf
+		</v-btn>
+
+		<!--
 		<v-btn icon>
 			<v-icon>mdi-magnify</v-icon>
 		</v-btn>
+		-->
 	</v-app-bar>
 </template>
 <script lang="ts">

@@ -17,7 +17,7 @@
 								:width="7"
 								color="indigo">
 							</v-progress-circular>
-							<p class="mt-6 text-body white--text" style="font-size: 1.5rem;" v-html="$store.getters.loadmsg"></p>
+							<p class="mt-6 text-body blue--text text--lighten-5" style="font-size: 1.5rem;" v-html="$store.getters.loadmsg"></p>
 						</div>
 					</v-layout>
 				</v-container>

@@ -6,7 +6,7 @@
 -->
 <template>
 	<v-main class="vh-100">
-		<v-row class="ma-0 h-100">
+		<v-row class="ma-0 white" style="min-height: 100vh;">
 			<v-col cols="3">
 				<dashboard-sidebar />
 			</v-col>

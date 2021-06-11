@@ -181,7 +181,7 @@ export default class UploadMenu extends Mixins(GlobalMixins) {
 		},
 		language: 'yaml',
 		code: '',
-		theme: 'vs',
+		theme: this.$vuetify.theme.dark ? 'vs-dark' : 'vs',
 	};
 
 	public async mounted() {

@@ -8,9 +8,9 @@
 	<v-app-bar
 		elevation="2"
 		color="indigo lighten-3">
-		<v-app-bar-nav-icon color="white"/>
+		<v-app-bar-nav-icon class="d-sm-none" color="blue lighten-5"/>
 		<v-toolbar-title>
-			<router-link style="text-decoration: none" class="white--text" to="#">
+			<router-link style="text-decoration: none" class="blue--text text--lighten-5" to="#">
 				GIT STORY
 			</router-link>
 		</v-toolbar-title>
@@ -37,7 +37,10 @@
 					elevation="1"
 					color="teal darken-3"
 					class="mr-3"
-					style="height: 36px; width: 36px; background: white;"
+					style="height: 36px; width: 36px;"
+	 				:style="$vuetify.theme.dark ?
+						{ background: '#272727', } :
+						{ background: 'white', }"
 					v-bind="attrs"
 					v-on="on">
 					<v-icon> mdi-menu-down </v-icon>
@@ -88,7 +91,7 @@
 			<template v-slot:activator="{ on, attrs }">
 				<v-btn tile dark
 					elevation="1"
-					color="teal darken-3"
+					color="teal darken-2"
 	 				v-bind="attrs"
 					v-on="on">
 					{{ $t('posting.posting') }}

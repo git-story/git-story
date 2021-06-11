@@ -21,3 +21,22 @@
 .editor-widget.suggest-widget {
 	display: none !important;
 }
+
+.theme--dark .tree-arrow.has-child:after {
+	border: 1.5px solid white;
+	border-left: 0;
+	border-top: 0;
+}
+
+.theme--dark .tree-node:not(.selected)>.tree-content:hover {
+	background: #2b2f33;
+}
+
+.theme--dark .tree-node.selected>.tree-content {
+	background: #3e444d;
+}
+
+.theme--dark .tree-dragnode {
+	background: #000000;
+	border-color: 1px solid black;
+}

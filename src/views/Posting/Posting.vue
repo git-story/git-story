@@ -7,21 +7,36 @@
 <template>
 	<v-main style="overflow: hidden; height: 100vh;">
 		<Header />
-		<v-row class="mx-0 mt-0" style="background-color: #f2f4f7; height: calc(100vh - 64px); overflow-y: auto;">
+		<v-row
+			class="mx-0 mt-0"
+			style="overflow-y: auto; height: calc(100vh - 64px);"
+   			:style="$vuetify.theme.dark ?
+   				{ background: '#252526', } :
+				{ background: '#f2f4f7', }" >
 			<v-col class="d-none d-sm-block py-0" sm="1"  md="2" lg="3"></v-col>
 			<v-col class="py-0" cols="12" sm="10" md="8" lg="6">
-				<v-row style="background-color: white; height: 100%;" class="ma-0 editor-shadow">
+				<v-row style="height: 100%;" class="ma-0 editor-shadow white">
 					<v-col cols="12">
 						<v-row class="ma-0 pt-5 px-5">
 							<v-col cols="12">
-								<input v-model="$store.state.title" type="text" class="title-input" spellcheck="false" :placeholder="$t('title')">
+								<input
+									v-model="$store.state.title"
+									type="text"
+									class="title-input black--text"
+									spellcheck="false"
+									:placeholder="$t('title')">
 							</v-col>
 						</v-row>
 						<v-divider class="mx-8" />
 						<v-row class="mx-0 pt-4 px-6" style="height: 85%; cursor: text;" @click="editorFocusEnd">
 							<v-col cols="12">
 								<div @click.stop="">
-									<MarkdownEditor ref="editor" v-model="$store.state.markdown" :settings="mdOptions"/>
+									<MarkdownEditor
+										ref="editor"
+										v-model="$store.state.markdown"
+		  								:theme="$vuetify.theme.dark ? 'dark' : 'light'"
+		  								class="editor"
+										:settings="mdOptions"/>
 								</div>
 							</v-col>
 						</v-row>
@@ -166,5 +181,10 @@ export default class Posting extends Mixins(GlobalMixins) {
 	-webkit-box-shadow: 0px 0px 18px 2px rgba(173,173,173,1);
 	-moz-box-shadow: 0px 0px 18px 2px rgba(173,173,173,1);
 	box-shadow: 0px 0px 18px 2px rgba(173,173,173,1);
+}
+.theme--dark .editor-shadow {
+	-webkit-box-shadow: 0px 0px 18px 2px rgba(75,75,75,1);
+	-moz-box-shadow: 0px 0px 18px 2px rgba(75,75,75,1);
+	box-shadow: 0px 0px 18px 2px rgba(75,75,75,1);
 }
 </style>

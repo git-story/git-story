@@ -69,7 +69,7 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 		},
 		language: 'yaml',
 		code: '',
-		theme: 'vs',
+		theme: this.$vuetify.theme.dark ? 'vs-dark' : 'vs',
 	};
 	public originalCode: string = '';
 	public readonly configFilePath: string = '_config.yml';

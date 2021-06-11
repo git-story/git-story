@@ -119,9 +119,16 @@ export default class DashboardCategory extends Mixins(GlobalMixins) {
 	public async mounted() {
 		this.$store.commit('loading', true);
 		this.$logger.debug('app', 'DashboardCateogry mounted');
-		this.originalData =
-			this.data =
-			await this.$git.getContent<DataTree[]>(this.configFile, 'json') as DataTree[];
+
+		while ( true ) {
+			this.originalData =
+				this.data =
+				await this.$git.getContent<DataTree[]>(this.configFile, 'json') as DataTree[];
+			if ( this.originalData ) {
+				break;
+			}
+			await this.$sleep(1000);
+		}
 		this.treeReload();
 		this.$store.commit('loading', false);
 	}
