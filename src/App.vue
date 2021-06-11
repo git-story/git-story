@@ -28,7 +28,7 @@
 				<router-view />
 			</transition>
 		</v-sheet>
-		<monaco-editor style="display: none;" />
+		<monaco-editor style="display: none;" :options="{}" theme="vs" value="" />
 	</v-app>
 </template>
 <script lang="ts">
