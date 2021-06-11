@@ -17,6 +17,7 @@
 				@editorDidMount="editorDidMount"/>
 		</v-col>
 		<v-col cols="4" class="h-100">
+			<!--
 			<v-row class="ma-0" style="height: 20%;">
 				<v-col cols="12">
 					<h3>{{ $t('dashboard.config.format') }}</h3>
@@ -27,7 +28,8 @@
 					</v-radio-group>
 				</v-col>
 			</v-row>
-			<v-row class="ma-0" style="height: 65%;">
+			-->
+			<v-row class="ma-0" style="height: 85%;">
 				<v-col cols="12">
 					<h3>{{ $t('dashboard.config.desc-title') }}</h3>
 					<v-divider class="my-2"></v-divider>

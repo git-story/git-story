@@ -37,6 +37,12 @@ import GlobalMixins from '@/plugins/mixins';
 import { User } from '@/interface/user';
 import { Github } from '@/plugins/github';
 
+declare global {
+	interface Window {
+		monaco: any;
+	}
+}
+
 @Component({
 	watch: {
 		$route(to, from) {
