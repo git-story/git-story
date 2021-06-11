@@ -147,7 +147,7 @@ export default class Posting extends Mixins(GlobalMixins) {
 				const repl = splMd[img.line].replace(regx, `![${img.name}](${url})`);
 				md.replaceLine(img.line, repl);
 			}
-			this.$store.getters.markdown = md.text;
+			this.$store.commit('markdown', md.text);
 		});
 
 		this.$evt.$off('post:get');
