@@ -11,6 +11,8 @@ export default {
 		'remove': '포스팅 삭제',
 		'remove-desc': '정말로 해당 포스팅을 삭제하시겠습니까?<br>삭제하면 복원할 수 없습니다.',
 		'empty': '게시글이 없습니다. 새로 작성해 주세요!',
+		'search-post': '게시글 검색',
+		'soon': '아직 개발중인 것이야요',
 	},
 	'content': {
 		posts: '글 목록 관리',

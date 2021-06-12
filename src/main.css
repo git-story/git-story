@@ -40,3 +40,9 @@
 	background: #000000;
 	border-color: 1px solid black;
 }
+
+.card-transparent.v-card,
+.card-transparent.v-card .v-list
+{
+	background-color: transparent !important;
+}

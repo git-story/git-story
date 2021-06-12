@@ -6,13 +6,32 @@
 -->
 <template>
 	<v-row class="ma-0" style="height: 100%;">
-		<v-col cols="8" class="pa-0">
+		<v-col cols="5" class="pa-0">
+			<v-text-field
+				class="pt-0 mx-3 mb-0"
+				:loading="searchLoading"
+				color="indigo"
+				v-model="search"
+				clearable
+				:placeholder="$t('dashboard.blog.search-post')"
+				append-icon="mdi-magnify"/>
 			<div v-if="loading === false">
 				<v-card
-					elevation="1" tile
+					:elevation="0" tile
 					v-for="(empty, idx) in skeletonCount" :key="'skeleton-' + empty + idx"
 					:class="idx > 0 ? 'mt-6' : ''">
-					<v-skeleton-loader type="image, article, divider, actions" />
+					<div class="d-flex flex-no-wrap justify-space-between">
+						<v-avatar
+							class="ma-3"
+							size="125"
+							style="border-radius: 0.5rem;">
+							<v-skeleton-loader min-height="250" max-height="250" max-width="250" min-width="250" type="image" />
+						</v-avatar>
+
+						<div style="width: 100%;">
+							<v-skeleton-loader type="article" />
+						</div>
+					</div>
 				</v-card>
 			</div>
 			<div v-else-if="posts.length > 0">
@@ -22,8 +41,7 @@
 					:post="post"
 					:config="config"
 	 				:meta-data="metaData"
-					@remove="remove(post)"
-					:class="idx > 0 ? 'mt-6' : ''"/>
+					@remove="remove(post)"/>
 				<infinite-loading @infinite="nextPostLoading">
 					<template v-slot:no-results>
 						<span></span>
@@ -48,16 +66,11 @@
 				</v-col>
 			</v-row>
 		</v-col>
-		<v-col cols="4" class="pa-0">
-			<v-row class="ma-0" style="position: fixed; width: 25%;">
-				<v-col cols="12" class="py-0">
-					<v-text-field
-		 				class="pt-0"
-	   					:loading="searchLoading"
-	   					color="indigo"
-						v-model="search"
-	  					clearable
-						prepend-icon="mdi-magnify"/>
+		<v-col cols="7" class="pa-0">
+			<v-row class="ma-0" height="100%;" style="position: fixed; width: 42%; height: 86%;" align="center">
+				<v-col cols="12" class="py-0" align="center">
+					<h1 class="display-4">. . .</h1>
+					<p class="mt-4">{{ $t('dashboard.blog.soon') }}</p>
 				</v-col>
 			</v-row>
 		</v-col>

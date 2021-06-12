@@ -7,34 +7,91 @@
 <template>
 	<v-hover style="cursor: pointer;">
 		<template v-slot:default="{ hover }">
-			<v-card tile :elevation="hover ? 12 : 1" @click="openPost">
-				<v-img
-					height="250"
-	 				lazy-src="https://cdn.pixabay.com/photo/2015/02/22/17/56/loading-645268_640.jpg"
-					:src="post.cover || defaultImage">
-				</v-img>
+			<v-card
+	   			shaped
+	   			:class="hover ? 'grey lighten-4' : 'white'"
+				@click="openPost"
+	   			:elevation="hover ? 4 : 0"
+			   	:style="hover ? { zIndex: 4 } : {}">
+				<div class="d-flex flex-no-wrap justify-space-between">
+					<v-avatar
+						class="ma-3"
+						size="125"
+						style="border-radius: 0.5rem;">
+						<v-img
+							height="250"
+							lazy-src="https://cdn.pixabay.com/photo/2015/02/22/17/56/loading-645268_640.jpg"
+							:src="post.cover || defaultImage">
+						</v-img>
+					</v-avatar>
 
-				<v-card-title>{{ post.title }}</v-card-title>
-				<v-card-text class="pt-0">
-					<v-row align="center" class="ma-0">
-						<div>{{ post.content }}</div>
-					</v-row>
-				</v-card-text>
+					<div style="width: 100%;">
+						<v-card-title>
+							<span :title="post.title" class="font-weight-bold">
+								{{ title(post.title) }}
+							</span>
+							<v-spacer></v-spacer>
 
-				<v-divider class="mx-4"></v-divider>
+							<v-menu
+								open-on-hover left
+								content-class="elevation-0"
+								tile
+								:close-on-content-click="false">
+								<template v-slot:activator="{ on, attrs }">
+									<v-btn
+										icon small
+										v-bind="attrs"
+		  								:color="hover ? 'grey' : 'grey lighten-2'"
+										v-on="on">
+										<v-icon>mdi-dots-vertical</v-icon>
+									</v-btn>
+								</template>
 
-				<v-card-actions>
-					<v-row>
-						<v-col cols="12" align="right" class="pr-6">
-							<v-btn color="red" dark class="mr-4" tile depressed @click.stop="remove">
-								{{ $t('remove') }}
-							</v-btn>
-							<v-btn color="indigo" dark tile depressed @click.stop="modify">
-								{{ $t('modify') }}
-							</v-btn>
-						</v-col>
-					</v-row>
-				</v-card-actions>
+								<v-list class="pa-0" :elevation="0">
+									<v-list-item class="pa-0" style="min-height: 10px;">
+										<v-btn
+											text tile
+											color="green"
+											dark depressed
+											@click.stop="modify">
+											{{ $t('modify') }}
+										</v-btn>
+										<v-btn
+											text tile
+											color="red"
+											dark depressed
+											@click.stop="remove">
+											{{ $t('remove') }}
+										</v-btn>
+									</v-list-item>
+								</v-list>
+
+							</v-menu>
+						</v-card-title>
+						<v-card-text class="pt-0" style="min-height: 80px;">
+							<v-row align="center" class="ma-0">
+								<div>{{ post.content }}</div>
+							</v-row>
+						</v-card-text>
+
+						<!--
+						<v-divider class="mx-4"></v-divider>
+
+						<v-card-actions>
+							<v-row>
+								<v-col cols="12" align="right" class="pr-6">
+									<v-btn color="red" dark class="mr-4" tile depressed @click.stop="remove">
+										{{ $t('remove') }}
+									</v-btn>
+									<v-btn color="indigo" dark tile depressed @click.stop="modify">
+										{{ $t('modify') }}
+									</v-btn>
+								</v-col>
+							</v-row>
+						</v-card-actions>
+						-->
+					</div>
+				</div> <!-- Flex Justify -->
 			</v-card>
 		</template>
 	</v-hover>
@@ -126,6 +183,13 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 
 	public modify() {
 		this.$assign(`/posting/${this.post.src}`);
+	}
+
+	public title(title: string) {
+		if ( title.length > 8 ) {
+			title = title.substr(0, 8) + '...';
+		}
+		return title;
 	}
 
 }

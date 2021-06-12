@@ -8,10 +8,10 @@
 	<v-main class="vh-100">
 		<dashboard-header />
 		<v-row class="white" style="min-height: calc(100vh - 64px); margin-top: 64px;">
-			<v-col cols="3">
+			<v-col cols="3" class="grey lighten-4">
 				<dashboard-sidebar />
 			</v-col>
-			<v-col cols="9">
+			<v-col cols="9" style="padding: 2rem;">
 				<router-view></router-view>
 			</v-col>
 		</v-row>

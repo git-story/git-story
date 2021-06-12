@@ -5,7 +5,8 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<div class="col-3 pt-0" style="padding-right: 20px; position: fixed;">
+	<div class="col-3 pt-0" style="padding: 2rem; position: fixed;">
+		<!--
 		<v-btn
 	 		tile dark
 	  		large block
@@ -13,24 +14,25 @@
 			@click="$assign('/posting/')">
 			{{ $t('dashboard.new-posting') }}
 		</v-btn>
+		-->
 
-		<v-card tile class="mt-4">
+		<v-card tile class="mt-4 card-transparent" flat>
 			<v-card-title>
 				<p class="ma-0 text-right w-100">{{ $t('dashboard.blog.content') }}</p>
 			</v-card-title>
 			<v-divider />
-			<v-list flat>
+			<v-list flat rounded>
 				<dash-list-item href="/dashboard/posts" icon="playlist-edit">{{ $t('dashboard.content.posts') }}</dash-list-item>
 				<dash-list-item href="/dashboard/category" icon="shape">{{ $t('dashboard.content.category') }}</dash-list-item>
 			</v-list>
 		</v-card>
 
-		<v-card tile class="mt-6">
+		<v-card tile class="mt-6 card-transparent" flat>
 			<v-card-title>
 				<p class="ma-0 text-right w-100">{{ $t('dashboard.blog.setting') }}</p>
 			</v-card-title>
 			<v-divider />
-			<v-list flat>
+			<v-list flat rounded>
 				<dash-list-item href="/dashboard/theme" icon="compare">{{ $t('dashboard.setting.theme') }}</dash-list-item>
 				<!--
 				<dash-list-item href="/dashboard/template" icon="layers-triple">{{ $t('dashboard.setting.template') }}</dash-list-item>
@@ -41,6 +43,7 @@
 			</v-list>
 		</v-card>
 
+		<!--
 		<v-btn
 	 		tile dark
 	  		large block
@@ -49,6 +52,7 @@
 			@click="logout">
 			{{ $t('logout') }}
 		</v-btn>
+		-->
 	</div>
 </template>
 <script lang="ts">
