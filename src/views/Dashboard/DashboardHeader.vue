@@ -17,7 +17,22 @@
 
 		<v-spacer></v-spacer>
 
-		<theme-toggle-btn class="mr-2" btn-color="black" />
+		<v-btn
+	  		class="mr-0"
+	 		color="black"
+			icon plain depressed
+			@click="$assign($git.repo.html_url, true)">
+			<v-icon>mdi-github</v-icon>
+		</v-btn>
+
+		<theme-toggle-btn class="mr-4" btn-color="black" />
+
+		<v-btn
+	  		class="mr-4"
+	 		color="indigo darken-1"
+			dark
+			@click="$assign('/posting/')"
+			rounded depressed>{{ $t('dashboard.new-posting') }}</v-btn>
 	</v-app-bar>
 </template>
 <script lang="ts">

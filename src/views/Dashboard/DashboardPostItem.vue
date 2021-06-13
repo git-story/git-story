@@ -42,6 +42,7 @@
 										icon small
 										v-bind="attrs"
 		  								:color="hover ? 'grey' : 'grey lighten-2'"
+		  								plain
 										v-on="on">
 										<v-icon>mdi-dots-vertical</v-icon>
 									</v-btn>
@@ -52,14 +53,14 @@
 										<v-btn
 											text tile
 											color="green"
-											dark depressed
+											dark depressed plain
 											@click.stop="modify">
 											{{ $t('modify') }}
 										</v-btn>
 										<v-btn
 											text tile
 											color="red"
-											dark depressed
+											dark depressed plain
 											@click.stop="remove">
 											{{ $t('remove') }}
 										</v-btn>

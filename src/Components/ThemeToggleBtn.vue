@@ -5,7 +5,7 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<v-btn icon :color="btnColor || 'grey lighten-5'" @click.stop="toggleTheme">
+	<v-btn icon :color="btnColor || 'grey lighten-5'" @click.stop="toggleTheme" plain>
 		<v-icon>
 			{{
 				theme ?
