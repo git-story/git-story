@@ -31,8 +31,12 @@ export default class ThemeToggleBtn extends Mixins(GlobalMixins) {
 	public toggleTheme() {
 		this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
 		if ( this.$vuetify.theme.dark ) {
+			document.querySelector('link[title=github-dark]').removeAttribute('disabled');
+			document.querySelector('link[title=github]').setAttribute('disabled', 'disabled');
 			window.monaco.editor.setTheme('vs-dark');
 		} else {
+			document.querySelector('link[title=github-dark]').setAttribute('disabled', 'disabled');
+			document.querySelector('link[title=github]').removeAttribute('disabled');
 			window.monaco.editor.setTheme('vs');
 		}
 		this.$logger.debug('app', `Theme toggle to ${this.theme ? 'dark' : 'light'}`);

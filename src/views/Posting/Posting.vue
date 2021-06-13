@@ -13,37 +13,34 @@
    			:style="$vuetify.theme.dark ?
    				{ background: '#252526', } :
 				{ background: '#f2f4f7', }" >
-			<v-col class="d-none d-sm-block py-0" sm="1"  md="2" lg="3"></v-col>
-			<v-col class="py-0" cols="12" sm="10" md="8" lg="6">
-				<v-row style="height: 100%;" class="ma-0 editor-shadow white">
+			<v-col cols="12" md="6" class="white">
+				<v-row class="ma-0 pt-5 px-5">
 					<v-col cols="12">
-						<v-row class="ma-0 pt-5 px-5">
-							<v-col cols="12">
-								<input
-									v-model="$store.state.title"
-									type="text"
-									class="title-input black--text"
-									spellcheck="false"
-									:placeholder="$t('title')">
-							</v-col>
-						</v-row>
-						<v-divider class="mx-8" />
-						<v-row class="mx-0 pt-4 px-6" style="height: 85%; cursor: text;" @click="editorFocusEnd">
-							<v-col cols="12">
-								<div @click.stop="">
-									<MarkdownEditor
-										ref="editor"
-										v-model="$store.state.markdown"
-		  								:theme="$vuetify.theme.dark ? 'dark' : 'light'"
-		  								class="editor"
-										:settings="mdOptions"/>
-								</div>
-							</v-col>
-						</v-row>
+						<input
+							v-model="$store.state.title"
+							type="text"
+							class="title-input black--text"
+							spellcheck="false"
+							:placeholder="$t('title')">
+					</v-col>
+				</v-row>
+				<v-divider class="mx-8" />
+				<v-row class="mx-0 pt-4 px-6" style="height: 85%; cursor: text;" @click="editorFocusEnd">
+					<v-col cols="12">
+						<div @click.stop="">
+							<MarkdownEditor
+								ref="editor"
+								v-model="$store.state.markdown"
+								:theme="$vuetify.theme.dark ? 'dark' : 'light'"
+								class="editor"
+								:settings="mdOptions"/>
+						</div>
 					</v-col>
 				</v-row>
 			</v-col>
-			<v-col class="d-none d-sm-block py-0" sm="1"  md="2" lg="3"></v-col>
+			<v-col cols="6" class="d-none d-md-flex">
+				<div v-html="preview" class="mt-5 mx-5 w-100"></div>
+			</v-col>
 		</v-row>
 	</v-main>
 </template>
@@ -92,6 +89,12 @@ export default class Posting extends Mixins(GlobalMixins) {
 		const uint8array = Buffer.from(text, 'hex');
 		const blob = new Blob([ uint8array ], { type });
 		return URL.createObjectURL(blob);
+	}
+
+	get preview() {
+		const text = '# ' + this.$store.getters.title + '\n<br><br>\n' +
+			this.$store.getters.markdown;
+		return new Markdown(text).html;
 	}
 
 	public mounted() {
