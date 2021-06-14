@@ -9,19 +9,20 @@
 -->
 <template>
 	<div>
-		<v-row class="ma-0" align="center">
-			<h1>{{ $t('dashboard.setting.theme') }}</h1>
-			<v-spacer></v-spacer>
-			<v-text-field
-				v-model="search"
-				:label="$t('dashboard.theme.search')"
-				@keydown="inputEvent"
-				class="custom"
-				color="indigo"
-				append-icon="mdi-magnify">
-			</v-text-field>
+		<v-row class="ma-0 white" align="center">
+			<v-col cols="12" sm="8" md="6" class="py-0" style="min-height: 64px">
+				<v-text-field
+					v-model="search"
+					:label="$t('dashboard.theme.search')"
+					@keydown="inputEvent"
+					class="custom"
+					color="indigo darken-3"
+					rounded filled dense
+	 				hide-details single-line
+					prepend-inner-icon="mdi-magnify">
+				</v-text-field>
+			</v-col>
 		</v-row>
-		<v-divider class="my-2"></v-divider>
 		<v-row v-if="renderer && themes.length > 0">
 			<v-col
 				xs="12"
