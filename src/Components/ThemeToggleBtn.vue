@@ -32,8 +32,10 @@ export default class ThemeToggleBtn extends Mixins(GlobalMixins) {
 		this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
 		if ( this.$vuetify.theme.dark ) {
 			window.monaco.editor.setTheme('vs-dark');
+			this.$local.write('theme', 'dark');
 		} else {
 			window.monaco.editor.setTheme('vs');
+			this.$local.write('theme', 'light');
 		}
 		this.$logger.debug('app', `Theme toggle to ${this.theme ? 'dark' : 'light'}`);
 	}

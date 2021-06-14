@@ -32,6 +32,7 @@ export default new Vuetify({
 		current: lang,
 	},
 	theme: {
+		dark: Boolean(local.read<string>('theme') === 'dark'),
 		themes: {
 			dark: {
 				black: '#e8e8e8',
