@@ -5,14 +5,14 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<v-card tile elevation="1" width="500px">
+	<v-card tile elevation="1" width="500px" class="thin-outline">
 		<v-row class="ma-0 px-3 pt-3" align="center">
 			<v-col cols="12" class="pb-0">
 				<v-radio-group
 					v-model="editMode"
 	 				class="custom ma-0"
 	  				@change="editModeChange"
-	 				row>
+	 				row hide-details>
 					<v-radio
 		 				label="Basic"
 	   					value="basic"
@@ -29,7 +29,8 @@
 				<v-col cols="12">
 					<monaco-editor
 						ref="code-editor"
-	  					style="width: 100%; height: 300px; border: solid black 1px;"
+	  					class="thin-outline"
+	  					style="width: 100%; height: 300px;"
 						v-model="editor.code"
 						:language="editor.language"
 						:theme="editor.theme"
@@ -44,7 +45,12 @@
 					<h5>{{ $t('posting.cover') }}</h5>
 				</v-col>
 				<v-col cols="7">
-					<v-text-field v-model="value.cover" />
+					<v-text-field
+		 				dense flat
+		 				solo hide-details rounded
+		 				spellcheck="false"
+		 				background-color="grey lighten-4"
+						v-model="value.cover" />
 				</v-col>
 				<v-col cols="2">
 					<v-file-input
@@ -71,7 +77,9 @@
 						menu-props="auto"
 						:label="$t('posting.category')"
 						color="indigo darken-3"
-						dense>
+	  					background-color="grey lighten-4"
+						hide-details
+						dense solo rounded flat>
 					</v-select>
 				</v-col>
 			</v-row>
@@ -87,8 +95,11 @@
 						class="custom"
 						:label="$t('posting.tag-label')"
 						color="indigo darken-3"
+	  					background-color="grey lighten-4"
 						chips clearable
-						multiple dense>
+						multiple hide-details
+						dense solo rounded flat
+						append-icon="">
 						<template v-slot:selection="{ attrs, item, select, selected }">
 							<v-chip
 								small
@@ -123,7 +134,7 @@
 		<v-row class="ma-0 px-3 pb-3">
 			<v-col cols="12">
 				<v-btn
-					block dark
+					block dark depressed tile large
 					color="indigo darken-1"
 					@click="upload">{{ $t('posting.upload') }}</v-btn>
 			</v-col>

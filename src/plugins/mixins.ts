@@ -74,16 +74,25 @@ export default class Mixin extends VueDecorator {
 	}
 
 	public $assign(url: string, newTab: boolean = false) {
+		const router = this && this.$router;
+
+		if ( url === '-1' ) {
+			if ( window.history.length > 2 ) {
+				window.history.go(-1);
+				return true;
+			}
+			return false;
+		}
+
 		if ( !url.match(/^https?:\/\//) ) {
 			url = path.join('/', this.$vuetify.lang.current, url);
 		}
 
 		if ( newTab ) {
 			window.open(url);
-			return;
+			return true;
 		}
 
-		const router = this && this.$router;
 		if ( router ) {
 			if ( router.currentRoute.path !== url ) {
 				router.push({ path: url })

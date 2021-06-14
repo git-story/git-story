@@ -27,8 +27,7 @@
 
 		<v-list
 			dense
-	  		color="white"
-			style="border: solid; border-color: rgba(255, 255, 255, 0.12) !important; border-width: thin;">
+			class="thin-outline">
 			<v-list-item-group>
 				<v-list-item @click="$assign($git.repo.owner.html_url, true)">
 					<v-list-item-icon class="mr-3">

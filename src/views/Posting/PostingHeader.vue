@@ -6,20 +6,28 @@
 -->
 <template>
 	<v-app-bar
-		elevation="2"
-		color="indigo lighten-3">
-		<v-app-bar-nav-icon class="d-sm-none" color="blue lighten-5"/>
-		<v-toolbar-title>
-			<router-link style="text-decoration: none" class="blue--text text--lighten-5" to="#">
-				GIT STORY
-			</router-link>
-		</v-toolbar-title>
+		elevation="0"
+		color="grey lighten-4">
 
-		<theme-toggle-btn />
+		<v-btn
+	  		class="ml-0"
+	  		icon plain
+	  		color="black"
+			@click="$assign('-1') || $assign('/dashboard/')">
+			<v-icon>mdi-arrow-left</v-icon>
+		</v-btn>
+
+		<v-divider vertical class="ml-3 mr-4"></v-divider>
+
+		<h3 class="indigo--text text--darken-4">
+			GIT STORY
+		</h3>
+
+		<theme-toggle-btn btnClass="ml-1" />
 
 		<v-spacer />
 
-		<v-btn tile elevation="1"
+		<v-btn tile depressed
 			:loading="tempPostLoading"
 			color="teal--text text--darken-3 white"
 			@click="postSave">
@@ -35,10 +43,9 @@
 			offset-y>
 			<template v-slot:activator="{ on, attrs }">
 				<v-btn
-					tile icon
-					elevation="1"
+					tile icon depressed
 					color="teal darken-3"
-					class="mr-3"
+					class="mr-5"
 					style="height: 36px; width: 36px;"
 	 				:style="$vuetify.theme.dark ?
 						{ background: '#272727', } :
@@ -54,7 +61,7 @@
 					<v-list-item-group
 		 				v-if="tempPosts.length > 0"
 		 				v-model="selectedPostIdx"
-	   					color="indigo">
+	   					color="indigo darken-4">
 						<v-list-item
 							v-for="(post, i) in tempPosts"
 		  					@click="selectTempPost(i)"
@@ -62,12 +69,11 @@
 							<v-list-item-content>
 								<v-list-item-title v-text="post.title || $t('posting.untitle')"></v-list-item-title>
 								<v-list-item-subtitle
-									class="blue-grey--text text--lighten-2 mt-2"
 		 							v-text="post.content.replace(/\\n/g, ' ').substr(0, 20)"/>
 							</v-list-item-content>
 							<v-list-item-action>
 								<v-list-item-action-text v-text="dateFormat(post.updated)" />
-								<v-btn class="mt-1" icon color="red" @click.stop="deleteTempPost(i)">
+								<v-btn class="mt-1" icon color="red" plain @click.stop="deleteTempPost(i)">
 									<v-icon>mdi-delete</v-icon>
 								</v-btn>
 							</v-list-item-action>
@@ -91,8 +97,10 @@
 	  		:close-on-content-click="false"
 			offset-y>
 			<template v-slot:activator="{ on, attrs }">
-				<v-btn tile dark
-					elevation="1"
+				<v-btn
+					dark rounded
+					depressed
+					class="px-6"
 					color="teal darken-2"
 	 				v-bind="attrs"
 					v-on="on">

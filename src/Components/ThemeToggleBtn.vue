@@ -5,7 +5,11 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<v-btn icon :color="btnColor || 'grey lighten-5'" @click.stop="toggleTheme" plain>
+	<v-btn
+		icon plain
+		:color="btnColor || 'black'"
+	 	:class="btnClass || ''"
+		@click.stop="toggleTheme">
 		<v-icon>
 			{{
 				theme ?
@@ -23,6 +27,7 @@ import GlobalMixins from '@/plugins/mixins';
 export default class ThemeToggleBtn extends Mixins(GlobalMixins) {
 
 	@Prop(String) public btnColor!: string;
+	@Prop(String) public btnClass!: string;
 
 	get theme() {
 		return this.$vuetify.theme.dark;
