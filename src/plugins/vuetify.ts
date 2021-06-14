@@ -26,13 +26,25 @@ export const locales = {
 	ko,
 };
 
+const theme = Boolean(local.read<string>('theme') === 'dark');
+
+window.addEventListener('load', () => {
+	if ( theme ) {
+		(document.querySelector('link[title=github-dark]') as HTMLElement).removeAttribute('disabled');
+		(document.querySelector('link[title=github]') as HTMLElement).setAttribute('disabled', 'disabled');
+	} else {
+		(document.querySelector('link[title=github-dark]') as HTMLElement).setAttribute('disabled', 'disabled');
+		(document.querySelector('link[title=github]') as HTMLElement).removeAttribute('disabled');
+	}
+});
+
 export default new Vuetify({
 	lang: {
 		locales,
 		current: lang,
 	},
 	theme: {
-		dark: Boolean(local.read<string>('theme') === 'dark'),
+		dark: theme,
 		themes: {
 			dark: {
 				black: '#e8e8e8',
