@@ -6,10 +6,8 @@
 -->
 <template>
 	<div class="h-100">
-		<h1>{{ $t('dashboard.category.title') }}</h1>
 		<v-row class="ma-0">
 			<v-col cols="8">
-				<v-divider class="my-1"></v-divider>
 				<tree
 					v-if="treeRenderer"
 					:data="data"
@@ -17,14 +15,16 @@
 	 				style="overflow: hidden;"
 	 				@node:dragging:finish="refresh"
 					ref="tree">
-					<div slot-scope="{ node }" class="d-flex" style="align-items: center;">
+					<v-row slot-scope="{ node }" class="ma-0" align="center">
 						<v-text-field
 							color="indigo darken-3"
 							class="pt-0 custom"
 							v-model="node.text"
 	   						@input="refresh"
+	   						flat hide-details rounded
+	   						background-color="transparent"
 							@click.stop="() => {}" />
-						&nbsp;
+						<v-spacer></v-spacer>
 						<v-btn
 		  					depressed
 		  					class="ml-2"
@@ -41,36 +41,34 @@
 							icon>
 							<v-icon>mdi-delete</v-icon>
 						</v-btn>
-					</div>
+					</v-row>
 				</tree>
-				<v-btn
-					dark depressed
-					tile text
-					color="green darken-4"
-	 				@click="addNew"
-					>
-					{{ $t('dashboard.category.new') + ' ' + $t('add') }}
-				</v-btn>
 			</v-col>
 			<v-col cols="4">
-				<!--
 				<v-row class="ma-0">
-					<v-col cols="12">
-						<v-btn @click="save">save</v-btn>
-						<pre>{{ value }}</pre>
+					<v-col cols="12" class="pb-0">
+						<v-btn
+							dark depressed
+		  					block
+							tile text
+							color="green darken-4"
+							@click="addNew"
+	   						large
+							>
+							{{ $t('dashboard.category.new') + ' ' + $t('add') }}
+						</v-btn>
 					</v-col>
 				</v-row>
-				-->
 				<v-row class="ma-0">
 					<v-col cols="12">
 						<v-btn
 							:disabled="$store.getters.loading || !modified"
 							:dark="modified"
 							:loading="$store.getters.loading"
-							depressed
-							tile block
+							depressed text
+							tile block large
 							@click="save"
-							color="teal">
+							color="indigo darken-4">
 							{{ $t('save') }}
 						</v-btn>
 					</v-col>
