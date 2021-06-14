@@ -15,6 +15,8 @@
 			</router-link>
 		</v-toolbar-title>
 
+		<theme-toggle-btn />
+
 		<v-spacer />
 
 		<v-btn tile elevation="1"
