@@ -30,20 +30,28 @@
 	  		color="white"
 			style="border: solid; border-color: rgba(255, 255, 255, 0.12) !important; border-width: thin;">
 			<v-list-item-group>
-				<v-list-item @click="$assign('/dashboard/')">
-					<v-list-item-icon class="mr-3">
-						<v-icon dense>mdi-post</v-icon>
-					</v-list-item-icon>
-					<v-list-item-content style="font-size: 10pt;">
-						{{ $t('manage-blog') }}
-					</v-list-item-content>
-				</v-list-item>
-				<v-list-item @click="$assign($git.repo.html_url, true)">
+				<v-list-item @click="$assign($git.repo.owner.html_url, true)">
 					<v-list-item-icon class="mr-3">
 						<v-icon dense>mdi-account</v-icon>
 					</v-list-item-icon>
 					<v-list-item-content style="font-size: 10pt;">
+						{{ $t('my-account') }}
+					</v-list-item-content>
+				</v-list-item>
+				<v-list-item @click="$assign(`https://${$git.repo.name}`, true)">
+					<v-list-item-icon class="mr-3">
+						<v-icon dense>mdi-post</v-icon>
+					</v-list-item-icon>
+					<v-list-item-content style="font-size: 10pt;">
 						{{ $t('my-blog') }}
+					</v-list-item-content>
+				</v-list-item>
+				<v-list-item @click="$assign($git.repo.html_url, true)">
+					<v-list-item-icon class="mr-3">
+						<v-icon dense>mdi-github</v-icon>
+					</v-list-item-icon>
+					<v-list-item-content style="font-size: 10pt;">
+						{{ $t('blog-github') }}
 					</v-list-item-content>
 				</v-list-item>
 				<v-divider class="my-2"></v-divider>
@@ -68,8 +76,8 @@ import firebase from 'firebase';
 @Component
 export default class AvatarBtn extends Mixins(GlobalMixins) {
 
-	@Prop(String) public btnColor: string = 'grey lighten-5';
-	@Prop(String) public btnClass: string = '';
+	@Prop(String) public btnColor!: string;
+	@Prop(String) public btnClass!: string;
 
 	get theme() {
 		return this.$vuetify.theme.dark;
