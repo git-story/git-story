@@ -42,17 +42,6 @@
 				<dash-list-item href="/dashboard/config" icon="microsoft-visual-studio-code">{{ $t('dashboard.setting.config') }}</dash-list-item>
 			</v-list>
 		</v-card>
-
-		<!--
-		<v-btn
-	 		tile dark
-	  		large block
-	  		class="mt-4"
-			color="red darken-3"
-			@click="logout">
-			{{ $t('logout') }}
-		</v-btn>
-		-->
 	</div>
 </template>
 <script lang="ts">
@@ -60,7 +49,6 @@ import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { Imgs } from 'types/index';
 import DashListItem from './DashboardSidebarItem.vue';
-import firebase from 'firebase';
 
 @Component({
 	components: {
@@ -75,12 +63,6 @@ export default class DashboardSidebar extends Mixins(GlobalMixins) {
 		this.$logger.debug('app', 'DashboardSidebar mounted');
 	}
 
-	public logout() {
-		firebase.auth().signOut().finally(() => {
-			this.$session.write('userInfo', '');
-			this.$assign('/');
-		});
-	}
 
 }
 </script>

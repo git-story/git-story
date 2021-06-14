@@ -16,6 +16,8 @@ export default {
 	dashboard,
 	github,
 	posting,
+	'manage-blog': '블로그 관리',
+	'my-blog': '내 블로그',
 	'notice': '알림',
 	'create-new': '새로 만들기',
 	'logout': '로그아웃',

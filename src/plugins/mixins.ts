@@ -80,7 +80,10 @@ export default class Mixin extends VueDecorator {
 		const router = this && this.$router;
 		if ( router ) {
 			if ( router.currentRoute.path !== url ) {
-				router.push({ path: url });
+				router.push({ path: url })
+					.catch(() => {
+						// ignore error
+					});
 			}
 		}
 	}

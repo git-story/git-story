@@ -22,6 +22,7 @@ import { Firebase } from './plugins/firebase';
 import { Github } from './plugins/github';
 
 import ThemeToggleBtn from './Components/ThemeToggleBtn.vue';
+import AvatarBtn from './Components/AvatarBtn.vue';
 
 import LiquorTree from 'liquor-tree';
 import MonacoEditor from 'vue-monaco';
@@ -54,6 +55,7 @@ Vue.use(logger);
 Vue.use(LiquorTree);
 
 Vue.component('theme-toggle-btn', ThemeToggleBtn);
+Vue.component('avatar-btn', AvatarBtn);
 Vue.component('monaco-editor', MonacoEditor);
 
 new Vue({
