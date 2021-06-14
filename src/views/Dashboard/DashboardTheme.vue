@@ -53,7 +53,8 @@
 				<v-skeleton-loader
 					v-bind="{
 						boilerplate: true,
-						elevation: 2,
+						elevation: 0,
+						tile: true,
 					}"
 					type="image, divider, table-heading, list-item-two-line">
 				</v-skeleton-loader>
