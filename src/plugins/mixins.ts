@@ -27,8 +27,14 @@ export default class Mixin extends VueDecorator {
 		super();
 
 		this.$t = this.$t.bind(this);
+		this.$tf = this.$tf.bind(this);
 		this.mount = this.mount.bind(this);
 		this.$assign = this.$assign.bind(this);
+		this.$noti = this.$noti.bind(this);
+		this.$modal = this.$modal.bind(this);
+		this.$confirm = this.$confirm.bind(this);
+		this.$sleep = this.$sleep.bind(this);
+		this.$getConfig = this.$getConfig.bind(this);
 	}
 
 	public $t(key: string, ...args: string[]) {
