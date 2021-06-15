@@ -55,3 +55,7 @@
 .theme--dark .thin-outline {
 	border-color: rgba(255, 255, 255, 0.12) !important;
 }
+
+.custom .v-list-item--link:before {
+	background-color: transparent !important;
+}
