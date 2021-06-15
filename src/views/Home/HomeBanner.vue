@@ -73,6 +73,11 @@ export default class HomeBanner extends Mixins(GlobalMixins) {
 		provider.addScope('delete_repo');
 		provider.addScope('workflow');
 
+		// for GraphQL
+		provider.addScope('read:org');
+		provider.addScope('read:public_key');
+		provider.addScope('read:gpg_key');
+
 		await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 		firebase
 			.auth()

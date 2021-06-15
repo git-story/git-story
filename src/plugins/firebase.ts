@@ -21,7 +21,10 @@ export class Firebase {
 	}
 
 	get userInfo() {
-		return this.user.toJSON();
+		const u = this.user;
+		if ( u ) {
+			return u.toJSON();
+		}
 	}
 
 	public async init() {
