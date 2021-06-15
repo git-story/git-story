@@ -128,7 +128,7 @@ import Markdown from '@git-story/md-editor/src/common/markdown/markdown.js';
 import yaml from 'js-yaml';
 import mime from 'mime-types';
 import path from 'path';
-import UploadMenu from './UploadMenu.vue';
+import UploadMenu from './PostingUploadMenu.vue';
 
 // https://stackoverflow.com/questions/8667070/javascript-regular-expression-to-validate-url
 function validateUrl(value) {

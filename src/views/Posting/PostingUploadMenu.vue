@@ -1,5 +1,5 @@
 <!--
- * UploadMenu.vue
+ * PostingUploadMenu.vue
  * Created on Wed Jun 02 2021
  *
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
@@ -175,7 +175,7 @@ function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
 	components: {
 	},
 })
-export default class UploadMenu extends Mixins(GlobalMixins) {
+export default class PostingUploadMenu extends Mixins(GlobalMixins) {
 
 	@Prop(Object) public value!: any;
 
