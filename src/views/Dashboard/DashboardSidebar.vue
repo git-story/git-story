@@ -22,8 +22,8 @@
 			</v-card-title>
 			<v-divider />
 			<v-list flat rounded>
-				<dash-list-item href="/dashboard/posts" icon="playlist-edit">{{ $t('dashboard.content.posts') }}</dash-list-item>
-				<dash-list-item href="/dashboard/category" icon="shape">{{ $t('dashboard.content.category') }}</dash-list-item>
+				<dash-list-item href="/dashboard/posts" icon="playlist-edit">{{ $t('dashboard.sidebar.posts') }}</dash-list-item>
+				<dash-list-item href="/dashboard/category" icon="shape">{{ $t('dashboard.sidebar.category') }}</dash-list-item>
 			</v-list>
 		</v-card>
 
@@ -33,13 +33,13 @@
 			</v-card-title>
 			<v-divider />
 			<v-list flat rounded>
-				<dash-list-item href="/dashboard/theme" icon="compare">{{ $t('dashboard.setting.theme') }}</dash-list-item>
+				<dash-list-item href="/dashboard/theme" icon="compare">{{ $t('dashboard.sidebar.theme') }}</dash-list-item>
 				<!--
 				<dash-list-item href="/dashboard/template" icon="layers-triple">{{ $t('dashboard.setting.template') }}</dash-list-item>
 				<dash-list-item href="/dashboard/comment" icon="comment-multiple">{{ $t('dashboard.setting.comment') }}</dash-list-item>
 				-->
-				<dash-list-item href="/dashboard/setting" icon="cog">{{ $t('dashboard.setting.etc') }}</dash-list-item>
-				<dash-list-item href="/dashboard/config" icon="microsoft-visual-studio-code">{{ $t('dashboard.setting.config') }}</dash-list-item>
+				<dash-list-item href="/dashboard/setting" icon="cog">{{ $t('dashboard.sidebar.etc') }}</dash-list-item>
+				<dash-list-item href="/dashboard/config" icon="microsoft-visual-studio-code">{{ $t('dashboard.sidebar.config') }}</dash-list-item>
 			</v-list>
 		</v-card>
 	</div>
