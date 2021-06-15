@@ -38,6 +38,20 @@ const routes: RouteConfig[] = [
 			{
 				path: 'setting',
 				component: () => import('views/Dashboard/DashboardSetting.vue'),
+				children: [
+					{
+						path: 'blog',
+						component: () => import('views/Dashboard/Setting/SettingBlog.vue'),
+					},
+					{
+						path: 'profile',
+						component: () => import('views/Dashboard/Setting/SettingProfile.vue'),
+					},
+					{
+						path: '',
+						redirect: 'blog',
+					},
+				],
 			},
 			{
 				path: '',
