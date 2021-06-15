@@ -36,14 +36,6 @@ const routes: RouteConfig[] = [
 				component: () => import('views/Dashboard/DashboardTheme.vue'),
 			},
 			{
-				path: 'template',
-				component: () => import('views/Dashboard/DashboardTemplate.vue'),
-			},
-			{
-				path: 'comment',
-				component: () => import('views/Dashboard/DashboardComment.vue'),
-			},
-			{
 				path: 'setting',
 				component: () => import('views/Dashboard/DashboardSetting.vue'),
 			},
