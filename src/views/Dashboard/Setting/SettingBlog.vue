@@ -22,6 +22,7 @@
 				<div class="d-flex">
 					<v-text-field
 						flat dense rounded filled
+		 				hide-details
 		 				v-model="cname"
 		 				color="indigo darken-1"
 						class="mr-2">
@@ -63,6 +64,23 @@
 					v-html="$t('dashboard.setting.blog.enforce-https-desc')"></p>
 			</v-col>
 		</v-row>
+
+		<v-row class="ma-0">
+			<v-col cols="12">
+				<v-row class="ma-0" align="center">
+					<h3>{{ $t('dashboard.setting.blog.allow-post-gather') }}</h3>
+					<v-checkbox
+		 				v-model="allowGather"
+	   					:disabled="true"
+	   					color="indigo darken-1"
+		 				class="ma-0 ml-3 mb-1"
+						hide-details/>
+				</v-row>
+				<p
+					class="mt-3" style="font-size: 11pt;"
+					v-html="$t('dashboard.setting.blog.allow-post-gather-desc')"></p>
+			</v-col>
+		</v-row>
 	</v-container>
 </template>
 <script lang="ts">
@@ -78,6 +96,7 @@ export default class SettingBlog extends Mixins(GlobalMixins) {
 	public info: any = {};
 	public cname: string = '';
 	public https: boolean = false;
+	public allowGather: boolean = true;
 
 	public async mounted() {
 		while ( !this.$git.User || !this.$git.repo ) {
