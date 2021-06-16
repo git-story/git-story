@@ -83,7 +83,7 @@ export default class DashboardSetting extends Mixins(GlobalMixins) {
 
 	public get selected() {
 		const idx = this.linkList.findIndex(
-			(link: Link) => `/${this.$route.params.lang}/dashboard/setting/${link.key}` === this.$route.fullPath
+			(link: Link) => `/${this.$route.params.lang}/dashboard/setting/${link.key}` === this.$route.fullPath,
 		);
 		return idx > -1 ? [ idx ] : [ 0 ];
 	}
