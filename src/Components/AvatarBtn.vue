@@ -94,11 +94,9 @@ export default class AvatarBtn extends Mixins(GlobalMixins) {
 		this.$logger.debug('app', `Theme toggle to ${this.theme ? 'dark' : 'light'}`);
 	}
 
-	public logout() {
-		firebase.auth().signOut().finally(() => {
-			this.$session.write('userInfo', '');
-			this.$assign('/');
-		});
+	public async logout() {
+		await this.$logout();
+		this.$assign('/');
 	}
 
 }

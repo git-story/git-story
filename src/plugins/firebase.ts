@@ -58,4 +58,8 @@ export class Firebase {
 		}
 	}
 
+	public signOut() {
+		return this.firebase.auth().signOut();
+	}
+
 }

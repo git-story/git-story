@@ -240,4 +240,13 @@ export default class Mixin extends VueDecorator {
 		return config;
 	}
 
+	public async $logout(): Promise<void> {
+		try {
+			await this.$firebase.signOut();
+		} catch {
+			/* empty */
+		}
+		this.$session.write('userInfo', '');
+	}
+
 }
