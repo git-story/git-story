@@ -176,8 +176,12 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		await this.createBlogRepo(repo);
 		let content: any;
 		do {
-			await this.$sleep(1000);
-			content = await this.$git.getContent<MetaData[]>('meta-data.json', 'json', repo);
+			try {
+				const { data } = await this.$axios.get(`https://raw.githubusercontent.com/${this.$store.getters.user.userName}/${repo}/master/meta-data.json`);
+				content = data as MetaData[];
+			} catch {
+				await this.$sleep(3000);
+			}
 		} while ( !content );
 
 		await this.$git.initRepo(repo);
