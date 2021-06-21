@@ -45,20 +45,21 @@ jobs:
       #- run: npm run preview:build
       #- run: rm -rf node_modules package-lock.json
     - run: "echo 'testset' > preview/index.html"
+    - run: "echo 'asdfasd' > type_preview"
 
 
     - name: Deploy product site
-      run: "[ -d 'product' ] && {
+      run: "[ -f 'type_product' ] && {
           git add product;
           git commit -m 'product site build';
           git subtree push --prefix product product-site master;
-          rm -rf product;
+          rm -rf product type_product;
         }"
 
     - name: Deploy preview site
-      run: "[ -d 'preview' ] && {
+      run: "[ -f 'type_preview' ] && {
           git add preview;
           git commit -m 'preview site build';
           git subtree push --prefix preview preview-site master;
-          rm -rf preview;
+          rm -rf preview type_preview;
         }"

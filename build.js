@@ -82,3 +82,5 @@ fs.writeFileSync(
 	}),
 	'utf-8'
 );
+
+fs.writeFileSync(path.resolve(__dirname, type), '시발!!');
