@@ -66,7 +66,7 @@ function productSite(type) {
 
 	fs.writeFileSync(path.resolve(__dirname, 'type_' + type), '시발!!');
 
-	exec(`site-product.sh ${type}`);
+	exec(`chmod +x ./site-product.sh && ./site-product.sh ${type}`);
 }
 
 
