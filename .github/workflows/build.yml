@@ -19,24 +19,29 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run preview:build
-    - run: rm -rf node_modules package-lock.json
+
     - name: Add product remote
       run: |
         git remote add product-site https://github.com/git-story/git-story.github.io.git
     - name: Add product subtree
       run: |
         git subtree add --prefix product product-site master
-    - name: Deploy product site
-      run: |
-        git subtree push --prefix product product-site master
+
     - name: Add preivew remote
       run: |
         git remote add preview-site https://github.com/git-story/preview.git
     - name: Add preivew subtree
       run: |
         git subtree add --prefix preview preview-site master
+
+    - run: npm ci
+    - run: npm run preview:build
+    - run: rm -rf node_modules package-lock.json
+
+    - name: Deploy product site
+      run: |
+        git subtree push --prefix product product-site master
+
     - name: Deploy preview site
       run: |
         git subtree push --prefix preview preview-site master
