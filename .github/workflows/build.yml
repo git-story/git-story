@@ -45,3 +45,6 @@ jobs:
     - name: Deploy preview site
       run: |
         git subtree push --prefix preview preview-site master
+
+    - run: [ -d "product" ] && rm -rf product
+    - run: [ -d "preview" ] && rm -rf preview
