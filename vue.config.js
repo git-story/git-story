@@ -5,6 +5,7 @@ const dist = process.env.PROD_TYPE || 'dist';
 
 module.exports = {
 	"configureWebpack": {
+		"baseUrl": dist === 'preview' ? '/preview/' : '/',
 		"devServer": {
 			"host": "0.0.0.0",
 		},
