@@ -51,11 +51,8 @@
 				v-for="(empty, idx) in skeleton"
 				:key="'skeleton' + idx">
 				<v-skeleton-loader
-					v-bind="{
-						boilerplate: true,
-						elevation: 0,
-						tile: true,
-					}"
+					tile
+					elevation="0"
 					type="image, divider, table-heading, list-item-two-line">
 				</v-skeleton-loader>
 			</v-col>
