@@ -27,6 +27,7 @@ jobs:
       env:
         BOT_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
       run: |
+        echo "${BOT_TOKEN}"
         git remote add product-site "https://git-story:${BOT_TOKEN}@github.com/git-story/git-story.github.io.git"
     - name: Add product subtree
       run: |
@@ -36,7 +37,7 @@ jobs:
       env:
         BOT_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
       run: |
-        git remote add preview-site https://git-story:${BOT_TOKEN}@github.com/git-story/preview.git
+        git remote add preview-site "https://git-story:${BOT_TOKEN}@github.com/git-story/preview.git"
     - name: Add preivew subtree
       run: |
         git subtree add --prefix preview preview-site master
@@ -46,12 +47,17 @@ jobs:
       #- run: rm -rf node_modules package-lock.json
     - run: "echo 'testset' > preview/index.html"
 
+
     - name: Deploy product site
       run: |
+        git add product
+        git commit -m "product site build"
         git subtree push --prefix product product-site master
 
     - name: Deploy preview site
       run: |
+        git add preview
+        git commit -m "preview site build"
         git subtree push --prefix preview preview-site master
 
     - run: '[ -d "product" ] && rm -rf product'
