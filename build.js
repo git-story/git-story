@@ -45,7 +45,7 @@ function checkVersionUp() {
 	const vfile = path.join(pdir, 'version.json');
 	if ( fs.existsSync(pdir) && fs.existsSync(vfile) ) {
 		const version = require(vfile);
-		if ( verCompaire(package.version, version,version) > 0 ) {
+		if ( verCompaire(package.version, version.version) > 0 ) {
 			return true;
 		}
 	} else {
