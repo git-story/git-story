@@ -141,8 +141,14 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 				title: this.$t('dashboard.blog.not-found-repo.title'),
 				content: this.$t('dashboard.blog.not-found-repo.content', repoName),
 			}).then(async (close) => {
-				content = await this.initialize(repoName);
 				close();
+
+				this.$store.commit('loadmsg', '');
+				this.$store.commit('loading', true);
+
+				content = await this.initialize(repoName);
+
+				this.$store.commit('loading', false);
 			});
 		} else {
 			content = await this.$git.getContent<MetaData[]>('meta-data.json', 'json');
@@ -157,13 +163,17 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 				textOk: this.$t('create-new'),
 				textCancel: this.$t('logout'),
 			}).then(async (close) => {
+				close();
+
+				this.$store.commit('loadmsg', '');
+				this.$store.commit('loading', true);
+
 				await this.$git.rest.repos.delete({
 					owner: this.$store.getters.user.userName,
 					repo: repoName,
 				});
 
 				content = await this.initialize(repoName);
-				close();
 			}).catch(async (close) => {
 				// TODO: 어떻게 깃헙까지 로그아웃합니까?
 				if ( firebase.auth().currentUser ) {
@@ -172,7 +182,11 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 				this.$session.write('userInfo', '');
 				this.$assign('/');
 
-				close();
+				if ( typeof close === 'function' ) {
+					close();
+				}
+			}).finally(() => {
+				this.$store.commit('loading', true);
 			});
 		}
 

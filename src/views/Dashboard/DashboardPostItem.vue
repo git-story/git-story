@@ -139,6 +139,9 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 			textOk: this.$t('yes'),
 			textCancel: this.$t('cancel'),
 		}).then(async (close) => {
+			close();
+			this.$store.commit('loadmsg', '');
+			this.$store.commit('loading', true);
 			const imgDir = path.join(this.config.source_dir, 'images', date2str(new Date(this.post.date)));
 			let i = 0;
 
@@ -171,14 +174,14 @@ export default class DashboardPostItem extends Mixins(GlobalMixins) {
 			this.$emit('remove');
 
 			await this.$git.clear();
-
-			close();
 		}).catch((close) => {
 			if ( typeof close === 'function' ) {
 				close();
 			} else {
 				throw close;
 			}
+		}).finally(() => {
+			this.$store.commit('loading', false);
 		});
 	}
 
