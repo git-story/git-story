@@ -4,7 +4,7 @@ const MonacoEditorPlugin = require('monaco-editor-webpack-plugin');
 const dist = process.env.PROD_TYPE || 'dist';
 
 module.exports = {
-	"baseUrl": dist === 'preview' ? '/preview/' : '/',
+	"publicPath": dist === 'preview' ? '/preview/' : '/',
 	"configureWebpack": {
 		"devServer": {
 			"host": "0.0.0.0",
