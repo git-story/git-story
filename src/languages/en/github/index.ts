@@ -6,5 +6,23 @@
  */
 
 export default {
-	description: '📚 [GITSTORY] 🚥 깃헙 페이지를 간단하게 사용하기',
+	description: '📚 [GITSTORY] 🚥 Using Github page easily',
+	progress: {
+		init: 'Repository Reset',
+		add: 'Add File $0',
+		remove: 'Delete File $0',
+		update: 'File Update $0',
+		treebuild: 'Tree Build',
+		commit: 'Create Commit',
+		updateref: 'Reference Update',
+		workflowlist: 'Request Workflow List',
+		workflowruns: 'Request Workflow List from Workflow $0',
+		workflowcancel: 'Cancel $0 from Workflow',
+		defaultbranch: 'Request Default Branch',
+		getref: 'Reference Request',
+		gettree: 'Tree List Request',
+		createblob: 'Generate Blob File $0',
+		removeblob: 'Remove Blob File $0',
+		createtree: 'Generate Tree',
+	},
 };
