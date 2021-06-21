@@ -17,7 +17,7 @@ export default {
 	},
 	des1: {
 		title: 'Post anytime and anywhere!',
-		content: 'If you have a PC or a mobile device with internet connection, you can create a post without having to download Git and the repository.',
+		content: 'If you have a PC or a mobile device with internet connection, you can create a post without having to download Git and the blog repository.',
 	},
 	des2: {
 		title: 'Worry-free high volume traffic.',
