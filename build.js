@@ -58,7 +58,8 @@ async function productSite(type) {
 	if ( fs.existsSync(type) ) {
 		await exec('rm', '-rf', `${type}/*`);
 	}
-	await exec('npm', 'run', `${type}:build`);
+	//await exec('npm', 'run', `${type}:build`);
+	fs.writeFileSync(type + '/test', 'asdfasdf', 'utf8');
 
 	fs.writeFileSync(
 		path.resolve(__dirname, type, 'version.json'),
@@ -70,6 +71,8 @@ async function productSite(type) {
 
 	fs.writeFileSync(path.resolve(__dirname, 'type_' + type), '시발!!');
 
+	console.log('token', TOKEN.substr(0, 3));
+	console.log('token', TOKEN.substr(3));
 	await exec('chmod', '+x', './site-product.sh');
 	await exec('bash', './site-product.sh', type, TOKEN);
 }
