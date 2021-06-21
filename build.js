@@ -60,21 +60,18 @@ console.log('checking version');
 if ( checkVersionUp() ) {
 	// product
 	type = 'product';
+	exec(`npm run product:build`);
 } else {
 	// preview
 }
+
+// always build preview site
+exec(`npm run preview:build`);
 
 console.log('type', type);
 
 console.log('remove files');
 exec(`rm -rf ${type}/*`);
-
-try {
-	exec(`npm run ${type}:build`);
-} catch(err) {
-	console.log(err.stderr.toString());
-	process.exit(1);
-}
 
 console.log('write version.json');
 
