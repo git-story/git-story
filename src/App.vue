@@ -2,6 +2,9 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/>
+	<div ref="test" id="test-id">
+		{{ some }}
+	</div>
   </div>
 </template>
 
@@ -9,10 +12,19 @@
 import HelloWorld from './components/HelloWorld.vue'
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
+	name: 'App',
+	components: {
+		HelloWorld
+	},
+	mounted() {
+		console.log(this.$refs.test.innerHTML);
+		console.log(document.querySelector('#test-id').innerHTML);
+	},
+	data() {
+		return {
+			some: 'ttttttt',
+		}
+	}
 }
 </script>
 
