@@ -68,7 +68,13 @@ console.log('type', type);
 
 console.log('remove files');
 exec(`rm -rf ${type}/*`);
-exec(`npm run ${type}:build`);
+
+try {
+	exec(`npm run ${type}:build`);
+} catch(err) {
+	console.log(err.stderr.toString());
+	process.exit(1);
+}
 
 console.log('write version.json');
 
