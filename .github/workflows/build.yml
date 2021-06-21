@@ -49,15 +49,14 @@ jobs:
 
     - name: Deploy product site
       run: |
-        git add product
-        git commit -m "product site build"
-        git subtree push --prefix product product-site master
+        '[ -d "product" ] && git add product'
+        '[ -d "product" ] && git commit -m "product site build"'
+        '[ -d "product" ] && git subtree push --prefix product product-site master'
+        '[ -d "product" ] && rm -rf product'
 
     - name: Deploy preview site
       run: |
-        git add preview
-        git commit -m "preview site build"
-        git subtree push --prefix preview preview-site master
-
-    - run: '[ -d "product" ] && rm -rf product'
-    - run: '[ -d "preview" ] && rm -rf preview'
+        '[ -d "preview" ] && git add preview'
+        '[ -d "preview" ] && git commit -m "preview site build"'
+        '[ -d "preview" ] && git subtree push --prefix preview preview-site master'
+        '[ -d "preview" ] && rm -rf preview'
