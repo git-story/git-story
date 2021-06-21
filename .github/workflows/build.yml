@@ -34,5 +34,8 @@ jobs:
       run: git clone https://git-story:${BOT_TOKEN}@github.com/git-story/preview.git preview
 
     - run: npm ci
-    - run: npm run build
+    - name: 'Build & Product'
+      env:
+        BOT_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+      run: npm run build
     - run: rm -rf node_modules package-lock.json
