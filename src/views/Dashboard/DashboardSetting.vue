@@ -39,7 +39,9 @@
 		<v-divider vertical></v-divider>
 		<!-- S: Right Panel -->
 		<v-col cols="6">
-			<router-view></router-view>
+			<transition name="scroll-x-transition">
+				<router-view></router-view>
+			</transition>
 		</v-col>
 		<!-- E: Right Panel -->
 	</v-row>

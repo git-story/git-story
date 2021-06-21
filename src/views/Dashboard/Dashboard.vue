@@ -12,7 +12,9 @@
 				<dashboard-sidebar />
 			</v-col>
 			<v-col cols="9" style="padding: 2rem;">
-				<router-view></router-view>
+				<transition name="scroll-y-reverse-transition">
+					<router-view></router-view>
+				</transition>
 			</v-col>
 		</v-row>
 	</v-main>
