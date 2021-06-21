@@ -27,7 +27,6 @@ jobs:
       env:
         BOT_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
       run: |
-        echo "${BOT_TOKEN}"
         git remote add product-site "https://git-story:${BOT_TOKEN}@github.com/git-story/git-story.github.io.git"
     - name: Add product subtree
       run: |
