@@ -71,7 +71,8 @@ async function productSite(type) {
 	fs.writeFileSync(path.resolve(__dirname, 'type_' + type), '시발!!');
 
 	await exec('chmod', '+x', './site-product.sh');
-	await exec('bash', './site-product.sh', type, TOKEN);
+	await exec('bash', './site-product.sh',
+		type, TOKEN, type === 'product' ? 'git-story.github.io' : type);
 }
 
 // from https://github.com/jbrooksuk/github-subtree-push-action/blob/master/start.js
