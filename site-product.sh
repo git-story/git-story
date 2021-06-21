@@ -2,7 +2,7 @@
 set -e
 
 TYPE="$1"
-TOKEN="$(printenv BOT_TOKEN)"
+TOKEN="$2"
 
 if [ -f "type_${TYPE}" -a -d $TYPE ]; then
 	cd $TYPE

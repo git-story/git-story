@@ -3,6 +3,7 @@ const fs = require('fs');
 const { spawn, execSync } = require('child_process');
 
 const package = require('./package.json');
+const TOKEN = process.env.BOT_TOKEN;
 
 function parseVersion(ver) {
 	if ( typeof ver !== "string" ) return false;
@@ -70,7 +71,7 @@ async function productSite(type) {
 	fs.writeFileSync(path.resolve(__dirname, 'type_' + type), '시발!!');
 
 	await exec('chmod', '+x', './site-product.sh');
-	await exec('bash', './site-product.sh', type);
+	await exec('bash', './site-product.sh', type, TOKEN);
 }
 
 // from https://github.com/jbrooksuk/github-subtree-push-action/blob/master/start.js
