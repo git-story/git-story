@@ -21,3 +21,6 @@ yarn-error.log*
 *.sw?
 
 yarn.lock
+
+type_product
+type_preview

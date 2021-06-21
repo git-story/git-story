@@ -53,34 +53,29 @@ function checkVersionUp() {
 	return false;
 }
 
-let type = 'preview';
+function productSite(type) {
+	exec(`npm run ${type}:build`);
+
+	fs.writeFileSync(
+		path.resolve(__dirname, type, 'version.json'),
+		JSON.stringify({
+			version: package.version,
+		}),
+		'utf-8'
+	);
+
+	fs.writeFileSync(path.resolve(__dirname, 'type_' + type), '시발!!');
+
+	exec(`site-product.sh ${type}`);
+}
+
 
 console.log('checking version');
 
 if ( checkVersionUp() ) {
 	// product
-	type = 'product';
-	exec(`npm run product:build`);
-} else {
-	// preview
+	productSite('product');
 }
 
 // always build preview site
-exec(`npm run preview:build`);
-
-console.log('type', type);
-
-console.log('remove files');
-exec(`rm -rf ${type}/*`);
-
-console.log('write version.json');
-
-fs.writeFileSync(
-	path.resolve(__dirname, type, 'version.json'),
-	JSON.stringify({
-		version: package.version,
-	}),
-	'utf-8'
-);
-
-fs.writeFileSync(path.resolve(__dirname, type), '시발!!');
+productSite('preview');
