@@ -47,7 +47,7 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
-import Contribution from './DashboardSettingContribution.vue';
+import Contribution from './Setting/SettingContribution.vue';
 import SettingLink from './Setting/SettingLink.vue';
 
 interface Link {

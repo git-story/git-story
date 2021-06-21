@@ -1,5 +1,5 @@
 <!--
- * DashboardSettingContribution.vue
+ * SettingContribution.vue
  * Created on Tue Jun 15 2021
  *
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
@@ -21,7 +21,7 @@ import moment from 'moment';
 		CalendarHeatmap,
 	},
 })
-export default class DashboardSettingContribution extends Mixins(GlobalMixins) {
+export default class SettingContribution extends Mixins(GlobalMixins) {
 	public config: any = {};
 	public contributions!: any;
 	public heatmapData: any = [];
@@ -37,7 +37,7 @@ export default class DashboardSettingContribution extends Mixins(GlobalMixins) {
 	}
 
 	public async mounted() {
-		this.$logger.debug('app', 'DashboardSettingContribution mounted');
+		this.$logger.debug('app', 'SettingContribution mounted');
 
 		let user = this.$store.getters.user;
 		while ( !user ) {
@@ -85,8 +85,6 @@ export default class DashboardSettingContribution extends Mixins(GlobalMixins) {
 				};
 			});
 		}).flat();
-		console.log('contribution', this.contributions);
-		console.log('data!', this.today, this.heatmapData);
 	}
 
 }
