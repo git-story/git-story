@@ -29,7 +29,7 @@ export default new Vuex.Store({
 		loading: false,
 		loadmsg: '',
 		loadtot: 0,
-		totime: 30000 /* 30 sec */,
+		totime: 60000 /* 60 sec */,
 	},
 	getters: {
 		user(state: State) {
@@ -63,8 +63,8 @@ export default new Vuex.Store({
 		},
 		loading(state: State, v: boolean) {
 			v ? state.loadtot = setTimeout(() => {
-				this.commit('loading', false);
-			}, state.totime) : clearTimeout(state.loadtot);
+				(this as any).commit('loading', false);
+			}, state.totime) as any : clearTimeout(state.loadtot);
 			state.loading = v;
 		},
 		loadmsg(state: State, msg: string) {
