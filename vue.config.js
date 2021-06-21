@@ -1,6 +1,8 @@
 const path = require('path');
 const MonacoEditorPlugin = require('monaco-editor-webpack-plugin');
 
+const dist = process.env.PROD_TYPE || 'dist';
+
 module.exports = {
 	"configureWebpack": {
 		"devServer": {
@@ -14,12 +16,17 @@ module.exports = {
 				"@": path.resolve(__dirname, "src"),
 			}
 		},
+		"output": {
+			filename: `${dist}/[name].js`,
+			chunkFilename: `chunk/[name].js`,
+		},
 		"plugins": [
 			new MonacoEditorPlugin({
 				languages: ['json', 'yaml'],
 			}),
 		],
 	},
+	"outputDir": path.resolve(__dirname, dist),
 	"runtimeCompiler": true,
 	"transpileDependencies": [
 		"vuetify"
