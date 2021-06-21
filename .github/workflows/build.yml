@@ -25,14 +25,14 @@ jobs:
 
     - name: Add product remote
       run: |
-        git remote add product-site https://git-story:${{ secrets.BOT_GITHUB_TOKEN }}@github.com/git-story.github.io.git
+        git remote add product-site https://git-story:${{ secrets.BOT_GITHUB_TOKEN }}@github.com/git-story/git-story.github.io.git
     - name: Add product subtree
       run: |
         git subtree add --prefix product product-site master
 
     - name: Add preivew remote
       run: |
-        git remote add preview-site https://git-story:${{ secrets.BOT_GITHUB_TOKEN }}@github.com/preview.git
+        git remote add preview-site https://git-story:${{ secrets.BOT_GITHUB_TOKEN }}@github.com/git-story/preview.git
     - name: Add preivew subtree
       run: |
         git subtree add --prefix preview preview-site master
