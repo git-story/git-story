@@ -55,7 +55,7 @@ function checkVersionUp() {
 
 async function productSite(type) {
 	if ( fs.existsSync(type) ) {
-		await exec('rm', '-rf' `${type}/*`);
+		await exec('rm', '-rf', `${type}/*`);
 	}
 	await exec('npm', 'run', `${type}:build`);
 
