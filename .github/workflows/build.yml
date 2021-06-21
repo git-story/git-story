@@ -23,25 +23,16 @@ jobs:
     - run: git config --global user.email "git.page.story@gmail.com"
     - run: git config --global user.name  "git-story-bot"
 
-      #- name: Add product remote
-      #  env:
-      #    BOT_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
-      #  run: git remote add product-site https://git-story:${BOT_TOKEN}@github.com/git-story/git-story.github.io.git
-      #- name: Add product subtree
-      #  run: |
-      #    git subtree add --prefix product product-site master
+    - name: Add product remote
+      env:
+        BOT_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+      run: git clone https://git-story:${BOT_TOKEN}@github.com/git-story/git-story.github.io.git product
 
     - name: Add preivew remote
       env:
         BOT_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
       run: git clone https://git-story:${BOT_TOKEN}@github.com/git-story/preview.git preview
 
-      #- run: npm ci
-      #- run: npm run preview:build
-      #- run: rm -rf node_modules package-lock.json
-    - run: "echo 'testset' > preview/index.html"
-    - run: "echo 'asdfasd' > type_preview"
-    - name: "Product"
-      env:
-        BOT_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
-      run: "chmod +x ./site-product.sh && ./site-product.sh preview ${BOT_TOKEN}"
+    - run: npm ci
+    - run: npm run build
+    - run: rm -rf node_modules package-lock.json
