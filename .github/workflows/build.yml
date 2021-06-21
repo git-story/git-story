@@ -1,9 +1,7 @@
-name: build CI
+name: Site build CI
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
     branches: [ master ]
 
 jobs:
@@ -23,25 +21,21 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm install
     - run: npm run build
-    - name: product push
-      uses: git-story/git-story.github.io@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        push-branch: 'master'
-        commit-message: 'product site build'
-        force-add: 'true'
-        name: 'Github Actions'
-        email: 'git.page-story@gmail.com'
-        file-path: |
-          product/**
-    - name: preview push
-      uses: git-story/preview@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        push-branch: 'master'
-        commit-message: 'preview site build'
-        force-add: 'true'
-        name: 'Github Actions'
-        email: 'git.page-story@gmail.com'
-        file-path: |
-          preview/**
+    - name: Add product remote
+      run: |
+        git remote add product-site https://github.com/git-story/git-story.github.io.git
+    - name: Add product subtree
+      run: |
+        git subtree add --prefix product product-site master
+    - name: Deploy product site
+      run: |
+        git subtree push --prefix product product-site master
+    - name: Add preivew remote
+      run: |
+        git remote add preview-site https://github.com/git-story/preview.git
+    - name: Add preivew subtree
+      run: |
+        git subtree add --prefix preview preview-site master
+    - name: Deploy preview site
+      run: |
+        git subtree push --prefix preview preview-site master
