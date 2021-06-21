@@ -7,15 +7,25 @@
 <template>
 	<v-row class="ma-0" style="height: 100%;">
 		<v-col cols="5" class="pa-0">
-			<v-text-field
-				class="pt-0 mx-3 mb-0"
-				:loading="searchLoading"
-				color="indigo"
-				v-model="search"
-				clearable
-				:placeholder="$t('dashboard.blog.search-post')"
-				append-icon="mdi-magnify"/>
-			<div v-if="loading === false">
+			<v-row class="ma-0 mb-3" align="center">
+				<v-btn
+					icon plain depressed
+					class="mt-2"
+	 				:loading="refreshLoading"
+					@click="refreshPosts">
+					<v-icon>mdi-refresh</v-icon>
+				</v-btn>
+				<v-text-field
+					class="pt-0 mx-3 mb-0"
+					:loading="searchLoading"
+					color="indigo"
+					v-model="search"
+					clearable
+	 				hide-details
+					:placeholder="$t('dashboard.blog.search-post')"
+					append-icon="mdi-magnify"/>
+			</v-row>
+			<div v-if="loaded === false">
 				<v-card
 					:elevation="0" tile
 					v-for="(empty, idx) in skeletonCount" :key="'skeleton-' + empty + idx"
@@ -104,7 +114,8 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 
 	public search: string = '';
 	public searchLoading: boolean = false;
-	public loading: boolean = false;
+	public loaded: boolean = false;
+	public refreshLoading: boolean = false;
 
 	private imgs: Imgs = {
 		empty: require('assets/dashboard/empty.png'),
@@ -169,7 +180,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		this.config = await this.$git.getContent<any>('_config.yml', 'yaml');
 		this.metaData = content as MetaData[];
 		this.nextPostLoading();
-		this.loading = true;
+		this.loaded = true;
 	}
 
 	public async initialize(repo: string): Promise<MetaData[]> {
@@ -262,6 +273,15 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		if ( midx > -1 ) {
 			this.metaData.splice(midx, 1);
 		}
+	}
+
+	public async refreshPosts() {
+		this.loaded = false;
+		this.metaData = await this.$git.getContent<MetaData[]>('meta-data.json', 'json');
+		this.postList = [];
+		this.metaIdx = 0;
+		this.nextPostLoading();
+		this.loaded = true;
 	}
 
 }
