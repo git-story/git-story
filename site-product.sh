@@ -2,10 +2,12 @@
 set -e
 
 TYPE="$1"
+TOKEN="$2"
 
 if [ -f "type_${TYPE}" -a -d $TYPE ]; then
-	git add $TYPE
+	cd $TYPE
+	git add -all
 	git commit -m "${TYPE} site build"
-	git subtree push --prefix $TYPE ${TYPE}-site master
+	git push "https://git-story:$TOKEN@github.com/git-story/${TYPE}.git" master
 	rm -rf type_${TYPE} $TYPE
 fi

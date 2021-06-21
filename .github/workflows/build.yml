@@ -34,14 +34,14 @@ jobs:
     - name: Add preivew remote
       env:
         BOT_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
-      run: git remote add preview-site https://git-story:${BOT_TOKEN}@github.com/git-story/preview.git
-    - name: Add preivew subtree
-      run: |
-        git subtree add --prefix preview preview-site master
+      run: git clone https://git-story:${BOT_TOKEN}@github.com/git-story/preview.git preview
 
       #- run: npm ci
       #- run: npm run preview:build
       #- run: rm -rf node_modules package-lock.json
     - run: "echo 'testset' > preview/index.html"
     - run: "echo 'asdfasd' > type_preview"
-    - run: "chmod +x ./site-product.sh && ./site-product.sh preview"
+    - name: "Product"
+      env:
+        BOT_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+      run: "chmod +x ./site-product.sh && ./site-product.sh preview ${BOT_TOKEN}"
