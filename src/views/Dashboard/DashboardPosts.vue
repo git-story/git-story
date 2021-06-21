@@ -221,7 +221,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 			repo,
 			source: {
 				branch: 'master',
-				path: '/' + config.public_dir,
+				path: '/docs', // Actions build fail issue
 			},
 		});
 
