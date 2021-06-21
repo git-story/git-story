@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 
 const package = require('./package.json');
 
@@ -54,8 +54,10 @@ function checkVersionUp() {
 }
 
 async function productSite(type) {
-	await exec(`rm -rf ${type}/*`);
-	await exec(`npm run ${type}:build`);
+	if ( fs.existsSync(type) ) {
+		await exec('rm', '-rf' `${type}/*`);
+	}
+	await exec('npm', 'run', `${type}:build`);
 
 	fs.writeFileSync(
 		path.resolve(__dirname, type, 'version.json'),
@@ -67,13 +69,13 @@ async function productSite(type) {
 
 	fs.writeFileSync(path.resolve(__dirname, 'type_' + type), '시발!!');
 
-	await exec(`chmod +x ./site-product.sh`);
-	await exec(`./site-product.sh ${type}`);
+	await exec('chmod', '+x', './site-product.sh');
+	await exec('bash', './site-product.sh', type);
 }
 
 // from https://github.com/jbrooksuk/github-subtree-push-action/blob/master/start.js
-const exec = (...args) => new Promise((resolve, reject) => {
-	const app = spawn('bash', args, { stdio: 'inherit' });
+const exec = (cmd, ...args) => new Promise((resolve, reject) => {
+	const app = spawn(cmd, args, { stdio: 'inherit' });
 	app.on('close', resolve);
 	app.on('error', reject);
 });
