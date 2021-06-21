@@ -13,6 +13,8 @@ interface State {
 	title: string;
 	loading: boolean;
 	loadmsg: string;
+	loadtot: number;
+	totime: number;
 }
 
 export default new Vuex.Store({
@@ -26,6 +28,8 @@ export default new Vuex.Store({
 		title: '',
 		loading: false,
 		loadmsg: '',
+		loadtot: 0,
+		totime: 30000 /* 30 sec */,
 	},
 	getters: {
 		user(state: State) {
@@ -58,6 +62,9 @@ export default new Vuex.Store({
 			state.title = t;
 		},
 		loading(state: State, v: boolean) {
+			v ? state.loadtot = setTimeout(() => {
+				this.commit('loading', false);
+			}, state.totime) : clearTimeout(state.loadtot);
 			state.loading = v;
 		},
 		loadmsg(state: State, msg: string) {
