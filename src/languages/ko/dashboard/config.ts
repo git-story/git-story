@@ -74,4 +74,5 @@ export default {
 		'robotstxt>disallow': '블로그의 페이지 수집을 비허용할 경로를 설정합니다.',
 		'robotstxt>sitemap': '블로그의 사이트맵 파일 경로를 설정합니다.',
 	},
+	'restore-config': '설정값 초기화',
 };

@@ -10,6 +10,7 @@
 			<monaco-editor
 				ref="code-editor"
 				class="editor"
+				v-if="editorRender"
 				v-model="editor.code"
 				:language="editor.language"
 				:theme="editor.theme"
@@ -48,6 +49,14 @@
 						color="teal">
 						{{ $t('save') }}
 					</v-btn>
+					<v-btn
+		 				depressed
+		 				tile block dark
+		 				class="mt-2"
+		 				@click="restoreConfig"
+						color="red">
+						{{ $t('dashboard.config.restore-config') }}
+					</v-btn>
 				</v-col>
 			</v-row>
 		</v-col>
@@ -74,6 +83,7 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 	public originalCode: string = '';
 	public readonly configFilePath: string = '_config.yml';
 	public description: string = '';
+	public editorRender: boolean = false;
 
 	get modified() {
 		return this.originalCode !== this.editor.code;
@@ -91,6 +101,10 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 
 			await this.$sleep(500);
 		}
+
+		this.$nextTick(() => {
+			this.editorRender = true;
+		});
 	}
 
 	public change() {
@@ -144,7 +158,7 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 			}
 		}
 		await this.$git.clear();
-		await this.$git.update(this.configFilePath, code);
+		this.$git.update(this.configFilePath, code);
 		await this.$git.commit(`UPDATE: ${this.configFilePath}`);
 		this.originalCode = this.editor.code;
 		this.$store.commit('loading', false);
@@ -156,6 +170,22 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 			const key = parse.reverse().join('>');
 			this.description = this.$tf(`dashboard.config.desc.${key}`, '');
 		});
+	}
+
+	public async restoreConfig() {
+		this.$store.commit('loadmsg', this.$t('dashboard.config.restore-config'));
+		this.$store.commit('loading', true);
+
+		const config = await this.$git.getContent<any>('_config.yml', 'yaml', 'git-story/git-story-template');
+		config.root = '/';
+		config.url = `https://${this.$store.getters.user.userName}.github.io/`;
+		config.title = config.author = this.$store.getters.user.userName;
+
+		this.editor.code = yaml.dump(config);
+		this.$git.clear();
+		this.$git.update(this.configFilePath, this.editor.code);
+		await this.$git.commit(`RESTORE: ${this.configFilePath}`);
+		this.$store.commit('loading', false);
 	}
 
 	private parsePath(code: string[], line: number, p: string[] = [], dep: string = '') {
