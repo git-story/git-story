@@ -20,9 +20,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Set the user info
-      run: git config --global user.email "git.page.story@gmail.com"
-      run: git config --global user.name  "git-story"
+    - run: git config --global user.email "git.page.story@gmail.com"
+    - run: git config --global user.name  "git-story"
 
     - name: Add product remote
       run: |
