@@ -24,15 +24,19 @@ jobs:
     - run: git config --global user.name  "git-story-bot"
 
     - name: Add product remote
+      env:
+        TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
       run: |
-        git remote add product-site https://git-story:${{ secrets.BOT_GITHUB_TOKEN }}@github.com/git-story/git-story.github.io.git
+        git remote add product-site https://git-story:$TOKEN@github.com/git-story/git-story.github.io.git
     - name: Add product subtree
       run: |
         git subtree add --prefix product product-site master
 
     - name: Add preivew remote
+      env:
+        TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
       run: |
-        git remote add preview-site https://git-story:${{ secrets.BOT_GITHUB_TOKEN }}@github.com/git-story/preview.git
+        git remote add preview-site https://git-story:$TOKEN@github.com/git-story/preview.git
     - name: Add preivew subtree
       run: |
         git subtree add --prefix preview preview-site master
