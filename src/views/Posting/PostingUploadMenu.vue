@@ -114,21 +114,6 @@
 				</v-col>
 			</v-row>
 			<!-- E: Tag -->
-			<v-row class="ma-0 px-3">
-				<v-col cols="3">
-					<h5>{{ $t('posting.image-upload.type') }}</h5>
-				</v-col>
-				<v-col cols="9">
-					<v-radio-group
-						v-model="value.uploadType"
-						row>
-						<v-radio label="Github" value="github" color="indigo"></v-radio>
-						<v-radio label="Jsdelivr" value="jsdelivr" color="indigo"></v-radio>
-						<!-- <v-radio label="Base64" value="base64" color="indigo"></v-radio> -->
-						<!-- <v-radio label="Imgur" value="imgur"></v-radio> -->
-					</v-radio-group>
-				</v-col>
-			</v-row>
 		</div>
 		<!-- S: Upload Button -->
 		<v-row class="ma-0 px-3 pb-3">

@@ -194,7 +194,6 @@ export default class Header extends Mixins(GlobalMixins) {
 	public postConfig: PostConfig = {
 		cover: '',
 		tags: [],
-		uploadType: 'jsdelivr',
 	};
 	public imgFile!: File;
 	public config!: any; // _config.yml
@@ -205,7 +204,6 @@ export default class Header extends Mixins(GlobalMixins) {
 		this.postConfig = {
 			cover: '',
 			tags: [],
-			uploadType: 'jsdelivr',
 		};
 		this.$store.commit('title', '');
 		this.$store.commit('markdown', '');
@@ -220,7 +218,6 @@ export default class Header extends Mixins(GlobalMixins) {
 			const header = content.replace(/---\n((?:.*\n)*)?---\n(?:(?:.*\n?)*)/g, '$1');
 			content = content.replace(/---\n(?:(?:.*\n)*)?---\n((?:.*\n?)*)/g, '$1');
 			this.postConfig = yaml.load(header);
-			this.postConfig.uploadType = 'jsdelivr';
 			const md = new Markdown(content);
 			const splMd = md.text.split('\n');
 			const imgs = md.images();
@@ -355,42 +352,35 @@ export default class Header extends Mixins(GlobalMixins) {
 
 		let content = '';
 
-		const uploadType = this.postConfig.uploadType;
 		const md = new Markdown(post.content);
 		const splMd = md.text.split('\n');
-		if ( uploadType === 'base64' ) {
-			content += await buildMarkdown(md);
-		} else if ( uploadType === 'github' || uploadType === 'jsdelivr' ) {
-			const imgs = md.images();
-			/* tslint:disable-next-line */
-			for ( let i = 0; i < imgs.length; i++ ) {
-				const img = imgs[i];
-				if ( img.url.startsWith('blob:') ) {
-					const b64url = await blobToBase64(img.url);
-					const { data, contentType } = parseB64URL(b64url);
-					const imgName = img.alt.replace(/\s/g, '_');
-					let imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
-					this.$git.add(`${this.config.source_dir}${imagePath}`, data, 'base64');
+		const imgs = md.images();
+		/* tslint:disable-next-line */
+		for ( let i = 0; i < imgs.length; i++ ) {
+			const img = imgs[i];
+			if ( img.url.startsWith('blob:') ) {
+				const b64url = await blobToBase64(img.url);
+				const { data, contentType } = parseB64URL(b64url);
+				const imgName = img.alt.replace(/\s/g, '_');
+				let imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
+				this.$git.add(`${this.config.source_dir}${imagePath}`, data, 'base64');
 
-					if ( uploadType === 'jsdelivr' ) {
-						imagePath = `https://cdn.jsdelivr.net/gh/${this.$git.repo.full_name}/${this.config.public_dir}${imagePath}`;
-					}
+				imagePath = `https://cdn.jsdelivr.net/gh/${this.$git.repo.full_name}/${this.config.public_dir}${imagePath}`;
 
-					const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
-					md.replaceLine(img.line, repl);
-					imgs[i].url = imagePath;
-				}
+				const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
+				md.replaceLine(img.line, repl);
+				imgs[i].url = imagePath;
 			}
-
-			// Set cover if don't have cover
-			if ( !this.postConfig.cover ) {
-				if ( imgs.length > 0 ) {
-					this.postConfig.cover = imgs[0].url;
-				}
-			}
-
-			content += md.text;
 		}
+
+		// Set cover if don't have cover
+		if ( !this.postConfig.cover ) {
+			if ( imgs.length > 0 ) {
+				this.postConfig.cover = imgs[0].url;
+			}
+		}
+
+		content += md.text;
 
 		content =
 			'---\n' +
@@ -450,49 +440,44 @@ export default class Header extends Mixins(GlobalMixins) {
 
 		let content = '';
 
-		const uploadType = this.postConfig.uploadType;
 		const md = new Markdown(post.content);
 		const splMd = md.text.split('\n');
-		if ( uploadType === 'base64' ) {
-			content += await buildMarkdown(md);
-		} else if ( uploadType === 'github' || uploadType === 'jsdelivr' ) {
-			const imgs = md.images();
-			/* tslint:disable-next-line */
-			for ( let i = 0; i < imgs.length; i++ ) {
-				const img = imgs[i];
-				if ( img.url.startsWith('blob:') ) {
-					const b64url = await blobToBase64(img.url);
-					const { data, contentType } = parseB64URL(b64url);
-					const imgName = img.alt.replace(/\s/g, '_');
-					let imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
+		const imgs = md.images();
 
-					const fullPath = path.join(this.config.source_dir, imagePath);
+		/* tslint:disable-next-line */
+		for ( let i = 0; i < imgs.length; i++ ) {
+			const img = imgs[i];
+			if ( img.url.startsWith('blob:') ) {
+				const b64url = await blobToBase64(img.url);
+				const { data, contentType } = parseB64URL(b64url);
+				const imgName = img.alt.replace(/\s/g, '_');
+				let imagePath = `${imgDir}/${imgName}.${mime.extension(contentType)}`;
 
-					if ( this.$git.exists(fullPath) ) {
-						this.$git.update(fullPath, data, 'base64');
-					} else {
-						this.$git.add(fullPath, data, 'base64');
-					}
+				const fullPath = path.join(this.config.source_dir, imagePath);
 
-					if ( uploadType === 'jsdelivr' ) {
-						imagePath = `https://cdn.jsdelivr.net/gh/${this.$git.repo.full_name}/${this.config.public_dir}${imagePath}`;
-					}
-
-					const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
-					md.replaceLine(img.line, repl);
-					imgs[i].url = imagePath;
+				if ( this.$git.exists(fullPath) ) {
+					this.$git.update(fullPath, data, 'base64');
+				} else {
+					this.$git.add(fullPath, data, 'base64');
 				}
-			}
 
-			// Set cover if don't have cover
-			if ( !this.postConfig.cover ) {
-				if ( imgs.length > 0 ) {
-					this.postConfig.cover = imgs[0].url;
-				}
-			}
+				// for jsdelivr
+				imagePath = `https://cdn.jsdelivr.net/gh/${this.$git.repo.full_name}/${this.config.public_dir}${imagePath}`;
 
-			content += md.text;
+				const repl = splMd[img.line].replace(/!\[(.*?)\]\((.+?)\)/, `![$1](${imagePath})`);
+				md.replaceLine(img.line, repl);
+				imgs[i].url = imagePath;
+			}
 		}
+
+		// Set cover if don't have cover
+		if ( !this.postConfig.cover ) {
+			if ( imgs.length > 0 ) {
+				this.postConfig.cover = imgs[0].url;
+			}
+		}
+
+		content += md.text;
 
 		content =
 			'---\n' +

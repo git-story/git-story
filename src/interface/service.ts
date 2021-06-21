@@ -50,7 +50,6 @@ export interface PostConfig {
 	categories?: string[];
 	permalink?: string;
 	cover?: string;
-	uploadType: 'github'|'base64'|'jsdelivr';
 }
 
 export interface DataTree {
