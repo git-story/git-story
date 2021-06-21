@@ -5,8 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "node build.js",
-    "preview:build": "PROD_TYPE=preview vue-cli-service build",
-    "product:build": "PROD_TYPE=product vue-cli-service build",
+    "preview:build": "PROD_TYPE=preview vue-cli-service build --no-clean",
+    "product:build": "PROD_TYPE=product vue-cli-service build --no-clean",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
