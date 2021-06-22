@@ -6,29 +6,37 @@
 -->
 <template>
 	<v-app>
-		<v-layout row justify-center>
-			<v-dialog v-model="$store.getters.loading" persistent fullscreen content-class="loading-dialog">
-				<v-container fill-height>
-					<v-layout row justify-center align-center>
-						<div align="center">
-							<v-progress-circular
-								indeterminate
-								:size="70"
-								:width="7"
-								color="indigo">
-							</v-progress-circular>
-							<p class="mt-6 text-body blue--text text--lighten-5" style="font-size: 1.5rem;" v-html="$store.getters.loadmsg"></p>
-						</div>
-					</v-layout>
-				</v-container>
-			</v-dialog>
-		</v-layout>
-		<v-sheet id="router-view" tile>
-			<transition name="scroll-y-reverse-transition">
-				<router-view />
-			</transition>
-		</v-sheet>
-		<monaco-editor style="display: none;" :options="{}" theme="vs" value="" />
+		<v-row class="d-md-none vh-100 ma-0" align="center">
+			<v-col cols="12" align="center">
+				<v-img max-height="200px" max-width="200px" :src="imgs.oops"></v-img>
+				<p class="mt-4">{{ $t('block-mobile') }}</p>
+			</v-col>
+		</v-row>
+		<div class="d-none d-md-block">
+			<v-layout row justify-center>
+				<v-dialog v-model="$store.getters.loading" persistent fullscreen content-class="loading-dialog">
+					<v-container fill-height>
+						<v-layout row justify-center align-center>
+							<div align="center">
+								<v-progress-circular
+									indeterminate
+									:size="70"
+									:width="7"
+									color="indigo">
+								</v-progress-circular>
+								<p class="mt-6 text-body blue--text text--lighten-5" style="font-size: 1.5rem;" v-html="$store.getters.loadmsg"></p>
+							</div>
+						</v-layout>
+					</v-container>
+				</v-dialog>
+			</v-layout>
+			<v-sheet id="router-view" tile>
+				<transition name="scroll-y-reverse-transition">
+					<router-view />
+				</transition>
+			</v-sheet>
+		</div>
+		<monaco-editor class="d-none" :options="{}" theme="vs" value="" />
 	</v-app>
 </template>
 <script lang="ts">
@@ -36,6 +44,7 @@ import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { User } from '@/interface/user';
 import { Github } from '@/plugins/github';
+import { Img } from '@/types/';
 
 declare global {
 	interface Window {
@@ -65,6 +74,10 @@ declare global {
 	},
 })
 export default class App extends Mixins(GlobalMixins) {
+
+	public imgs: Img = {
+		oops: require('assets/oops.png'),
+	};
 
 	public created() {
 		this.$logger.debug('app', 'App created');
