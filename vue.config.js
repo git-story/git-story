@@ -28,6 +28,11 @@ module.exports = {
 			}),
 		],
 	},
+	"chainWebpack": (config) => {
+		const args = config.plugins.store.get('html')
+			.store.get('args')[0]
+		args.title = 'GIT-STORY';
+	},
 	"outputDir": path.resolve(__dirname, dist),
 	"runtimeCompiler": true,
 	"transpileDependencies": [
