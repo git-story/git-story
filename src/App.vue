@@ -44,7 +44,7 @@ import { Component, Mixins } from 'vue-property-decorator';
 import GlobalMixins from '@/plugins/mixins';
 import { User } from '@/interface/user';
 import { Github } from '@/plugins/github';
-import { Img } from '@/types/';
+import { Imgs } from '@/types/';
 
 declare global {
 	interface Window {
@@ -75,7 +75,7 @@ declare global {
 })
 export default class App extends Mixins(GlobalMixins) {
 
-	public imgs: Img = {
+	public imgs: Imgs = {
 		oops: require('assets/oops.png'),
 	};
 
