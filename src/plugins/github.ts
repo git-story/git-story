@@ -3,6 +3,7 @@ import path from 'path';
 import yaml from 'js-yaml';
 import * as submodule from 'git-submodule-js';
 import logger from './logger';
+import axios from 'axios';
 
 import {
 	Tree,
@@ -304,6 +305,14 @@ export class Github {
 		return false;
 	}
 
+	public async defBranch(owner: string, repo: string) {
+		const { data } = await this.rest.repos.get({
+			owner,
+			repo,
+		});
+		return data.default_branch;
+	}
+
 	public async getTreeByRef(repo: string = '', refrence?: string, recursive: boolean = false): Promise<any> {
 		const [ user, name ] = repo.split('/');
 		const ret: TreeRef = { success: false };
@@ -317,11 +326,7 @@ export class Github {
 		this.refStr = ref;
 
 		if ( user && name ) {
-			const { data } = await this.rest.repos.get({
-				owner: user,
-				repo: name,
-			});
-			default_branch = data.default_branch;
+			default_branch = await this.defBranch(user, name);
 		}
 
 		if ( !refrence ) {
