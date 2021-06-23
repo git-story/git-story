@@ -34,4 +34,5 @@ export default {
 	'search': '검색',
 	'add': '추가',
 	'block-mobile': '모바일은 개발중입니다. PC로 접속해 주세요.',
+	'exit': '나가기',
 };
