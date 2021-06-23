@@ -26,7 +26,7 @@ export default {
 	},
 	'category': '카테고리',
 	'exit-confirm': {
-		'title': '이 페이지를 벗어나시겠습니까?',
-		'content': '작성중인 내용은 자동으로 저장되지 않습니다.',
+		title: '이 페이지를 벗어나시겠습니까?',
+		content: '작성중인 내용은 자동으로 저장되지 않습니다.',
 	},
 };
