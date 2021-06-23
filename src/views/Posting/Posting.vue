@@ -81,8 +81,6 @@ declare global {
 			next(false);
 		});
 	},
-	beforeUnmount() {
-	},
 })
 export default class Posting extends Mixins(GlobalMixins) {
 
