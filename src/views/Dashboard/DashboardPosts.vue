@@ -202,7 +202,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		let content: any;
 		do {
 			try {
-				const { data } = await this.$axios.get(`https://raw.githubusercontent.com/${this.$store.getters.user.userName}/${repo}/master/meta-data.json`);
+				const { data } = await this.$axios.get(`https://raw.githubusercontent.com/${this.$store.getters.user.userName}/${repo}/main/meta-data.json`);
 				content = data as MetaData[];
 			} catch {
 				await this.$sleep(3000);
@@ -220,7 +220,7 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 			owner: this.$store.getters.user.userName,
 			repo,
 			source: {
-				branch: 'master',
+				branch: 'main',
 				path: '/docs', // Actions build fail issue
 			},
 		});
