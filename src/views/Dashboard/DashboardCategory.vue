@@ -6,43 +6,51 @@
 -->
 <template>
 	<div class="h-100">
-		<v-row class="ma-0">
+		<v-row class="ma-0" style="min-height: 100%;">
 			<v-col cols="8">
 				<tree
 					v-if="treeRenderer"
 					:data="data"
 					:options="treeOptions"
-	 				style="overflow: hidden;"
-	 				@node:dragging:finish="refresh"
+					style="overflow: hidden;"
+					@node:dragging:finish="refresh"
 					ref="tree">
 					<v-row slot-scope="{ node }" class="ma-0" align="center">
 						<v-text-field
 							color="indigo darken-3"
 							class="pt-0 custom"
 							v-model="node.text"
-	   						@input="refresh"
-	   						flat hide-details rounded
-	   						background-color="transparent"
+							@input="refresh"
+							flat hide-details rounded
+							background-color="transparent"
 							@click.stop="() => {}" />
 						<v-spacer></v-spacer>
 						<v-btn
-		  					depressed
-		  					class="ml-2"
-		 					color="green darken-1"
-		 					@click.stop="addChildNode(node)"
+							depressed
+							class="ml-2"
+							color="green darken-1"
+							@click.stop="addChildNode(node)"
 							icon>
 							<v-icon>mdi-plus</v-icon>
 						</v-btn>
 						<v-btn
-		  					depressed
-		  					class="ml-2"
-		 					color="red darken-3"
-		 					@click.stop="remove(node)"
+							depressed
+							class="ml-2"
+							color="red darken-3"
+							@click.stop="remove(node)"
 							icon>
 							<v-icon>mdi-delete</v-icon>
 						</v-btn>
 					</v-row>
 				</tree>
+				<v-row
+					v-if="data.length === 0"
+	 				class="h-100"
+					align="center">
+					<v-col cols="12" align="center">
+						<p style="font-size: 1rem;">{{ $t('dashboard.category.empty') }}</p>
+					</v-col>
+				</v-row>
 			</v-col>
 			<v-col cols="4">
 				<v-row class="ma-0">
