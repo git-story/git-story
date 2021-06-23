@@ -72,7 +72,7 @@ export default new Vuex.Store({
 				clearTimeout(state.loadtot);
 				state.loadtot = setTimeout(() => {
 					(this as any).commit('loading', false);
-				}, state.totime) as any
+				}, state.totime) as any;
 			}
 			state.loadmsg = msg;
 		},
