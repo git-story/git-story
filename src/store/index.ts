@@ -64,10 +64,16 @@ export default new Vuex.Store({
 		loading(state: State, v: boolean) {
 			v ? state.loadtot = setTimeout(() => {
 				(this as any).commit('loading', false);
-			}, state.totime) as any : clearTimeout(state.loadtot);
+			}, state.totime) as any : clearTimeout(state.loadtot), state.loadtot = 0;
 			state.loading = v;
 		},
 		loadmsg(state: State, msg: string) {
+			if ( state.loading && state.loadtot !== 0 ) {
+				clearTimeout(state.loadtot);
+				state.loadtot = setTimeout(() => {
+					(this as any).commit('loading', false);
+				}, state.totime) as any
+			}
 			state.loadmsg = msg;
 		},
 	},

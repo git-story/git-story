@@ -202,10 +202,13 @@ export default class DashboardPosts extends Mixins(GlobalMixins) {
 		let content: any;
 		do {
 			try {
+				this.$store.commit('loadmsg', this.$t('dashboard.blog.get-metadata'));
 				const { data } = await this.$axios.get(`https://raw.githubusercontent.com/${this.$store.getters.user.userName}/${repo}/main/meta-data.json`);
 				content = data as MetaData[];
 			} catch {
-				await this.$sleep(3000);
+				await this.$sleep(1500);
+				this.$store.commit('loadmsg', this.$t('dashboard.blog.get-metadata-fail'));
+				await this.$sleep(1500);
 			}
 		} while ( !content );
 
