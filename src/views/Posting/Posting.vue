@@ -65,6 +65,24 @@ declare global {
 		MarkdownEditor,
 		Header,
 	},
+	beforeRouteLeave(to, from, next) {
+		const $vue = this as any;
+		$vue.$confirm({
+			title: $vue.$t('posting.exit-confirm.title'),
+			content: $vue.$t('posting.exit-confirm.content'),
+			type: 'warn',
+			textOk: $vue.$t('exit'),
+			textCancel: $vue.$t('cancel'),
+		}).then((close) => {
+			close();
+			next();
+		}).catch((close) => {
+			close();
+			next(false);
+		});
+	},
+	beforeUnmount() {
+	},
 })
 export default class Posting extends Mixins(GlobalMixins) {
 
@@ -163,6 +181,17 @@ export default class Posting extends Mixins(GlobalMixins) {
 			};
 			end(post);
 		});
+
+		window.addEventListener('beforeunload', this.unLoadEvent);
+	}
+
+	public beforeDestroy() {
+		window.removeEventListener('beforeunload', this.unLoadEvent);
+	}
+
+	public unLoadEvent(evt) {
+		evt.preventDefault();
+		evt.returnValue = '';
 	}
 
 	public editorFocusEnd() {
