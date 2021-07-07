@@ -134,7 +134,7 @@ import { DataTree, TempPost } from '@/interface/service';
 import moment from 'moment';
 import yaml from 'js-yaml';
 
-function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
+function categoryDump(arr: DataTree[], dep: number = 0, parent: any = []) {
 	let ret: any[] = [];
 	for ( const item of arr ) {
 		let str = '';
@@ -149,7 +149,7 @@ function dump(arr: DataTree[], dep: number = 0, parent: any = []) {
 			dep: parent,
 		});
 		if ( Array.isArray(item.children) && item.children.length > 0 ) {
-			const sub = dump(item.children, dep + 1, [...parent, item.text]);
+			const sub = categoryDump(item.children, dep + 1, [...parent, item.text]);
 			ret = ret.concat(sub);
 		}
 	}
@@ -181,7 +181,7 @@ export default class PostingUploadMenu extends Mixins(GlobalMixins) {
 	public async mounted() {
 		this.$logger.debug('app', 'UploadMenu Mounted');
 		const tmp = await this.$git.getContent<DataTree[]>('categories.json', 'json') as DataTree[];
-		this.categories = dump(tmp);
+		this.categories = categoryDump(tmp);
 		this.category = this.categories[0];
 		this.categoryRerender();
 		this.$logger.debug('post', 'Category list', this.categories);
