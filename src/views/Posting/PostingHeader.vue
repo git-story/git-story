@@ -308,6 +308,8 @@ export default class Header extends Mixins(GlobalMixins) {
 
 		await this.$git.clear();
 		this.$store.commit('loading', false);
+
+		this.$store.commit('editing', false);
 		this.$assign('/dashboard');
 
 	}

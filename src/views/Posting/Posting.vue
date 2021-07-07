@@ -67,19 +67,29 @@ declare global {
 	},
 	beforeRouteLeave(to, from, next) {
 		const $vue = this as any;
-		$vue.$confirm({
-			title: $vue.$t('posting.exit-confirm.title'),
-			content: $vue.$t('posting.exit-confirm.content'),
-			type: 'warn',
-			textOk: $vue.$t('exit'),
-			textCancel: $vue.$t('cancel'),
-		}).then((close) => {
-			close();
+		const { $store } = $vue;
+		console.log($store.getters.editing, $store.getters.title, $store.getters.markdown, $vue.$t('content'));
+		console.log(($store.getters.title !== '' || $store.getters.markdown !== $vue.$t('content')));
+		if ( $store.getters.editing &&
+			($store.getters.title !== '' || $store.getters.markdown !== $vue.$t('content')) ) {
+			$store.commit('editing', false);
+			$vue.$confirm({
+				title: $vue.$t('posting.exit-confirm.title'),
+				content: $vue.$t('posting.exit-confirm.content'),
+				type: 'warn',
+				textOk: $vue.$t('exit'),
+				textCancel: $vue.$t('cancel'),
+			}).then((close) => {
+				close();
+				next();
+			}).catch((close) => {
+				close();
+				next(false);
+			});
+		} else {
+			$store.commit('editing', false);
 			next();
-		}).catch((close) => {
-			close();
-			next(false);
-		});
+		}
 	},
 })
 export default class Posting extends Mixins(GlobalMixins) {
@@ -116,6 +126,7 @@ export default class Posting extends Mixins(GlobalMixins) {
 	public mounted() {
 		this.$store.commit('loading', true);
 		this.$store.commit('markdown', this.$t('content'));
+		this.$store.commit('editing', true);
 
 		this.$logger.debug('app', 'Posting mounted');
 		this.$evt.$off('post:temp.save');

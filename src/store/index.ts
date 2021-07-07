@@ -15,6 +15,7 @@ interface State {
 	loadmsg: string;
 	loadtot: number;
 	totime: number;
+	editing: boolean;
 }
 
 export default new Vuex.Store({
@@ -30,6 +31,7 @@ export default new Vuex.Store({
 		loadmsg: '',
 		loadtot: 0,
 		totime: 60000 /* 60 sec */,
+		editing: false,
 	},
 	getters: {
 		user(state: State) {
@@ -49,6 +51,9 @@ export default new Vuex.Store({
 		},
 		loadmsg(state: State) {
 			return state.loadmsg;
+		},
+		editing(state: State) {
+			return state.editing;
 		},
 	},
 	mutations: {
@@ -75,6 +80,9 @@ export default new Vuex.Store({
 				}, state.totime) as any;
 			}
 			state.loadmsg = msg;
+		},
+		editing(state: State, value: boolean) {
+			state.editing = value;
 		},
 	},
 	actions: {
