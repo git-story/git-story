@@ -5,7 +5,7 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<v-row class="ma-0 h-100">
+	<v-row class="config-wrapper">
 		<v-col cols="8">
 			<monaco-editor
 				ref="code-editor"
@@ -210,7 +210,7 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 
 }
 </script>
-<style scope>
+<style scoped>
 .editor {
 	width: 100%;
 	height: 100%;
@@ -223,5 +223,9 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 .editor > .monaco-editor > .overflow-guard {
 	margin: 0;
 	width: 100% !important;
+}
+.config-wrapper {
+	margin: 0;
+	height: 100%;
 }
 </style>
