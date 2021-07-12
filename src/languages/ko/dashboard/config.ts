@@ -12,7 +12,7 @@ export default {
 		'keywords': '블로그에 대한 키워드를 설정합니다. 다중 값을 지원합니다.',
 		'author': '블로그의 소유자 이름을 설정합니다.',
 		'language': '블로그가 사용하는 주 언어를 설정합니다. 기본값은 <code>en</code>이며 <a href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes" target="_blank">2-letter ISO-639-1 code</a>를 참조하세요.',
-		'timezone': '블로그에서 상요하는 Timezone을 설정합니다. GIT-STORY는 기본적으로 GMT 시간값을 사용합니다. 사용 가능한 Timezone의 종류는 <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" target="_blank">여기</a>에서 확인할 수 있습니다. 다음과 같은 형식으로 사용하세요. <code>America/New_York</code>, <code>Japan</code>, <code>UTC</code>',
+		'timezone': '블로그에서 사용하는 Timezone을 설정합니다. GIT-STORY는 기본적으로 GMT 시간값을 사용합니다. 사용 가능한 Timezone의 종류는 <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" target="_blank">여기</a>에서 확인할 수 있습니다. 다음과 같은 형식으로 사용하세요. <code>America/New_York</code>, <code>Japan</code>, <code>UTC</code>',
 		'url': '블로그의 URL을 설정합니다. 문장의 시작은 <code>http://</code>또는 <code>https://</code>여야 합니다.',
 		'root': '블로그의 최상위 폴더입니다. {{ dashboard.config.desc.fixed }}',
 		'permalink': '게시글의 <a href="https://hexo.io/docs/permalinks.html" target="_blank">permalink</a>형식입니다.',
