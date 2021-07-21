@@ -7,7 +7,7 @@
 <template>
 	<div class="h-100">
 		<v-row class="ma-0" style="min-height: 100%;">
-			<v-col cols="8">
+			<v-col cols="12" lg="8">
 				<tree
 					v-if="treeRenderer"
 					:data="data"
@@ -20,6 +20,7 @@
 							color="indigo darken-3"
 							class="pt-0 custom"
 							v-model="node.text"
+	   						style="max-width: 40vw;"
 							@input="refresh"
 							flat hide-details rounded
 							background-color="transparent"
@@ -52,7 +53,7 @@
 					</v-col>
 				</v-row>
 			</v-col>
-			<v-col cols="4">
+			<v-col cols="12" lg="4">
 				<v-row class="ma-0">
 					<v-col cols="12" class="pb-0">
 						<v-btn
