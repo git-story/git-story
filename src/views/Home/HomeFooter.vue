@@ -11,7 +11,8 @@
 		<v-card
 			flat tile
 			width="100%"
-			class="grey darken-4 white--text text-center">
+			class="text-center"
+			style="background: black; color: white;">
 			<v-card-text>
 				<v-btn
 					class="mx-4"

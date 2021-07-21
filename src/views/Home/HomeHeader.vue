@@ -7,6 +7,7 @@
 <template>
 	<v-app-bar
 		color="transparent"
+  		height="64"
   		style="transform: translateY(24px);"
 		>
 		<v-app-bar-nav-icon class="d-sm-none"/>
@@ -19,7 +20,7 @@
 
 		<v-spacer />
 
-		<theme-toggle-btn />
+		<theme-toggle-btn btnColor="grey lighten-5"/>
 
 		<!--
 		<v-btn icon>
