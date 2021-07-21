@@ -207,6 +207,7 @@ export default class Posting extends Mixins(GlobalMixins) {
 		const editor = this.$refs.editor as any;
 		editor.focus();
 		editor.focusEnd();
+		editor.showToolbar();
 	}
 
 }
