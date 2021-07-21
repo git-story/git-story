@@ -213,7 +213,7 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 <style scoped>
 .editor {
 	width: 100%;
-	height: 100%;
+	height: 80vh;
 }
 .editor > .monaco-editor {
 	margin: 0;
