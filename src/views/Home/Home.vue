@@ -8,7 +8,7 @@
 	<v-main>
 		<HomeBanner />
 		<v-row class="ma-0 mt-12 pt-12 mb-10 pb-10" justify="center">
-			<v-col cols="4" align="center">
+			<v-col cols="10" md="4" align="center">
 				<v-divider class="mt-6" />
 			</v-col>
 		</v-row>
@@ -16,7 +16,7 @@
 		<v-row
 			align="center">
 			<v-col
-				sm="12"
+				cols="12"
 				md="5"
 				align="center"
 				style="padding:0">
@@ -37,7 +37,7 @@
 		</v-row>
 		<!-- E:Des 1 -->
 		<v-row class="ma-0 my-12 py-6" justify="center">
-			<v-col cols="4" align="center">
+			<v-col cols="10" md="4" align="center">
 				<v-divider class="mt-6" />
 			</v-col>
 		</v-row>
@@ -57,7 +57,7 @@
 				</v-row>
 			</v-col>
 			<v-col
-				sm="12"
+				cols="12"
 				md="5"
 				align="center"
 				style="padding:0">
@@ -66,7 +66,7 @@
 		</v-row>
 		<!-- E:Des 2 -->
 		<v-row class="ma-0 my-12 py-6" justify="center">
-			<v-col cols="4" align="center">
+			<v-col cols="12" md="4" align="center">
 				<v-divider class="mt-6" />
 			</v-col>
 		</v-row>
@@ -74,7 +74,7 @@
 		<v-row
 			align="center">
 			<v-col
-				sm="12"
+				cols="12"
 				md="5"
 				align="center"
 				style="padding:0">
