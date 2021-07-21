@@ -7,6 +7,7 @@
 <template>
 	<v-app-bar
 		elevation="0"
+  		height="64"
 		color="grey lighten-4">
 
 		<v-btn
@@ -19,7 +20,7 @@
 
 		<v-divider vertical class="ml-3 mr-4"></v-divider>
 
-		<h3 class="indigo--text text--darken-4">
+		<h3 class="indigo--text text--darken-4 d-none d-sm-block">
 			GIT STORY
 		</h3>
 
