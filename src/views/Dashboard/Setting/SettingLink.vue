@@ -9,7 +9,7 @@
 		<v-list-item
 			:key="keyname"
 			class="white"
-			@click="$assign(path)">
+			@click="$assign(path); $emit('input', true);">
 			<template v-slot:default="{ active }">
 				<v-list-item-avatar
 					class="mr-5 pa-5"

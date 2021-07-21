@@ -59,3 +59,61 @@
 .custom .v-list-item--link:before {
 	background-color: transparent !important;
 }
+
+.p-absolute {
+	position: absolute !important;
+}
+
+.p-static {
+	position: static !important;
+}
+
+@media screen and (max-width: 599px) {
+	.p-xs-absolute {
+		position: absolute !important;
+	}
+
+	.p-xs-static {
+		position: static !important;
+	}
+}
+
+@media screen and (min-width: 600px) and (max-width: 959px) {
+	.p-sm-absolute {
+		position: absolute !important;
+	}
+
+	.p-sm-static {
+		position: static !important;
+	}
+}
+
+@media screen and (min-width: 960px) and (max-width: 1263px) {
+	.p-md-absolute {
+		position: absolute !important;
+	}
+
+	.p-md-static {
+		position: static !important;
+	}
+}
+
+@media screen and (min-width: 1264px) and (max-width: 1903px) {
+	.p-lg-absolute {
+		position: absolute !important;
+	}
+
+	.p-lg-static {
+		position: static !important;
+	}
+}
+
+@media screen and (min-width: 1904px) {
+	.p-xl-absolute {
+		position: absolute !important;
+	}
+
+	.p-xl-static {
+		position: static !important;
+	}
+}

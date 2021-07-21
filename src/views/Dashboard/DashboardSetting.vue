@@ -7,7 +7,7 @@
 <template>
 	<v-row class="h-100 ma-0">
 		<!-- S: Left Panel -->
-		<v-col cols="6">
+		<v-col cols="12" md="6">
 			<!-- S: Contribution -->
 			<v-row class="ma-0">
 				<v-col cols="12">
@@ -22,6 +22,7 @@
 					<template
 		 				v-for="(link, idx) in linkList">
 						<setting-link
+		  					v-model="openSubPage"
 		  					:key="'setting-link-' + link + idx"
 							:keyname="link.key"
 							:title="link.title"
@@ -36,9 +37,22 @@
 			</v-list>
 		</v-col>
 		<!-- E: Left Panel -->
-		<v-divider vertical></v-divider>
+		<v-divider class="d-none d-md-block" vertical></v-divider>
 		<!-- S: Right Panel -->
-		<v-col cols="6">
+		<v-col
+			cols="11" md="6"
+			:class="openSubPage ? 'd-block' : 'd-none'"
+			class="white p-absolute p-md-static d-md-block">
+			<v-row class="ma-0">
+				<v-col cols="12" class="pa-0 ma-0" align="right">
+					<v-btn
+		 				class="d-block d-md-none"
+	   					color="red"
+		 				@click.stop="openSubPage = false;"
+						text icon
+						style="font-size: 20pt"> X </v-btn>
+				</v-col>
+			</v-row>
 			<transition name="scroll-x-transition">
 				<router-view></router-view>
 			</transition>
@@ -82,6 +96,7 @@ export default class DashboardSetting extends Mixins(GlobalMixins) {
 			icon: 'mdi-account',
 		},
 	];
+	public openSubPage: boolean = false;
 
 	public get selected() {
 		const idx = this.linkList.findIndex(
