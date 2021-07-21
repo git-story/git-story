@@ -9,14 +9,21 @@
 		v-model="open"
 		persistent
 		max-width="500px"
+  		content-class="rounded-0"
 		width="70%">
-		<v-card align="center">
+		<v-card align="center" tile flat>
 			<v-card-text class="pt-8 py-6">
 				<v-row class="ma-0" align="center">
 					<v-col cols="12" align="center">
 						<h1 class="mb-8 d-flex">
 							<span class="mx-auto d-flex" style="align-items: center">
-								<v-icon :style="{ color: colors[type] }" class="mr-2" large>{{ icons[type] }}</v-icon>
+								<v-icon
+									:style="{ color: colors[type] }"
+									style="font-size: 20pt;"
+									class="mr-2"
+									large>
+									{{ icons[type] }}
+								</v-icon>
 								{{ title }}
 							</span>
 						</h1>
@@ -29,8 +36,8 @@
 
 						<v-btn
 							color="indigo"
-							large
-							dark
+							large text tile
+	   						:dark="!loading"
 	   						:disabled="loading"
 	   						:loading="loading"
 							@click="$emit('ok', $event); $emit('update:open', false);">
