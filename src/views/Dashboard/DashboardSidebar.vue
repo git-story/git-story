@@ -5,7 +5,7 @@
  * Copyright (c) git-story. Licensed under the GPL 3.0 License.
 -->
 <template>
-	<div class="col-3 pt-0" style="padding: 2rem; position: fixed;">
+	<div class="pt-0" style="padding: 2rem;">
 		<!--
 		<v-btn
 	 		tile dark

@@ -23,13 +23,7 @@
 				</v-container>
 			</v-dialog>
 		</v-layout>
-		<v-row class="d-md-none vh-100 ma-0" align="center">
-			<v-col cols="12" align="center">
-				<v-img max-height="200px" max-width="200px" :src="imgs.oops"></v-img>
-				<p class="mt-4">{{ $t('block-mobile') }}</p>
-			</v-col>
-		</v-row>
-		<div class="d-none d-md-block vh-100">
+		<div class="vh-100">
 			<v-sheet id="router-view" tile>
 				<transition name="scroll-y-reverse-transition">
 					<router-view />

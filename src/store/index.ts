@@ -16,6 +16,7 @@ interface State {
 	loadtot: number;
 	totime: number;
 	editing: boolean;
+	menu: boolean;
 }
 
 export default new Vuex.Store({
@@ -32,6 +33,7 @@ export default new Vuex.Store({
 		loadtot: 0,
 		totime: 60000 /* 60 sec */,
 		editing: false,
+		menu: false,
 	},
 	getters: {
 		user(state: State) {

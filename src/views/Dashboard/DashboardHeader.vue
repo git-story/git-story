@@ -8,8 +8,11 @@
 	<v-app-bar
 		color="grey lighten-4"
   		elevate-on-scroll
+  		height="64"
   		fixed>
-		<v-app-bar-nav-icon class="d-sm-none"></v-app-bar-nav-icon>
+		<v-app-bar-nav-icon
+			@click.stop="$store.state.menu = true"
+			class="d-lg-none"></v-app-bar-nav-icon>
 
 		<v-img class="ml-2" :src="imgs.logo" max-width="32" height="32"/>
 

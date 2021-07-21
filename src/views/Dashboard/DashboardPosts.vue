@@ -6,7 +6,7 @@
 -->
 <template>
 	<v-row class="ma-0" style="height: 100%;">
-		<v-col cols="5" class="pa-0">
+		<v-col cols="12" lg="5"  class="pa-0">
 			<v-row class="ma-0 mb-3" align="center">
 				<v-btn
 					icon plain depressed
@@ -76,7 +76,7 @@
 				</v-col>
 			</v-row>
 		</v-col>
-		<v-col cols="7" class="pa-0">
+		<v-col cols="0" lg="7" class="pa-0">
 			<v-row class="ma-0" height="100%;" style="position: fixed; width: 42%; height: 86%;" align="center">
 				<v-col cols="12" class="py-0" align="center">
 					<h1 class="display-4">. . .</h1>
