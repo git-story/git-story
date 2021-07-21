@@ -6,7 +6,31 @@
 -->
 <template>
 	<v-row class="config-wrapper">
-		<v-col cols="8">
+		<v-col cols="12" lg="0" class="d-table d-lg-none">
+			<v-row class="ma-0" align="end">
+				<v-col cols="12" align="right" class="pa-0">
+					<v-btn
+		 				:disabled="$store.getters.loading || !modified"
+		 				:dark="$store.getters.loading || modified"
+		 				:loading="$store.getters.loading"
+		 				depressed
+		 				tile block
+		 				@click="save"
+						color="teal">
+						{{ $t('save') }}
+					</v-btn>
+					<v-btn
+		 				depressed
+		 				tile block dark
+		 				class="mt-2"
+		 				@click="restoreConfig"
+						color="red">
+						{{ $t('dashboard.config.restore-config') }}
+					</v-btn>
+				</v-col>
+			</v-row>
+		</v-col>
+		<v-col cols="12" lg="8" class="d-table d-lg-block" style="min-height: 70vh">
 			<monaco-editor
 				ref="code-editor"
 				class="editor"
@@ -17,7 +41,7 @@
 				:options="editor.options"
 				@editorDidMount="editorDidMount"/>
 		</v-col>
-		<v-col cols="4" class="h-100">
+		<v-col cols="12" lg="4" class="h-100 d-none d-lg-block">
 			<!--
 			<v-row class="ma-0" style="height: 20%;">
 				<v-col cols="12">
@@ -210,10 +234,17 @@ export default class DashboardConfig extends Mixins(GlobalMixins) {
 
 }
 </script>
-<style scoped>
-.editor {
-	width: 100%;
-	height: 80vh;
+<style scope>
+@media screen and (max-width: 1264px) {
+	.editor {
+		height: 65vh;
+	}
+}
+@media (min-width: 1264px) {
+	.editor {
+		width: 100%;
+		height: 80vh;
+	}
 }
 .editor > .monaco-editor {
 	margin: 0;
