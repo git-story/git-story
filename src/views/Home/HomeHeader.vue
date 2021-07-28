@@ -8,9 +8,10 @@
 	<v-app-bar
 		color="transparent"
   		height="64"
-  		style="transform: translateY(24px);"
 		>
+		<!--
 		<v-app-bar-nav-icon class="d-sm-none"/>
+		-->
 
 		<v-toolbar-title>
 			<router-link style="text-decoration: none" class="grey--text text--lighten-5" to="/">
