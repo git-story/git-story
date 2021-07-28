@@ -6,6 +6,7 @@
  */
 
 import Vue from 'vue';
+import VueMeta from 'vue-meta';
 import App from '@/App.vue';
 import router from './router';
 import store from './store';
@@ -55,6 +56,9 @@ Vue.use(session);
 Vue.use(local);
 Vue.use(logger);
 Vue.use(LiquorTree);
+Vue.use(VueMeta, {
+	refreshOnceOnNavigation: true,
+});
 
 Vue.component('theme-toggle-btn', ThemeToggleBtn);
 Vue.component('avatar-btn', AvatarBtn);

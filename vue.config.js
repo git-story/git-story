@@ -24,7 +24,6 @@ module.exports = {
 		"plugins": [
 			new MonacoEditorPlugin({
 				languages: ['json', 'yaml'],
-				features: ['!anchorSelect'],
 			}),
 		],
 	},
